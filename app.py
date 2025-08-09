@@ -106,7 +106,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(['Risk Checks',
 ### -------------------------------------- BASIC INFO -------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-with tab1 == 'Risk Checks':
+with tab1:
     st.markdown('<div class="tab-title">', unsafe_allow_html=True)
     st.title("Risk Checks")
     st.markdown('</div>', unsafe_allow_html=True)
@@ -123,7 +123,7 @@ with tab1 == 'Risk Checks':
 ### ---------------------------- HISTORICAL VOLATILITY ANALYSIS ---------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab2 == 'Bank System Mapping':
+# with tab2:
     # st.markdown('<div class="tab-title">', unsafe_allow_html=True)
     # st.title("Bank System Mapping")
     # st.markdown('</div>', unsafe_allow_html=True)
@@ -135,7 +135,7 @@ with tab1 == 'Risk Checks':
 ### ------------------------------- RESPECTIVE PEERS ANALYSIS ------------------------------ ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab3 == 'Repo':
+# with tab3:
     # st.markdown('<div class="tab-title">', unsafe_allow_html=True)
     # st.title("Repo")
     # st.markdown('</div>', unsafe_allow_html=True)
@@ -146,7 +146,7 @@ with tab1 == 'Risk Checks':
 ### ------------------------------- HISTORICAL VOLUME AND ADV ------------------------------ ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab4 == 'Cross Rate':
+# with tab4:
     # st.markdown('<div class="tab-title">', unsafe_allow_html=True)
     # st.title("Cross Rate")
     # st.markdown('</div>', unsafe_allow_html=True)
@@ -158,7 +158,7 @@ with tab1 == 'Risk Checks':
 ### --------------------------------- PRICE-IMPACT MODELING -------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab5 == 'Cash':
+# with tab5:
     # st.markdown('<div class="tab-title">', unsafe_allow_html=True)
     # st.title("Cash")
     # st.markdown('</div>', unsafe_allow_html=True)
@@ -170,7 +170,7 @@ with tab1 == 'Risk Checks':
 ### --------------------------------- STOCK OWNERSHIP INFO --------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab6 == 'Auctions':
+# with tab6:
 #     st.markdown('<div class="tab-title">', unsafe_allow_html=True)
 #     st.title("Auctions")
 #     st.markdown('</div>', unsafe_allow_html=True)
@@ -180,7 +180,7 @@ with tab1 == 'Risk Checks':
 ### ----------------------------------- INSIDER ACTIVITY ----------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab7 == 'Futures':
+# with tab7:
 #     st.markdown('<div class="tab-title">', unsafe_allow_html=True)
 #     st.title("Futures")
 #     st.markdown('</div>', unsafe_allow_html=True)
@@ -190,7 +190,7 @@ with tab1 == 'Risk Checks':
 ### --------------------------------- PROFITABILITY METRICS -------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab8 == 'Primary Dealers':
+# with tab8:
 #     st.markdown('<div class="tab-title">', unsafe_allow_html=True)
 #     st.title("Primary Dealers")
 #     st.markdown('</div>', unsafe_allow_html=True)
