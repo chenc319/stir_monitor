@@ -110,7 +110,7 @@ with tab1:
     st.markdown('<div class="tab-title">', unsafe_allow_html=True)
     st.title("Risk Checks")
     st.markdown('</div>', unsafe_allow_html=True)
-    plot_dash_for_cash_spread(start_date=start_date, end_date=end_date)
+    plot_dash_for_cash_spread(start_date, end_date)
     plot_new_sofr_system(start_date, end_date)
     plot_repo_rate_complex(start_date, end_date)
     plot_sofr_distribution(start_date, end_date)
