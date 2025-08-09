@@ -1,38 +1,115 @@
-import requests
+### ---------------------------------------------------------------------------------------------------------- ###
+### ----------------------------------------------- AUCTIONS ------------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+### PACKAGES ###
+import datetime
+from fredapi import Fred
 import pandas as pd
+import matplotlib.pyplot as plt
+from pandas_datareader import data as pdr
+import functools as ft
+import requests
+fred = Fred(api_key='6905137c26f03db5c8c09f70b7839150')
 
-# Base Fiscal Data API URL and endpoint
-BASE_URL = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/"
-ENDPOINT = "securities_auctions"
-FULL_URL = BASE_URL + ENDPOINT
+### FUNCTIONS ###
+def merge_dfs(array_of_dfs):
+    new_df = ft.reduce(lambda left,
+                              right: pd.merge(left,
+                                                    right,
+                                                    left_index=True,
+                                                    right_index=True,
+                                                    how='outer'), array_of_dfs)
+    return(new_df)
 
-# API parameters for fields and paging
-params = {
-    'fields': 'record_date,security_type,security_term,offering_amount',
-    'page[size]': 1000,  # Max entries per page
-    'sort': 'record_date' # Ascending by date
-}
+### SET DATES ###
+start = datetime.datetime(2018, 1, 1)
+end = datetime.datetime.today()
 
-# Download and combine all pages for comprehensive data
-results = []
-while True:
-    resp = requests.get(FULL_URL, params=params)
-    resp.raise_for_status()
-    result = resp.json()
-    # Flatten and collect attribute dicts for each result
-    results.extend([item['attributes'] for item in result['data']])
-    # Follow next link for more pages
-    if 'next' in result['links']:
-        FULL_URL = result['links']['next']
-        params = {}  # Params not needed when using 'next' link
-    else:
-        break
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------ ISSUANCE IN AUCTION BY SECURITY ------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
-df = pd.DataFrame(results)
 
-# (Optional) Process data: filter by security type, convert amounts, etc.
-# Example - only Bills, Notes, Bonds:
-df = df[df['security_type'].isin(['Bill', 'Note', 'Bond'])]
-df['record_date'] = pd.to_datetime(df['record_date'])
 
-print(df.head())
+
+
+
+
+
+
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### -------------------------------------- NET BILL ISSUANCE OF TOTAL ---------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+
+
+
+
+
+
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ----------------------------------- BILLS DEALER TO NON DEALER RATIO ------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+
+
+
+
+
+
+
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------ BONDS DEALER TO NON DEALER RATIO ------------------------------------ ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+
+
+
+
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------ BONDS DEALER TO NON DEALER RATIO ------------------------------------ ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+
+
+
+
+
+
+
+
+
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### --------------------------------------- BILLS BID TO COVER RATIO ----------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+
+
+
+
+
+
+
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### --------------------------------------- BONDS BID TO COVER RATIO ----------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+
+
+
+
+
+
+
+
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### --------------------------------------- BONDS BID TO COVER RATIO ----------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###

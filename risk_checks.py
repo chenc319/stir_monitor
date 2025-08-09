@@ -57,6 +57,8 @@ sofr_3m = pdr.DataReader('SOFR90DAYAVG', 'fred', start, end)
 sofr_3m.index = pd.to_datetime(sofr_3m.index.values)
 rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
 rrp.index = pd.to_datetime(rrp.index.values)
+srf = pd.DataFrame(index=sofr.index)
+srf["SRF"] = rrp["RRPONTSYAWARD"] + 0.25
 
 ### CALCULATE DASH FOR CASH AND IN BPS ###
 dash_for_cash_spread = iorb.join(fed_funds, how='inner', lsuffix='_IORB', rsuffix='_EFFR')
@@ -75,10 +77,6 @@ plt.show()
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### -------------------------------------------- NEW SOFR SYSTEM --------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
-
-### CALCULATE SRF ###
-srf = pd.DataFrame(index=sofr.index)
-srf["SRF"] = rrp["RRPONTSYAWARD"] + 0.25  # SRF IS RRP + 25 BPS
 
 new_sofr_system = pd.concat([
     fed_funds.rename(columns={'EFFR': 'EFFR'}),
@@ -216,14 +214,14 @@ plt.show()
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 ### DATA PULL ALL IN TRILLIONS ###
-reserves = pdr.DataReader('WRESBAL', 'fred', start, end) / 1e3
-reserves.index = pd.to_datetime(reserves.index.values)
-tga = pdr.DataReader('WTREGEN', 'fred', start, end) / 1e3
-tga.index = pd.to_datetime(tga.index.values)
-rrp_on = pdr.DataReader('RRPONTSYD', 'fred', start, end) / 1e3
-rrp_on.index = pd.to_datetime(rrp_on.index.values)
-rrp = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
-rrp.index = pd.to_datetime(rrp.index.values)
+reserves_volume = pdr.DataReader('WRESBAL', 'fred', start, end) / 1e3
+reserves_volume.index = pd.to_datetime(reserves_volume.index.values)
+tga_volume = pdr.DataReader('WTREGEN', 'fred', start, end) / 1e3
+tga_volume.index = pd.to_datetime(tga_volume.index.values)
+rrp_on_volume = pdr.DataReader('RRPONTSYD', 'fred', start, end) / 1e3
+rrp_on_volume.index = pd.to_datetime(rrp_on_volume.index.values)
+rrp_volume = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
+rrp_volume.index = pd.to_datetime(rrp_volume.index.values)
 
 tri_volume_df = pd.DataFrame(requests.get(base_url + 'REPO-TRI_TV_TOT-P').json(), columns=["date", "value"])
 tri_volume_df['date'] = pd.to_datetime(tri_volume_df['date'])
@@ -231,11 +229,11 @@ tri_volume_df.index = tri_volume_df['date'].values
 tri_volume_df.drop('date', axis=1, inplace=True)
 tri_volume_df = pd.DataFrame(tri_volume_df / 1e12)
 
-triparty_rrp_merge = merge_dfs([tri_volume_df,rrp]).dropna()
+triparty_rrp_merge = merge_dfs([tri_volume_df,rrp_volume]).dropna()
 tri_repo_diff = pd.DataFrame(triparty_rrp_merge.iloc[:,0] - triparty_rrp_merge.iloc[:,1])
 tri_repo_diff.columns = ['Triparty - RRP']
 
-reserve_monitor_df = merge_dfs([reserves,tga,rrp,tri_repo_diff,rrp_on]).dropna()
+reserve_monitor_df = merge_dfs([reserves_volume,tga_volume,rrp_volume,tri_repo_diff,rrp_on]).dropna()
 reserve_monitor_df.columns = ['Bank Reserves','TGA','RRP','Triparty - RRP','RRP ON']
 
 # Plot
@@ -260,7 +258,7 @@ plt.show()
 shadow_bank_reserves = pdr.DataReader('WSHOMCB', 'fred', start, end) / 1e6
 shadow_bank_reserves.index = pd.to_datetime(shadow_bank_reserves.index.values)
 
-reserve_response_merge = merge_dfs([shadow_bank_reserves,reserves])
+reserve_response_merge = merge_dfs([shadow_bank_reserves,reserves_volume])
 reserve_response_merge.index = reserve_response_merge.index.values
 reserve_response_merge.columns = ['bank','shadow_bank']
 reserve_response = pd.DataFrame(reserve_response_merge['bank'].resample('M').last() +
@@ -268,7 +266,7 @@ reserve_response = pd.DataFrame(reserve_response_merge['bank'].resample('M').las
 
 ### FED ACTION ###
 total_fed_balance_sheet = pd.DataFrame(fed_balance_sheet_merge['SOMA Treasury'] + fed_balance_sheet_merge['SOMA MBS'])
-fed_action_merge = merge_dfs([total_fed_balance_sheet,rrp,tga])
+fed_action_merge = merge_dfs([total_fed_balance_sheet,rrp_volume,tga])
 fed_action_merge.columns = ['fed_balance_sheet','RRP','TGA']
 fed_action = pd.DataFrame((fed_action_merge['fed_balance_sheet'] -
                            fed_action_merge['RRP'] -
@@ -297,9 +295,9 @@ plt.show()
 
 ### AGGREGATE DATA ###
 fed_action_v2_merge = merge_dfs([total_fed_balance_sheet.resample('ME').last(),
-                                 reserves.resample('ME').last(),
+                                 reserves_volume.resample('ME').last(),
                                  shadow_bank_reserves.resample('ME').last()])
-reserve_response_v2_merge = merge_dfs([rrp,tga]).resample('ME').last()
+reserve_response_v2_merge = merge_dfs([rrp,tga_volume]).resample('ME').last()
 
 fed_action_v2 = pd.DataFrame(fed_action_v2_merge.iloc[:,0] -
                              (fed_action_v2_merge.iloc[:,1] + fed_action_v2_merge.iloc[:,2])).diff(1)
