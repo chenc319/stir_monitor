@@ -4,16 +4,14 @@
 
 ### IMPORT OTHER SCRIPTS ###
 import streamlit as st
-
-import app_risk_checks
 from app_risk_checks import *
-from auctions import *
-from cash import *
-from cross_rate import *
-from futures import *
-from primary_dealers import *
-from system import *
-from repo import *
+# from auctions import *
+# from cash import *
+# from cross_rate import *
+# from futures import *
+# from primary_dealers import *
+# from system import *
+# from repo import *
 
 ### FUNCTIONS ###
 def merge_dfs(array_of_dfs):
