@@ -10,3 +10,4 @@ scipy
 html2text
 beautifulsoup4
 requests
+pandas-datareader
