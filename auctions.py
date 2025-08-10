@@ -30,6 +30,12 @@ end = datetime.datetime.today()
 ### ------------------------------------ ISSUANCE IN AUCTION BY SECURITY ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+url = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/deposits_withdrawals_operating_cash?fields=record_date,transaction_type,transaction_today_amt"
+resp = requests.get(url)
+data = pd.DataFrame(resp.json()['data'][0])
+
+
+resp.json()['data'].keys()
 
 
 

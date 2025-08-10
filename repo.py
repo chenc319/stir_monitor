@@ -59,8 +59,6 @@ repo_total_merge = merge_dfs([gcf_volume,dvp_volume,tri_volume]).dropna()
 total_repo_volume = pd.DataFrame(repo_total_merge.sum(axis=1))
 total_repo_volume.columns = ['Repo']
 
-url = "https://markets.newyorkfed.org/api/data.csv?series[]=POSEIRFIA"
-df = pd.read_csv(url)
 
 blue_proxy = merge_dfs([tri_volume,rrp_volume,total_repo_volume])
 blue_proxy.columns = ['tri','rrp','total_repo']
