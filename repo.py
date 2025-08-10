@@ -186,6 +186,7 @@ plt.show()
 ### ---------------------------------------- VOLUME INVESTED IN MMF ------------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+mmf = fred.get_series('RMFSL')
 
 
 
@@ -199,22 +200,33 @@ plt.show()
 ### ----------------------------------------- RRP AND FOREIGN RRP -------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### PULL DATA ###
+foreign_rrp = pd.DataFrame(fred.get_series('WREPOFOR', observation_start=start, observation_end=end) / 1e6)
+rrp_foreign_rrp_merge = merge_dfs([rrp_volume,foreign_rrp])
+rrp_foreign_rrp_merge = rrp_foreign_rrp_merge.resample('W').last().dropna()
+rrp_foreign_rrp_merge.columns = ['RRP','Foreign_RRP']
 
-
-
-
-
-
-
-
+### PLOT DATA ###
+plt.figure(figsize=(12, 7))
+plt.plot(rrp_foreign_rrp_merge.index, rrp_foreign_rrp_merge['RRP'],
+         label="RRP",color="#07AFE3", lw=2)
+plt.plot(rrp_foreign_rrp_merge.index, rrp_foreign_rrp_merge['Foreign_RRP'],
+         label="Foreign RRP", color="#F57235", lw=2)
+plt.title("RRP vs. Foreign RRP", fontsize=22, fontweight="bold")
+plt.ylabel("%")
+plt.legend()
+plt.tight_layout()
+plt.show()
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ----------------------------------------- MMF REPO VS NON REPO ------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### DATA PULL ###
+rrp_on_volume = pdr.DataReader('RRPONTSYD', 'fred', start, end) / 1e3
+treasury = pdr.DataReader('TREAST', 'fred', start, end) / 1e6
 
-
-
+### PLOT ###
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###

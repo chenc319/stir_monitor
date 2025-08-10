@@ -107,15 +107,29 @@ plt.show()
 ### ---------------------------------------- TRIPARTY - TERM SPREAD ------------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-
-term1w_mnemonic = 'REPO-TRI_AR_1W-P'  # Example: 1 week term spread
+### DATA PULL ###
+term1w_mnemonic = 'REPO-DVP_AR_LE30-P'  # Example: 1 week term spread
 term1w_df = pd.DataFrame(requests.get(base_url + term1w_mnemonic).json(), columns=["date", "value"])
 term1w_df['date'] = pd.to_datetime(term1w_df['date'])
 term1w_df.index = term1w_df['date'].values
 term1w_df.drop('date', axis=1, inplace=True)
 
+tri_term_merge = merge_dfs([tri_df,term1w_df]).dropna().resample('W').last()
+tri_term_merge.columns = ['tri','dvp_30d']
+tri_term_merge['diff'] = tri_term_merge['tri'] - tri_term_merge['dvp_30d'] * 100
+tri_term_merge = tri_term_merge['2022-01-01':]
 
-
+### PLOT ###
+plt.figure(figsize=(8, 6))
+plt.plot(tri_term_merge.index, tri_term_merge['diff'],
+         color='#48DEE9', label='Term Spread Proxy', linewidth=2)
+plt.title('Tri Party Term Spread', fontsize=16, fontweight='bold')
+plt.ylabel('Basis Points')
+plt.xlabel('')
+plt.legend(loc='upper left')
+plt.grid(False)
+plt.tight_layout()
+plt.show()
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### -------------------------------------------- THE NEW SYSTEM ---------------------------------------------- ###
