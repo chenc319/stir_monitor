@@ -144,12 +144,18 @@ colors = {
     'RRP':      '#F39C12',
 }
 plt.figure(figsize=(12,7))
-plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['RRP'],      lw=2, color=colors['RRP'], label="RRP")
-plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['SRF'],      lw=2, color=colors['SRF'], label="SRF", alpha=0.95)
-plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['SOFR'],     lw=2, color=colors['SOFR'], label="SOFR")
-plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['DVP'],      lw=2, color=colors['DVP'], label="DVP")
-plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['GCF'],      lw=2, color=colors['GCF'], label="GCF")
-plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['TRIPARTY'], lw=2, color=colors['TRIPARTY'], label="TRIPARTY")
+plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['RRP'],
+         lw=2, color=colors['RRP'], label="RRP")
+plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['SRF'],
+         lw=2, color=colors['SRF'], label="SRF", alpha=0.95)
+plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['SOFR'],
+         lw=2, color=colors['SOFR'], label="SOFR")
+plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['DVP'],
+         lw=2, color=colors['DVP'], label="DVP")
+plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['GCF'],
+         lw=2, color=colors['GCF'], label="GCF")
+plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['TRIPARTY'],
+         lw=2, color=colors['TRIPARTY'], label="TRIPARTY")
 plt.ylabel("bps")
 plt.title("Visible Repo Rate Complex", fontsize=20, fontweight="bold")
 plt.legend()

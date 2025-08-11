@@ -34,6 +34,21 @@ end = datetime.datetime.today()
 ### OFR DATA PULLS ###
 base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
 
+repo_market_volumes = pd.read_csv('data/SponsoredVolume.csv').dropna()
+repo_market_volumes = repo_market_volumes.iloc[::-1].reset_index(drop=True)
+repo_market_volumes.index = pd.to_datetime(repo_market_volumes['BUSINESS_DATE'].values)
+repo_market_volumes = repo_market_volumes.drop('BUSINESS_DATE',axis=1)
+repo_market_volumes['DVP_TOTAL_AMOUNT'] = (
+    repo_market_volumes['DVP_TOTAL_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
+repo_market_volumes['GC_TOTAL_AMOUNT'] = (
+    repo_market_volumes['GC_TOTAL_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
+repo_market_volumes['TOTAL_REPO_AMOUNT'] = (
+    repo_market_volumes['TOTAL_REPO_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
+repo_market_volumes['TOTAL_REVERSE_REPO_AMOUNT'] = (
+    repo_market_volumes['TOTAL_REVERSE_REPO_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
+repo_market_volumes['TOTAL_AMOUNT'] = (
+    repo_market_volumes['TOTAL_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
+
 tri_volume = pd.DataFrame(requests.get(base_url + 'REPO-TRI_TV_TOT-P').json(), columns=["date", "value"])
 tri_volume['date'] = pd.to_datetime(tri_volume['date'])
 tri_volume.index = tri_volume['date'].values
@@ -58,6 +73,10 @@ rrp_volume.index = pd.to_datetime(rrp_volume.index.values)
 repo_total_merge = merge_dfs([gcf_volume,dvp_volume,tri_volume]).dropna()
 total_repo_volume = pd.DataFrame(repo_total_merge.sum(axis=1))
 total_repo_volume.columns = ['Repo']
+
+
+
+
 
 
 blue_proxy = merge_dfs([tri_volume,rrp_volume,total_repo_volume])

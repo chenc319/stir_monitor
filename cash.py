@@ -33,10 +33,19 @@ end = datetime.datetime.today()
 ### DATA PULL ###
 tga_volume = pdr.DataReader('WTREGEN', 'fred', start, end) / 1e3
 tga_volume.index = pd.to_datetime(tga_volume.index.values)
+tga_volume.columns = ['tga_volume']
 tga_roc = tga_volume.resample('W').last().diff(1)
 tga_roc.columns = ['TGA ROC']
 
 ### PLOT ###
+plt.figure(figsize=(7, 6))
+plt.plot(tga_volume.index, tga_volume['tga_volume'],
+         label='TGA Weekly ROC', color='#07AFE3', linewidth=2)
+plt.title('TGA', fontweight='bold')
+plt.legend(loc='best')
+plt.tight_layout()
+plt.show()
+
 plt.figure(figsize=(7, 6))
 plt.plot(tga_roc.index, tga_roc['TGA ROC'],
          label='TGA Weekly ROC', color='#07AFE3', linewidth=2)
@@ -52,10 +61,19 @@ plt.show()
 ### DATA PULL ###
 rrp_volume = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
 rrp_volume.index = pd.to_datetime(rrp_volume.index.values)
+rrp_volume.columns = ['rrp_volume']
 rrp_roc = rrp_volume.resample('W').last().diff(1)
 rrp_roc.columns = ['RRP ROC']
 
 ### PLOT ###
+plt.figure(figsize=(7, 6))
+plt.plot(rrp_volume.index, rrp_volume['rrp_volume'],
+         label='TGA Weekly ROC', color='#07AFE3', linewidth=2)
+plt.title('TGA', fontweight='bold')
+plt.legend(loc='best')
+plt.tight_layout()
+plt.show()
+
 plt.figure(figsize=(7, 6))
 plt.plot(rrp_roc.index, rrp_roc['RRP ROC'],
          label='RRP Weekly ROC', color='#07AFE3', linewidth=2)
@@ -69,25 +87,25 @@ plt.show()
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 ### DATA PULL ###
-base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+reserves_volume = pdr.DataReader('WRESBAL', 'fred', start, end) / 1e3
+reserves_volume.index = pd.to_datetime(reserves_volume.index.values)
 
-tri_volume = pd.DataFrame(requests.get(base_url + 'REPO-TRI_TV_TOT-P').json(), columns=["date", "value"])
-tri_volume['date'] = pd.to_datetime(tri_volume['date'])
-tri_volume.index = tri_volume['date'].values
-tri_volume.drop('date', axis=1, inplace=True)
-tri_volume = tri_volume / 1e12
+### PLOT ###
+plt.figure(figsize=(7, 6))
+plt.plot(reserves_volume.index, reserves_volume['rrp_volume'],
+         label='TGA Weekly ROC', color='#07AFE3', linewidth=2)
+plt.title('TGA', fontweight='bold')
+plt.legend(loc='best')
+plt.tight_layout()
+plt.show()
 
-dvp_volume = pd.DataFrame(requests.get(base_url + 'REPO-DVP_TV_TOT-P').json(), columns=["date", "value"])
-dvp_volume['date'] = pd.to_datetime(dvp_volume['date'])
-dvp_volume.index = dvp_volume['date'].values
-dvp_volume.drop('date', axis=1, inplace=True)
-dvp_volume = dvp_volume / 1e12
-
-gcf_volume = pd.DataFrame(requests.get(base_url + 'REPO-GCF_TV_TOT-P').json(), columns=["date", "value"])
-gcf_volume['date'] = pd.to_datetime(gcf_volume['date'])
-gcf_volume.index = gcf_volume['date'].values
-gcf_volume.drop('date', axis=1, inplace=True)
-gcf_volume = gcf_volume / 1e12
+plt.figure(figsize=(7, 6))
+plt.plot(rrp_roc.index, rrp_roc['RRP ROC'],
+         label='RRP Weekly ROC', color='#07AFE3', linewidth=2)
+plt.title('RRP', fontweight='bold')
+plt.legend(loc='best')
+plt.tight_layout()
+plt.show()
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###

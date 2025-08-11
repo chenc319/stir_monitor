@@ -37,7 +37,6 @@ sponsored_volume = pd.read_csv('data/SponsoredVolume.csv').dropna()
 sponsored_volume = sponsored_volume.iloc[::-1].reset_index(drop=True)
 sponsored_volume.index = pd.to_datetime(sponsored_volume['BUSINESS_DATE'].values)
 sponsored_volume = sponsored_volume.drop('BUSINESS_DATE',axis=1)
-sponsored_volume.columns
 sponsored_volume['DVP_TOTAL_AMOUNT'] = (
     sponsored_volume['DVP_TOTAL_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
 sponsored_volume['GC_TOTAL_AMOUNT'] = (
@@ -48,7 +47,6 @@ sponsored_volume['TOTAL_REVERSE_REPO_AMOUNT'] = (
     sponsored_volume['TOTAL_REVERSE_REPO_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
 sponsored_volume['TOTAL_AMOUNT'] = (
     sponsored_volume['TOTAL_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
-
 
 ### PLOT ###
 plt.figure(figsize=(10, 7))
@@ -102,17 +100,35 @@ plt.show()
 ### ----------------------------------- % OF DVP VOLUME THAT IS SPONSORED ------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### DATA PULL ###
+base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
 
+dvp_volume = pd.DataFrame(requests.get(base_url + 'REPO-DVP_TV_TOT-P').json(), columns=["date", "value"])
+dvp_volume['date'] = pd.to_datetime(dvp_volume['date'])
+dvp_volume.index = dvp_volume['date'].values
+dvp_volume.drop('date', axis=1, inplace=True)
+dvp_sponsored_volume = pd.DataFrame(sponsored_volume['DVP_TOTAL_AMOUNT'])
 
+dvp_merge = merge_dfs([dvp_sponsored_volume,dvp_volume]).dropna()
+dvp_merge.columns = ['dvp_sponsored','total_dvp']
+dvp_merge['pct'] = dvp_merge['dvp_sponsored'] / dvp_merge['total_dvp']
 
+url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-CBGUTSET.json'
+
+pos = pd.DataFrame(requests.get(url).json()['pd']['timeseries']).drop('keyid', axis=1)
+    pos['value'] = pd.to_numeric(pos['value'], errors='coerce') / 1e3
+    pos.dropna(subset=['value'], inplace=True)
+    pos['asofdate'] = pd.to_datetime(pos['asofdate'])
+    pos.index = pos['asofdate'].values
+    pos.drop('asofdate', axis=1, inplace=True)
 
 
 ### PLOT ###
 plt.figure(figsize=(10, 7))
-plt.plot(sponsored_repo_rrp_merge.index, sponsored_repo_rrp_merge['sponsored_repo'],
-         label='Repo Sponsored', color='#4CD0E9', lw=2)  # cyan
-plt.ylabel("Trillions")
-plt.title("Sponsored Volumes", fontsize=17, fontweight="bold")
+plt.plot(dvp_merge.index, dvp_merge['pct'],
+         color='#4CD0E9', lw=2)  # cyan
+plt.ylabel("%")
+plt.title("% of DVP that is Sponsored", fontsize=17, fontweight="bold")
 plt.legend()
 plt.tight_layout()
 plt.show()
@@ -121,27 +137,101 @@ plt.show()
 ### ------------------------------ PRIMARY DEALERS NET POSITIONS BILLS VS BONDS ------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### DATA PULL ###
+bills = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-B.json'
+coupon_2 = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-L2.json'
+coupon_2_3 = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G2L3.json'
+coupon_3_6 = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G3L6.json'
+coupon_6_7 = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G6L7.json'
+coupon_7_11 = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G7L11.json'
+coupon_11_21 = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G11L21.json'
+coupon_21 = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G21.json'
 
+urls = [bills,coupon_2,coupon_2_3,coupon_3_6,coupon_6_7,coupon_7_11,coupon_11_21,coupon_21]
+column_names = ['bills','l2','g2l3','g3l6','g6l7','g7l11','g11l21','g21']
+all_bills_bonds_pos_merge = pd.DataFrame()
+for idx in range(0,len(urls)):
+    pos = pd.DataFrame(requests.get(urls[idx]).json()['pd']['timeseries']).drop('keyid', axis=1)
+    pos['value'] = pd.to_numeric(pos['value'], errors='coerce') / 1e3
+    pos.dropna(subset=['value'], inplace=True)
+    pos['asofdate'] = pd.to_datetime(pos['asofdate'])
+    pos.index = pos['asofdate'].values
+    pos.drop('asofdate', axis=1, inplace=True)
+    pos.columns = [column_names[idx]]
+    all_bills_bonds_pos_merge = merge_dfs([all_bills_bonds_pos_merge,pos])
 
+all_bills_bonds_pos_merge.dropna()
+all_bills_bonds_pos_merge['net_nominal_bonds'] = (
+    all_bills_bonds_pos_merge['l2'] +
+    all_bills_bonds_pos_merge['g2l3'] +
+    all_bills_bonds_pos_merge['g3l6'] +
+    all_bills_bonds_pos_merge['g6l7'] +
+    all_bills_bonds_pos_merge['g7l11']
+)
 
-
-
+### PLOT ###
+plt.figure(figsize=(13,7))
+plt.plot(all_bills_bonds_pos_merge.index, all_bills_bonds_pos_merge['bills'],
+         label='Bills', color='#43c4e6', linewidth=2)
+plt.plot(all_bills_bonds_pos_merge.index, all_bills_bonds_pos_merge['net_nominal_bonds'],
+         label='Net Nominal Bonds', color='#262e39', linewidth=2)
+plt.title("Primary Dealers Net Positions Bills VS Bonds", fontsize=20, fontweight="bold")
+plt.ylabel("Billions")
+plt.xlabel("")
+plt.legend(loc="upper left", fontsize=13)
+plt.grid(True, which='major', linestyle='-', color='grey', alpha=0.3)
+plt.tight_layout()
+plt.show()
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------- PRIMARY DEALERS NET POSITIONS BY BOND TENOR ------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-
-
-
-
-
-
-
+### PLOT ###
+plt.figure(figsize=(12,7))
+plt.plot(all_bills_bonds_pos_merge.index, all_bills_bonds_pos_merge['l2'],
+         label='Bond <2Y', color='#9DDCF9')
+plt.plot(all_bills_bonds_pos_merge.index, all_bills_bonds_pos_merge['g2l3'],
+         label='Bond 2-3Y', color='#4CD0E9')
+plt.plot(all_bills_bonds_pos_merge.index, all_bills_bonds_pos_merge['g3l6'],
+         label='Bond 3-6Y', color='#233852')
+plt.plot(all_bills_bonds_pos_merge.index, all_bills_bonds_pos_merge['g6l7'],
+         label='Bond 6-7Y', color='#F5B820', linewidth=2)
+plt.plot(all_bills_bonds_pos_merge.index, all_bills_bonds_pos_merge['g7l11'],
+         label='Bond 7-10Y', color='#E69B93')
+plt.ylabel("Billions")
+plt.title("Primary Dealers Net Positions By Bond Tenor", fontsize=20, fontweight='bold')
+plt.legend()
+plt.tight_layout()
+plt.show()
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### -------------------------------------------- PRIMARY DEALERS --------------------------------------------- ###
+### ------------------------------------ ADDITIONAL DATA AND IMPROVEMENTS ------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### DATA PULL ###
+bills_c = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
+coupon_2c = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-L2C.json'
+coupon_2_3c = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G2L3C.json'
+coupon_3_6c = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G3L6C.json'
+coupon_6_7c = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G6L7C.json'
+coupon_7_11c = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G7L11C.json'
+coupon_11_21c = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G11L21C.json'
+coupon_21c = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G21C.json'
 
+
+urls = [bills_c,coupon_2,coupon_2_3,coupon_3_6,coupon_6_7,coupon_7_11,coupon_11_21,coupon_21]
+column_names = ['bills','l2','g2l3','g3l6','g6l7','g7l11','g11l21','g21']
+all_bills_bonds_change_merge = pd.DataFrame()
+for idx in range(0,len(urls)):
+    pos = pd.DataFrame(requests.get(urls[idx]).json()['pd']['timeseries']).drop('keyid', axis=1)
+    pos['value'] = pd.to_numeric(pos['value'], errors='coerce')
+    pos.dropna(subset=['value'], inplace=True)
+    pos['asofdate'] = pd.to_datetime(pos['asofdate'])
+    pos.index = pos['asofdate'].values
+    pos.drop('asofdate', axis=1, inplace=True)
+    pos.columns = [column_names[idx]]
+    all_bills_bonds_change_merge = merge_dfs([all_bills_bonds_change_merge,pos])
+
+all_bills_bonds_change_merge.dropna()
 
