@@ -210,8 +210,10 @@ fed_balance_sheet_merge.columns = ['SOMA Treasury','SOMA MBS']
 
 ### PLOT ###
 plt.figure(figsize=(12, 7))
-plt.plot(fed_balance_sheet_merge.index, fed_balance_sheet_merge['SOMA Treasury'], color="#46b5ca", lw=3, label='SOMA Treasury')
-plt.plot(fed_balance_sheet_merge.index, fed_balance_sheet_merge['SOMA MBS'], color="#17354c", lw=3, label='SOMA MBS')
+plt.plot(fed_balance_sheet_merge.index, fed_balance_sheet_merge['SOMA Treasury'],
+         color="#46b5ca", lw=3, label='SOMA Treasury')
+plt.plot(fed_balance_sheet_merge.index, fed_balance_sheet_merge['SOMA MBS'],
+         color="#17354c", lw=3, label='SOMA MBS')
 plt.title("FED Balance Sheet", fontsize=22, fontweight="bold")
 plt.ylabel("Dollars")
 plt.ylim(1, 6.5)
@@ -244,16 +246,21 @@ triparty_rrp_merge = merge_dfs([tri_volume_df,rrp_volume]).dropna()
 tri_repo_diff = pd.DataFrame(triparty_rrp_merge.iloc[:,0] - triparty_rrp_merge.iloc[:,1])
 tri_repo_diff.columns = ['Triparty - RRP']
 
-reserve_monitor_df = merge_dfs([reserves_volume,tga_volume,rrp_volume,tri_repo_diff,rrp_on]).dropna()
+reserve_monitor_df = merge_dfs([reserves_volume,tga_volume,rrp_volume,tri_repo_diff,rrp_on_volume]).dropna()
 reserve_monitor_df.columns = ['Bank Reserves','TGA','RRP','Triparty - RRP','RRP ON']
 
 # Plot
 plt.figure(figsize=(12, 7))
-plt.plot(reserve_monitor_df.index, reserve_monitor_df['Bank Reserves'], label="Bank Reserves", color="#aad8ef", lw=3)
-plt.plot(reserve_monitor_df.index, reserve_monitor_df['TGA'],           label="TGA",           color="#4da3d7", lw=2)
-plt.plot(reserve_monitor_df.index, reserve_monitor_df['RRP'],           label="RRP",           color="#17293c", lw=2)
-plt.plot(reserve_monitor_df.index, reserve_monitor_df['Triparty - RRP'], label="Triparty - RRP", color="#f5c23e", lw=2)
-plt.plot(reserve_monitor_df.index, reserve_monitor_df['RRP ON'],        label="RRP ON",        color="#f5b9ad", lw=2)
+plt.plot(reserve_monitor_df.index, reserve_monitor_df['Bank Reserves'],
+         label="Bank Reserves", color="#aad8ef", lw=3)
+plt.plot(reserve_monitor_df.index, reserve_monitor_df['TGA'],
+         label="TGA",           color="#4da3d7", lw=2)
+plt.plot(reserve_monitor_df.index, reserve_monitor_df['RRP'],
+         label="RRP",           color="#17293c", lw=2)
+plt.plot(reserve_monitor_df.index, reserve_monitor_df['Triparty - RRP'],
+         label="Triparty - RRP", color="#f5c23e", lw=2)
+plt.plot(reserve_monitor_df.index, reserve_monitor_df['RRP ON'],
+         label="RRP ON",        color="#f5b9ad", lw=2)
 
 plt.title("Monitoring reserves", fontsize=22, fontweight="bold")
 plt.ylabel("Dollars (Trillions)")
@@ -276,8 +283,12 @@ reserve_response = pd.DataFrame(reserve_response_merge['bank'].resample('M').las
                                 reserve_response_merge['shadow_bank'].resample('M').last()).diff(1)
 
 ### FED ACTION ###
+fed_balance_sheet_volume = pdr.DataReader('WALCL', 'fred', start, end) / 1e3
+fed_balance_sheet_volume.index = pd.to_datetime(fed_balance_sheet_volume.index.values)
+
+
 total_fed_balance_sheet = pd.DataFrame(fed_balance_sheet_merge['SOMA Treasury'] + fed_balance_sheet_merge['SOMA MBS'])
-fed_action_merge = merge_dfs([total_fed_balance_sheet,rrp_volume,tga])
+fed_action_merge = merge_dfs([total_fed_balance_sheet,rrp_volume,tga_volume])
 fed_action_merge.columns = ['fed_balance_sheet','RRP','TGA']
 fed_action = pd.DataFrame((fed_action_merge['fed_balance_sheet'] -
                            fed_action_merge['RRP'] -

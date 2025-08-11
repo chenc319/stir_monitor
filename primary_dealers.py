@@ -113,16 +113,6 @@ dvp_merge = merge_dfs([dvp_sponsored_volume,dvp_volume]).dropna()
 dvp_merge.columns = ['dvp_sponsored','total_dvp']
 dvp_merge['pct'] = dvp_merge['dvp_sponsored'] / dvp_merge['total_dvp']
 
-url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-CBGUTSET.json'
-
-pos = pd.DataFrame(requests.get(url).json()['pd']['timeseries']).drop('keyid', axis=1)
-    pos['value'] = pd.to_numeric(pos['value'], errors='coerce') / 1e3
-    pos.dropna(subset=['value'], inplace=True)
-    pos['asofdate'] = pd.to_datetime(pos['asofdate'])
-    pos.index = pos['asofdate'].values
-    pos.drop('asofdate', axis=1, inplace=True)
-
-
 ### PLOT ###
 plt.figure(figsize=(10, 7))
 plt.plot(dvp_merge.index, dvp_merge['pct'],
