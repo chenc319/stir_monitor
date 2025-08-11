@@ -173,11 +173,16 @@ sofr_distribution_df = merge_dfs([sofr,sofr1,sofr25,sofr75,sofr99])['2025-04-01'
 
 ### PLOT ###
 plt.figure(figsize=(10, 7))
-plt.plot(sofr_distribution_df.index, sofr_distribution_df['SOFR'],      label='SOFR',       color='#9DDCF9', lw=2)  # light blue
-plt.plot(sofr_distribution_df.index, sofr_distribution_df['SOFR1'],    label='SOFR 1%',    color='#4CD0E9', lw=2)  # cyan
-plt.plot(sofr_distribution_df.index, sofr_distribution_df['SOFR25'],   label='SOFR 25%',   color='#233852', lw=2)  # dark blue
-plt.plot(sofr_distribution_df.index, sofr_distribution_df['SOFR75'],   label='SOFR 75%',   color='#F5B820', lw=2)  # yellow/orange
-plt.plot(sofr_distribution_df.index, sofr_distribution_df['SOFR99'],   label='SOFR 99%',   color='#E69B93', lw=2)  # salmon/pink
+plt.plot(sofr_distribution_df.index, sofr_distribution_df['SOFR'],
+         label='SOFR', color='#9DDCF9', lw=2)  # light blue
+plt.plot(sofr_distribution_df.index, sofr_distribution_df['SOFR1'],
+         label='SOFR 1%', color='#4CD0E9', lw=2)  # cyan
+plt.plot(sofr_distribution_df.index, sofr_distribution_df['SOFR25'],
+         label='SOFR 25%', color='#233852', lw=2)  # dark blue
+plt.plot(sofr_distribution_df.index, sofr_distribution_df['SOFR75'],
+         label='SOFR 75%', color='#F5B820', lw=2)  # yellow/orange
+plt.plot(sofr_distribution_df.index, sofr_distribution_df['SOFR99'],
+         label='SOFR 99%', color='#E69B93', lw=2)  # salmon/pink
 plt.ylabel("Bps")
 plt.title("SOFR Distribution", fontsize=17, fontweight="bold")
 plt.legend()
