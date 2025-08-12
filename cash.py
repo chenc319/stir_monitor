@@ -110,39 +110,6 @@ plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
-
-### ---------------------------------------------------------------------------------------------------------- ###
-### ----------------------------------------- 6M CASH RATE OF CHANGE ----------------------------------------- ###
-### ---------------------------------------------------------------------------------------------------------- ###
-
-'''
-- description is to vague so not sure what it is trying to express or the source it is from
-'''
-
-# cash_volume = pdr.DataReader('WRESBAL', 'fred', start, end) / 1e3
-# cash_volume.index = pd.to_datetime(cash_volume.index.values)
-# cash_volume.columns = ['cash_volume']
-# cash_roc = cash_volume.resample('ME').last().diff(6)
-# cash_roc.columns = ['cash_roc']
-#
-# ### PLOT ###
-# plt.figure(figsize=(7, 6))
-# plt.plot(cash_volume.index, cash_volume['cash_volume'],
-#          label='Reserves', color='#07AFE3', linewidth=2)
-# plt.title('Reserves', fontweight='bold')
-# plt.legend(loc='best')
-# plt.tight_layout()
-# plt.show()
-#
-# plt.figure(figsize=(7, 6))
-# plt.plot(reserves_roc.index, reserves_roc['reserves_roc'],
-#          label='Reserves Weekly ROC', color='#07AFE3', linewidth=2)
-# plt.title('Reserves', fontweight='bold')
-# plt.legend(loc='best')
-# plt.tight_layout()
-# plt.show()
-
-
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------------ MMF REPO VS NON REPO ------------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###

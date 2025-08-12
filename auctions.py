@@ -4,13 +4,10 @@
 
 ### PACKAGES ###
 import datetime
-from fredapi import Fred
 import pandas as pd
 import matplotlib.pyplot as plt
-from pandas_datareader import data as pdr
 import functools as ft
 import requests
-fred = Fred(api_key='6905137c26f03db5c8c09f70b7839150')
 
 ### FUNCTIONS ###
 def merge_dfs(array_of_dfs):
@@ -160,6 +157,7 @@ plt.show()
 ### ----------------------------------- BILLS DEALER TO NON DEALER RATIO ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### DATA PULL ###
 dealer_non_dealer_df = us_treasury_auction_data[['record_date',
                                                  'security_type',
                                                  'security_term',
@@ -309,11 +307,11 @@ bills_26week.columns = ['26week']
 bills_52week = pd.DataFrame(bills_bid_to_cover[bills_bid_to_cover['security_term'] == '52-Week']['bid_to_cover_ratio'])
 bills_52week.columns = ['52week']
 
-bills_merge = merge_dfs([bills_4week.resample('ME').last(),
-                         bills_8week.resample('ME').last(),
-                         bills_13week.resample('ME').last(),
-                         bills_26week.resample('ME').last(),
-                         bills_52week.resample('ME').last()]).ffill().dropna()
+bills_merge = merge_dfs([bills_4week.resample('W').last(),
+                         bills_8week.resample('W').last(),
+                         bills_13week.resample('W').last(),
+                         bills_26week.resample('W').last(),
+                         bills_52week.resample('W').last()]).ffill().dropna()
 cols = ['4week', '8week', '13week', '26week', '52week']
 bills_merge[cols] = bills_merge[cols].apply(pd.to_numeric, errors='coerce')
 

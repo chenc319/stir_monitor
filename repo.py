@@ -31,6 +31,16 @@ end = datetime.datetime.today()
 ### ------------------------------- PROXY OF PERCENT WITHOUT CENTRAL CLEARING -------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+repo_asset_backed_securities = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
+repo_ = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
+repo_asset_backed_securities = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
+repo_asset_backed_securities = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
+repo_asset_backed_securities = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
+repo_asset_backed_securities = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
+repo_asset_backed_securities = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
+
+
+
 ### OFR DATA PULLS ###
 base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
 
@@ -191,22 +201,20 @@ plt.show()
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 ### DATA PULL ###
-volume6m_merge_df = merge_dfs([volume_venue_merge_df,total_repo_volume]).dropna()
-volume6m_merge_df['Repo-RRP'] = volume6m_merge_df['Repo'] - volume6m_merge_df['RRP']
-roc_6m_volume = volume6m_merge_df.resample('W').last().pct_change(26).rolling(4).mean().dropna()
+roc_6m_volume = volume_venue_merge_df.resample('ME').last().diff(1)
 
 ### PLOT ###
 plt.figure(figsize=(12, 7))
 plt.plot(roc_6m_volume.index, roc_6m_volume['DVP'],
          label="DVP",color="#f8b62d", lw=2)
-plt.plot(roc_6m_volume.index, roc_6m_volume['Repo-RRP'],
-         label="Repo-RRP", color="#f8772d", lw=2)
+plt.plot(roc_6m_volume.index, roc_6m_volume['RRP'],
+         label="RRP", color="#f8772d", lw=2)
 plt.plot(roc_6m_volume.index, roc_6m_volume['GCF'],
          label="GCF", color="#2f90c5", lw=2)
 plt.plot(roc_6m_volume.index, roc_6m_volume['Triparty-RRP'],
          label="Triparty-RRP", color="#67cbe7", lw=2)
-plt.title("Volume per Venue", fontsize=22, fontweight="bold")
-plt.ylabel("%")
+plt.title("Monthly Change in Volume per Venue", fontsize=22, fontweight="bold")
+plt.ylabel("Dollars (Trillions)")
 plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()

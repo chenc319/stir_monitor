@@ -108,7 +108,7 @@ plt.show()
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 ### DATA PULL ###
-term1w_mnemonic = 'REPO-TRI_AR_LE30-P'  # Example: 1 week term spread
+term1w_mnemonic = 'REPO-TRI_AR_LE30-P'  # 30day spread vs overnight
 term1w_df = pd.DataFrame(requests.get(base_url + term1w_mnemonic).json(), columns=["date", "value"])
 term1w_df['date'] = pd.to_datetime(term1w_df['date'])
 term1w_df.index = term1w_df['date'].values
@@ -123,7 +123,7 @@ tri_term_merge = tri_term_merge['2022-01-01':]
 plt.figure(figsize=(8, 6))
 plt.plot(tri_term_merge.index, tri_term_merge['diff'],
          color='#48DEE9', label='Term Spread Proxy', linewidth=2)
-plt.title('Tri Party Term Spread', fontsize=16, fontweight='bold')
+plt.title('Tri Party Term Spread (ON vs. <30d', fontsize=16, fontweight='bold')
 plt.ylabel('Basis Points')
 plt.xlabel('')
 plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
