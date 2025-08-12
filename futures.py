@@ -157,13 +157,13 @@ plt.show()
 ### DATA PULL ###
 sofr = pdr.DataReader('SOFR', 'fred', start, end)
 sofr.index = pd.to_datetime(sofr.index.values)
-combined_data = merge_dfs([sofr,rrp,gc_df,fed_funds,tri_df])
-combined_data.columns = ['SOFR','ON_RRP_Rate','BGCR','Fed_Funds','TGCR']
-clean_data = combined_data.dropna(subset=['SOFR', 'BGCR', 'TGCR', 'ON_RRP_Rate', 'Fed_Funds'])
+combined_data = merge_dfs([sofr,rrp,gc_df,fed_funds,tri_df,dvp_df])
+combined_data.columns = ['SOFR','ON_RRP_Rate','BGCR','Fed_Funds','TGCR','DVP']
+clean_data = combined_data.dropna(subset=['SOFR', 'BGCR', 'TGCR', 'ON_RRP_Rate', 'Fed_Funds','DVP'])
 
-clean_data['Private_Repo_Avg'] = (clean_data['SOFR'] + clean_data['BGCR'] + clean_data['TGCR']) / 3
-clean_data['Fed_Facility_Spread'] = clean_data['ON_RRP_Rate'] - clean_data['Private_Repo_Avg']
-clean_data['Private_Repo_Spread'] = clean_data['Private_Repo_Avg'] - clean_data['Fed_Funds']
+clean_data['Private_Repo_Avg'] = (clean_data['DVP'] + clean_data['TGCR']) / 2
+clean_data['Fed_Facility_Spread'] = clean_data['ON_RRP_Rate'] - clean_data['SOFR']
+clean_data['Private_Repo_Spread'] = clean_data['Private_Repo_Avg'] - clean_data['SOFR']
 clean_data['Fed_Facility_MA30'] = clean_data['Fed_Facility_Spread'].rolling(window=30).mean()
 clean_data['Private_Repo_MA30'] = clean_data['Private_Repo_Spread'].rolling(window=30).mean()
 clean_data['Fed_Facility_Z'] = (clean_data['Fed_Facility_MA30'] - clean_data['Fed_Facility_MA30'].mean()) / clean_data[
