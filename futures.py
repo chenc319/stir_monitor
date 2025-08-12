@@ -154,18 +154,72 @@ plt.show()
 ### --------------------------------------- IS THE STABILITY LOWER ROC --------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### DATA PULL ###
+sofr = pdr.DataReader('SOFR', 'fred', start, end)
+sofr.index = pd.to_datetime(sofr.index.values)
+combined_data = merge_dfs([sofr,rrp,gc_df,fed_funds,tri_df])
+combined_data.columns = ['SOFR','ON_RRP_Rate','BGCR','Fed_Funds','TGCR']
+clean_data = combined_data.dropna(subset=['SOFR', 'BGCR', 'TGCR', 'ON_RRP_Rate', 'Fed_Funds'])
 
+clean_data['Private_Repo_Avg'] = (clean_data['SOFR'] + clean_data['BGCR'] + clean_data['TGCR']) / 3
+clean_data['Fed_Facility_Spread'] = clean_data['ON_RRP_Rate'] - clean_data['Private_Repo_Avg']
+clean_data['Private_Repo_Spread'] = clean_data['Private_Repo_Avg'] - clean_data['Fed_Funds']
+clean_data['Fed_Facility_MA30'] = clean_data['Fed_Facility_Spread'].rolling(window=30).mean()
+clean_data['Private_Repo_MA30'] = clean_data['Private_Repo_Spread'].rolling(window=30).mean()
+clean_data['Fed_Facility_Z'] = (clean_data['Fed_Facility_MA30'] - clean_data['Fed_Facility_MA30'].mean()) / clean_data[
+    'Fed_Facility_MA30'].std()
+clean_data['Private_Repo_Z'] = (clean_data['Private_Repo_MA30'] - clean_data['Private_Repo_MA30'].mean()) / clean_data[
+    'Private_Repo_MA30'].std()
 
+plot_data = clean_data.dropna(subset=['Fed_Facility_Z', 'Private_Repo_Z'])
 
-
-
+### PLOT ###
+plt.figure(figsize=(12, 7))
+plt.plot(plot_data.index, plot_data['Fed_Facility_Z'],
+         label="Fed Facility to Repo Spreads", color="#1f77b4", lw=2)
+plt.plot(plot_data.index, plot_data['Private_Repo_Z'],
+         label="Private Repo Spreads", color="#2E3A59", lw=2)
+for y_val in [-2, -1, 1, 2]:
+    plt.axhline(y=y_val, color='gray', linestyle='--', alpha=0.6, linewidth=1)
+plt.title("Is the Stability Lower\nRate of Change", fontsize=22, fontweight="bold")
+plt.ylabel("Z-Score")
+plt.ylim(-5, 5)
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.figtext(0.02, 0.02, 'Fonte: FED, MacroDispatch. Note: Calculations on a 30 MA Difference',
+           fontsize=9, color='gray')
+plt.figtext(0.95, 0.02, 'ie', fontsize=14, color='steelblue',
+           fontweight='bold', ha='right')
+plt.tight_layout()
+plt.show()
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ----------------------------------------- HOW DID LEVELS CHANGE ------------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### DATA PULL ###
+clean_data['Fed_Facility_static_Z'] = (clean_data['Fed_Facility_Spread'] - clean_data['Fed_Facility_Spread'].mean()) / clean_data[
+    'Fed_Facility_Spread'].std()
+clean_data['Private_Repo_static_Z'] = (clean_data['Private_Repo_Spread'] - clean_data['Private_Repo_Spread'].mean()) / clean_data[
+    'Private_Repo_Spread'].std()
+plot_static_data = clean_data.dropna(subset=['Fed_Facility_static_Z', 'Private_Repo_static_Z'])
 
-
-
+### PLOT ###
+plt.figure(figsize=(12, 7))
+plt.plot(plot_static_data.index, plot_static_data['Fed_Facility_static_Z'],
+         label="Fed Facility to Repo Spreads", color="#1f77b4", lw=2)
+plt.plot(plot_static_data.index, plot_static_data['Private_Repo_static_Z'],
+         label="Private Repo Spreads", color="#2E3A59", lw=2)
+for y_val in [-2, -1, 1, 2]:
+    plt.axhline(y=y_val, color='gray', linestyle='--', alpha=0.6, linewidth=1)
+plt.title("Is the Stability Lower\nRate of Change", fontsize=22, fontweight="bold")
+plt.ylabel("Z-Score")
+plt.ylim(-5, 5)
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.figtext(0.95, 0.02, 'ie', fontsize=14, color='steelblue',
+           fontweight='bold', ha='right')
+plt.tight_layout()
+plt.show()
 
 
