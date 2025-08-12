@@ -35,11 +35,6 @@ end = datetime.datetime.today()
 url = "https://publicreporting.cftc.gov/resource/gpe5-46if.csv?$limit=60000"
 response = requests.get(url)
 cftc_all_futures = pd.read_csv(StringIO(response.text))
-bond_futures = cftc_all_futures[['commodity_name'] == '']
-cftc_all_futures['commodity_name'].unique()
-
-cftc_all_futures['contract_market_name'].unique()
-
 bonds_cftc_subset = cftc_all_futures[(cftc_all_futures['contract_market_name'] == 'UST 2Y NOTE') |
                                      (cftc_all_futures['contract_market_name'] == 'UST 5Y NOTE') |
                                      (cftc_all_futures['contract_market_name'] == 'UST 10Y NOTE') |
@@ -61,7 +56,7 @@ for col in pivot.columns:
 plt.title("Leverage Money Short Positions by Treasury Futures Bucket", fontsize=15)
 plt.xlabel("Date")
 plt.ylabel("Leverage Money Short Positions")
-plt.legend(title="Commodity Name")
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.grid(True)
 plt.tight_layout()
 plt.show()
@@ -116,7 +111,7 @@ plt.plot(quarter_spreads_merge.index, quarter_spreads_merge['gc_gcf'],
          label='GC-GCF', color='#233852', lw=2)  # dark blue
 plt.ylabel("Basis Points")
 plt.title("End of Quarter Spreads", fontsize=17, fontweight="bold")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -146,7 +141,7 @@ plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_rrp'],
          label="GC-RRP", color="#67cbe7", lw=2)
 plt.title("End of Month Spreads", fontsize=22, fontweight="bold")
 plt.ylabel("Basis Points")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -184,7 +179,7 @@ for y_val in [-2, -1, 1, 2]:
 plt.title("Is the Stability Lower\nRate of Change", fontsize=22, fontweight="bold")
 plt.ylabel("Z-Score")
 plt.ylim(-5, 5)
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.grid(True, alpha=0.3)
 plt.figtext(0.02, 0.02, 'Fonte: FED, MacroDispatch. Note: Calculations on a 30 MA Difference',
            fontsize=9, color='gray')
@@ -215,7 +210,7 @@ for y_val in [-2, -1, 1, 2]:
 plt.title("Is the Stability Lower\nRate of Change", fontsize=22, fontweight="bold")
 plt.ylabel("Z-Score")
 plt.ylim(-5, 5)
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.grid(True, alpha=0.3)
 plt.figtext(0.95, 0.02, 'ie', fontsize=14, color='steelblue',
            fontweight='bold', ha='right')

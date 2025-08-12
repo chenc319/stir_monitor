@@ -271,7 +271,13 @@ plt.show()
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 ### RESERVE RESPONSE ###
-shadow_bank_reserves = pdr.DataReader('WSHOMCB', 'fred', start, end) / 1e6
+mmf_total_net_assets = pdr.DataReader('MMMFFAQ027S', 'fred', start, end) /1e6
+brokers_total_assets = pdr.DataReader('BOGZ1FL664090005Q', 'fred', start, end) / 1e6
+shadow_bank_reserves_merge =  merge_dfs([mmf_total_net_assets, brokers_total_assets])
+shadow_bank_reserves_merge['shadow_bank_proxy'] = (shadow_bank_reserves_merge['MMMFFAQ027S'] +
+                                                   shadow_bank_reserves_merge['BOGZ1FL664090005Q'])
+shadow_bank_reserves = pd.DataFrame(shadow_bank_reserves_merge['shadow_bank_proxy'])
+shadow_bank_reserves.columns = ['shadow_bank_proxy']
 shadow_bank_reserves.index = pd.to_datetime(shadow_bank_reserves.index.values)
 
 reserve_response_merge = merge_dfs([shadow_bank_reserves,reserves_volume])

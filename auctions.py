@@ -49,7 +49,7 @@ plt.plot(agg_monthly.index, agg_monthly.get('Bond', pd.Series(index=agg_monthly.
 plt.plot(agg_monthly.index, agg_monthly.get('Note', pd.Series(index=agg_monthly.index)), label='Note', color='#ffc650')
 plt.title("Issuance in Auction By Security", fontsize=20, fontweight='bold', pad=20)
 plt.ylabel("Dollars (Trillions)")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.grid(True)
 plt.tight_layout()
 plt.show()
@@ -86,7 +86,7 @@ plt.plot(bill_issuance.index,
          bill_issuance.get('52-Week', pd.Series(index=bill_issuance.index)), label='52-Week', color='#fbc430')
 plt.title("Bill Issuances", fontsize=20, fontweight='bold', pad=20)
 plt.ylabel("Dollars (Trillions)")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.grid(True)
 plt.tight_layout()
 plt.show()
@@ -123,7 +123,7 @@ plt.plot(notes_issuance.index,
          notes_issuance.get('10-Year', pd.Series(index=notes_issuance.index)), label='10-Year', color='#fbc430')
 plt.title("Notes Issuances", fontsize=20, fontweight='bold', pad=20)
 plt.ylabel("Dollars (Trillions)")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.grid(True)
 plt.tight_layout()
 plt.show()
@@ -151,7 +151,7 @@ plt.plot(bonds_issuance.index,
          bonds_issuance.get('30-Year', pd.Series(index=bonds_issuance.index)), label='30-Year', color='#fbc430')
 plt.title("Bonds Issuances", fontsize=20, fontweight='bold', pad=20)
 plt.ylabel("Dollars (Trillions)")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.grid(True)
 plt.tight_layout()
 plt.show()
@@ -208,7 +208,7 @@ plt.plot(bills_merge.index, bills_merge['52week'],
          label='52-Week', color='#E69B93', lw=2)  # salmon/pink
 plt.ylabel("Ratio")
 plt.title("Bills Dealer to Non Dealer Ratio", fontsize=17, fontweight="bold")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -237,7 +237,7 @@ plt.plot(bonds_merge.index, bonds_merge['30year'],
          label='30-Year', color='#4CD0E9', lw=2)  # cyan
 plt.ylabel("Ratio")
 plt.title("Bonds Dealer to Non Dealer Ratio", fontsize=17, fontweight="bold")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -286,7 +286,7 @@ plt.plot(notes_merge.index, notes_merge['10year'],
          label='10-Year', color='#E69B93', lw=2)  # salmon/pink
 plt.ylabel("Ratio")
 plt.title("Bonds Dealer to Non Dealer Ratio", fontsize=17, fontweight="bold")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -331,7 +331,7 @@ plt.plot(bills_merge.index, bills_merge['52week'],
          label='52-Week', color='#E69B93', lw=2)  # salmon/pink
 plt.ylabel("Ratio")
 plt.title("Bills Bid to Cover Ratio", fontsize=17, fontweight="bold")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -358,7 +358,7 @@ plt.plot(bonds_merge.index, bonds_merge['30year'],
          label='30-Year', color='#4CD0E9', lw=2)  # cyan
 plt.ylabel("Ratio")
 plt.title("Bonds Bid to Cover Ratio", fontsize=17, fontweight="bold")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -402,6 +402,6 @@ plt.plot(notes_merge.index, notes_merge['10year'],
          label='10-Year', color='#E69B93', lw=2)  # salmon/pink
 plt.ylabel("Ratio")
 plt.title("Bonds Bid to Cover Ratio", fontsize=17, fontweight="bold")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()

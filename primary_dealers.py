@@ -56,7 +56,7 @@ plt.plot(sponsored_volume.index, sponsored_volume['GC_TOTAL_AMOUNT'],
          label='GC Sponsored', color='#233852', lw=2)  # dark blue
 plt.ylabel("Trillions")
 plt.title("Sponsored Volumes - The Solutions?", fontsize=17, fontweight="bold")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -92,7 +92,7 @@ plt.plot(sponsored_repo_rrp_merge.index, sponsored_repo_rrp_merge['sponsored_rrp
          label='RRP Sponsored', color='#233852', lw=2)  # dark blue
 plt.ylabel("Trillions")
 plt.title("Sponsored Volumes", fontsize=17, fontweight="bold")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -119,7 +119,7 @@ plt.plot(dvp_merge.index, dvp_merge['pct'],
          color='#4CD0E9', lw=2)  # cyan
 plt.ylabel("%")
 plt.title("% of DVP that is Sponsored", fontsize=17, fontweight="bold")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -168,7 +168,7 @@ plt.plot(all_bills_bonds_pos_merge.index, all_bills_bonds_pos_merge['net_nominal
 plt.title("Primary Dealers Net Positions Bills VS Bonds", fontsize=20, fontweight="bold")
 plt.ylabel("Billions")
 plt.xlabel("")
-plt.legend(loc="upper left", fontsize=13)
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.grid(True, which='major', linestyle='-', color='grey', alpha=0.3)
 plt.tight_layout()
 plt.show()
@@ -191,7 +191,7 @@ plt.plot(all_bills_bonds_pos_merge.index, all_bills_bonds_pos_merge['g7l11'],
          label='Bond 7-10Y', color='#E69B93')
 plt.ylabel("Billions")
 plt.title("Primary Dealers Net Positions By Bond Tenor", fontsize=20, fontweight='bold')
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 

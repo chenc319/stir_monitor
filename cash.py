@@ -42,7 +42,7 @@ plt.figure(figsize=(7, 6))
 plt.plot(tga_volume.index, tga_volume['tga_volume'],
          label='TGA Weekly ROC', color='#07AFE3', linewidth=2)
 plt.title('TGA', fontweight='bold')
-plt.legend(loc='best')
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -50,7 +50,7 @@ plt.figure(figsize=(7, 6))
 plt.plot(tga_roc.index, tga_roc['TGA ROC'],
          label='TGA Weekly ROC', color='#07AFE3', linewidth=2)
 plt.title('TGA', fontweight='bold')
-plt.legend(loc='best')
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -70,7 +70,7 @@ plt.figure(figsize=(7, 6))
 plt.plot(rrp_volume.index, rrp_volume['rrp_volume'],
          label='TGA Weekly ROC', color='#07AFE3', linewidth=2)
 plt.title('TGA', fontweight='bold')
-plt.legend(loc='best')
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -78,7 +78,7 @@ plt.figure(figsize=(7, 6))
 plt.plot(rrp_roc.index, rrp_roc['RRP ROC'],
          label='RRP Weekly ROC', color='#07AFE3', linewidth=2)
 plt.title('RRP', fontweight='bold')
-plt.legend(loc='best')
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -98,7 +98,7 @@ plt.figure(figsize=(7, 6))
 plt.plot(reserves_volume.index, reserves_volume['reserves_volume'],
          label='Reserves', color='#07AFE3', linewidth=2)
 plt.title('Reserves', fontweight='bold')
-plt.legend(loc='best')
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -106,7 +106,7 @@ plt.figure(figsize=(7, 6))
 plt.plot(reserves_roc.index, reserves_roc['reserves_roc'],
          label='Reserves Weekly ROC', color='#07AFE3', linewidth=2)
 plt.title('Reserves', fontweight='bold')
-plt.legend(loc='best')
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -176,7 +176,7 @@ plt.plot(mmf_repo_non_repo_merge.index, mmf_repo_non_repo_merge['mmf_repo'],
 
 plt.title("MMF Repo vs Nono Repo", fontsize=22, fontweight="bold")
 plt.ylabel('Dollars')
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -215,7 +215,7 @@ plt.plot(mmf_fed_repo_non_repo_merge.index, mmf_fed_repo_non_repo_merge['mmf_rep
          label="Repo Allocation", color="#F5B820", lw=2)
 plt.title("MMF Repo vs Nono Repo", fontsize=22, fontweight="bold")
 plt.ylabel('Dollars')
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -227,7 +227,7 @@ plt.show()
 reserve_liabilities_merge = merge_dfs([tga_volume.resample('ME').last(),
                                        rrp_volume.resample('ME').last(),
                                        reserves_volume.resample('ME').last(),
-                                       mmf_fed_repo_non_repo_merge]).dropna()
+                                       mmf_fed_repo_non_repo_merge.resample('ME').last()]).dropna()
 reserve_liabilities_merge['reserves_non_repo_rrp'] = (reserve_liabilities_merge['rrp_volume'] +
                                                       reserve_liabilities_merge['reserves_volume'] +
                                                       reserve_liabilities_merge['mmf_non_fed_repo'])
@@ -257,7 +257,7 @@ plt.plot(reserve_liabilities_merge.index, reserve_liabilities_merge['rrp_volume'
          label="RRP", color="#E69B93", lw=2)
 plt.title("Reserves Liabilities of the System", fontsize=22, fontweight="bold")
 plt.ylabel('Dollars')
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
