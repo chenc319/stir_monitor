@@ -5,10 +5,10 @@
 ### PACKAGES ###
 import datetime
 from fredapi import Fred
-import pandas as pd
-import matplotlib.pyplot as plt
 from pandas_datareader import data as pdr
 import functools as ft
+import pandas as pd
+import matplotlib.pyplot as plt
 import requests
 from io import StringIO
 fred = Fred(api_key='6905137c26f03db5c8c09f70b7839150')
@@ -31,118 +31,124 @@ end = datetime.datetime.today()
 ### -------------------------------------- FUTURES LEVERAGE MONEY SHORT -------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import requests
-from io import StringIO
-
-# Download full CFTC TFF data from Socrata API (Futures Only, all contracts)
+### DATA PULL ###
 url = "https://publicreporting.cftc.gov/resource/gpe5-46if.csv?$limit=60000"
 response = requests.get(url)
-df = pd.read_csv(StringIO(response.text))
+cftc_all_futures = pd.read_csv(StringIO(response.text))
+bond_futures = cftc_all_futures[['commodity_name'] == '']
+cftc_all_futures['commodity_name'].unique()
 
-# Normalize contract names, mapping to desired tenor buckets
-def contract_bucket(name):
-    # Lower and clean up input for robust matching
-    n = name.strip().lower()
-    if "2 yr" in n or "2-year" in n or "2yr" in n:
-        return "2 Year"
-    elif "5 yr" in n or "5-year" in n or "5yr" in n:
-        return "5 Year"
-    elif "ultra 10-yr" in n or "ultra 10 year" in n:
-        return "6.5-8 Years"       # Ultra 10-Year approximates 7-year as no direct 7y contract
-    elif "7 yr" in n or "7-year" in n or "7yr" in n:
-        return "6.5-8 Years"
-    elif "10 yr" in n or "10-year" in n or "10yr" in n:
-        return "9.5/12-10 Years"
-    else:
-        return None
+cftc_all_futures['contract_market_name'].unique()
 
-df['bucket'] = df['name'].apply(contract_bucket)
-
-df.columns
-
-df['commodity_name']
-
-# Filter to only our 4 buckets of interest and non-null leveraged shorts
-df = df[df['bucket'].notnull()]
-
-# Convert dates and relevant columns
-df['report_date_as_yyyy_mm_dd'] = pd.to_datetime(df['report_date_as_yyyy_mm_dd'])
-df['short_positions_leveraged_money'] = pd.to_numeric(df['short_positions_leveraged_money'], errors='coerce').fillna(0)
-
-# Sum/aggregate by report_date and bucket (works across multiple delivery months)
-agg = df.groupby(['report_date_as_yyyy_mm_dd', 'bucket'])['short_positions_leveraged_money'].sum().reset_index()
-pivot = agg.pivot(index='report_date_as_yyyy_mm_dd', columns='bucket', values='short_positions_leveraged_money')
-
-# Fill missing dates (weekly data, but ensure alignment)
-pivot = pivot.asfreq('W-WED')  # TFF reports as of Tuesday, usually published Friday
-
-# Fill missing values (0 = no position reported)
-pivot = pivot.fillna(0)
-
-# Order per visual legend and plot
-plot_order = ['2 Year', '6.5-8 Years', '9.5/12-10 Years', '5 Year']
-colors = ['#6cbde6', '#8cc4df', '#ffc73b', '#fc9442']   # Match your sample chart's color style
-
-# Make the area/stacked plot
-plt.figure(figsize=(13,7))
-pivot[plot_order].plot(
-    kind='area',
-    stacked=True,
-    color=colors,
-    linewidth=0,
-    alpha=0.95,
-    ax=plt.gca()
+bonds_cftc_subset = cftc_all_futures[(cftc_all_futures['contract_market_name'] == 'UST 2Y NOTE') |
+                                     (cftc_all_futures['contract_market_name'] == 'UST 5Y NOTE') |
+                                     (cftc_all_futures['contract_market_name'] == 'UST 10Y NOTE') |
+                                     (cftc_all_futures['contract_market_name'] == 'ULTRA UST 10Y')]
+bonds_future_leverage_money_short = bonds_cftc_subset[['commodity_name',
+                                                       'contract_market_name',
+                                                       'report_date_as_yyyy_mm_dd',
+                                                       'lev_money_positions_short']]
+bonds_future_leverage_money_short['report_date_as_yyyy_mm_dd'] = pd.to_datetime(bonds_future_leverage_money_short['report_date_as_yyyy_mm_dd'])
+pivot = bonds_future_leverage_money_short.pivot_table(
+    index='report_date_as_yyyy_mm_dd',
+    columns='commodity_name',
+    values='lev_money_positions_short',
+    aggfunc='sum'
 )
-
-plt.title('Futures Leverage Money Short', fontsize=18, fontweight='bold')
-plt.ylabel('Face Value Notional')
-plt.xlabel('')
-plt.legend(plot_order, loc='upper left')
-plt.grid(axis='y', color='gray', linestyle=':', alpha=0.5)
+plt.figure(figsize=(12, 6))
+for col in pivot.columns:
+    plt.plot(pivot.index, pivot[col], label=col)
+plt.title("Leverage Money Short Positions by Treasury Futures Bucket", fontsize=15)
+plt.xlabel("Date")
+plt.ylabel("Leverage Money Short Positions")
+plt.legend(title="Commodity Name")
+plt.grid(True)
 plt.tight_layout()
 plt.show()
-
-
-
-
-
-
-
-
-### ---------------------------------------------------------------------------------------------------------- ###
-### ---------------------------- THE RATES COMPLEX, LEAKY CEILINGS AND SOGGY FLOOR --------------------------- ###
-### ---------------------------------------------------------------------------------------------------------- ###
-
-
-
-
-
-
-
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ---------------------------------------- END OF QUARTER SPREADS ------------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### DATA PULL ###
+gc_rate = ('https://markets.newyorkfed.org/api/rates/secured/bgcr/search.'
+           'json?startDate=2014-08-01&endDate=2025-08-11&type=rate')
+gc_df = pd.DataFrame(requests.get(gc_rate).json()['refRates'])
+gc_df.index = pd.to_datetime(gc_df['effectiveDate'].values)
+gc_df = pd.DataFrame(gc_df['percentRate']).iloc[::-1]
 
+base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+dvp_mnemonic = 'REPO-DVP_AR_OO-P'
+gcf_mnemonic = 'REPO-GCF_AR_AG-P'
+tri_mnemonic = 'REPO-TRI_AR_OO-P'
 
+dvp_df = pd.DataFrame(requests.get(base_url + dvp_mnemonic).json(), columns=["date", "value"])
+dvp_df['date'] = pd.to_datetime(dvp_df['date'])
+dvp_df.index = dvp_df['date'].values
+dvp_df.drop('date', axis=1, inplace=True)
 
+gcf_df = pd.DataFrame(requests.get(base_url + gcf_mnemonic).json(), columns=["date", "value"])
+gcf_df['date'] = pd.to_datetime(gcf_df['date'])
+gcf_df.index = gcf_df['date'].values
+gcf_df.drop('date', axis=1, inplace=True)
 
+tri_df = pd.DataFrame(requests.get(base_url + tri_mnemonic).json(), columns=["date", "value"])
+tri_df['date'] = pd.to_datetime(tri_df['date'])
+tri_df.index = tri_df['date'].values
+tri_df.drop('date', axis=1, inplace=True)
 
+fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
+fed_funds.index = pd.to_datetime(fed_funds.index.values)
+
+quarter_spreads_merge = merge_dfs([gc_df,dvp_df,gcf_df,fed_funds]).resample('QE').last()
+quarter_spreads_merge.columns = ['gc','dvp','gcf','effr']
+quarter_spreads_merge['gc_effr'] = quarter_spreads_merge['gc'] - quarter_spreads_merge['effr']
+quarter_spreads_merge['gc_dvp'] = quarter_spreads_merge['gc'] - quarter_spreads_merge['dvp']
+quarter_spreads_merge['gc_gcf'] = quarter_spreads_merge['gc'] - quarter_spreads_merge['gcf']
+
+### PLOT ###
+plt.figure(figsize=(10, 7))
+plt.plot(quarter_spreads_merge.index, quarter_spreads_merge['gc_effr'],
+         label='GC-EFFR', color='#9DDCF9', lw=2)  # light blue
+plt.plot(quarter_spreads_merge.index, quarter_spreads_merge['gc_dvp'],
+         label='GC-DVP', color='#4CD0E9', lw=2)  # cyan
+plt.plot(quarter_spreads_merge.index, quarter_spreads_merge['gc_gcf'],
+         label='GC-GCF', color='#233852', lw=2)  # dark blue
+plt.ylabel("Basis Points")
+plt.title("End of Quarter Spreads", fontsize=17, fontweight="bold")
+plt.legend()
+plt.tight_layout()
+plt.show()
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ----------------------------------------- END OF MONTH SPREADS ------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### DATA PULL ###
+rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
+rrp.index = pd.to_datetime(rrp.index.values)
+monthly_spreads_merge = merge_dfs([gc_df,dvp_df,gcf_df,fed_funds,rrp]).resample('ME').last()
+monthly_spreads_merge.columns = ['gc','dvp','gcf','effr','rrp']
+monthly_spreads_merge['gc_effr'] = monthly_spreads_merge['gc'] - monthly_spreads_merge['effr']
+monthly_spreads_merge['gc_dvp'] = monthly_spreads_merge['gc'] - monthly_spreads_merge['dvp']
+monthly_spreads_merge['gc_gcf'] = monthly_spreads_merge['gc'] - monthly_spreads_merge['gcf']
+monthly_spreads_merge['gc_rrp'] = monthly_spreads_merge['gc'] - monthly_spreads_merge['rrp']
 
-
-
-
-
-
+### PLOT ###
+plt.figure(figsize=(12, 7))
+plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_effr'],
+         label="GC-EFFR",color="#f8b62d", lw=2)
+plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_dvp'],
+         label="GC-DVP", color="#f8772d", lw=2)
+plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_gcf'],
+         label="GC-GCF", color="#2f90c5", lw=2)
+plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_rrp'],
+         label="GC-RRP", color="#67cbe7", lw=2)
+plt.title("End of Month Spreads", fontsize=22, fontweight="bold")
+plt.ylabel("Basis Points")
+plt.legend()
+plt.tight_layout()
+plt.show()
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### --------------------------------------- IS THE STABILITY LOWER ROC --------------------------------------- ###

@@ -156,7 +156,7 @@ plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['GCF'],
          lw=2, color=colors['GCF'], label="GCF")
 plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['TRIPARTY'],
          lw=2, color=colors['TRIPARTY'], label="TRIPARTY")
-plt.ylabel("bps")
+plt.ylabel("Basis Points")
 plt.title("Visible Repo Rate Complex", fontsize=20, fontweight="bold")
 plt.legend()
 plt.tight_layout()
@@ -189,7 +189,7 @@ plt.plot(sofr_distribution_df.index, sofr_distribution_df['SOFR75'],
          label='SOFR 75%', color='#F5B820', lw=2)  # yellow/orange
 plt.plot(sofr_distribution_df.index, sofr_distribution_df['SOFR99'],
          label='SOFR 99%', color='#E69B93', lw=2)  # salmon/pink
-plt.ylabel("Bps")
+plt.ylabel("Basis Points")
 plt.title("SOFR Distribution", fontsize=17, fontweight="bold")
 plt.legend()
 plt.tight_layout()
@@ -215,7 +215,7 @@ plt.plot(fed_balance_sheet_merge.index, fed_balance_sheet_merge['SOMA Treasury']
 plt.plot(fed_balance_sheet_merge.index, fed_balance_sheet_merge['SOMA MBS'],
          color="#17354c", lw=3, label='SOMA MBS')
 plt.title("FED Balance Sheet", fontsize=22, fontweight="bold")
-plt.ylabel("Dollars")
+plt.ylabel("Trillions")
 plt.ylim(1, 6.5)
 plt.yticks(range(1, 7), [f"{x}T" for x in range(1, 7)])
 plt.legend()
@@ -254,16 +254,16 @@ plt.figure(figsize=(12, 7))
 plt.plot(reserve_monitor_df.index, reserve_monitor_df['Bank Reserves'],
          label="Bank Reserves", color="#aad8ef", lw=3)
 plt.plot(reserve_monitor_df.index, reserve_monitor_df['TGA'],
-         label="TGA",           color="#4da3d7", lw=2)
+         label="TGA", color="#4da3d7", lw=2)
 plt.plot(reserve_monitor_df.index, reserve_monitor_df['RRP'],
-         label="RRP",           color="#17293c", lw=2)
+         label="RRP", color="#17293c", lw=2)
 plt.plot(reserve_monitor_df.index, reserve_monitor_df['Triparty - RRP'],
          label="Triparty - RRP", color="#f5c23e", lw=2)
 plt.plot(reserve_monitor_df.index, reserve_monitor_df['RRP ON'],
-         label="RRP ON",        color="#f5b9ad", lw=2)
+         label="RRP ON", color="#f5b9ad", lw=2)
 
 plt.title("Monitoring reserves", fontsize=22, fontweight="bold")
-plt.ylabel("Dollars (Trillions)")
+plt.ylabel("Trillions")
 plt.legend()
 plt.tight_layout()
 plt.show()
@@ -306,7 +306,7 @@ plt.plot(fed_action_vs_reserve_response.index,
          fed_action_vs_reserve_response['Fed Balance Sheet - RRP - TGA'],
          label='FED Balance Sheet - RRP - TGA', color='#17293c', linewidth=2)
 plt.ylabel('30-Day Change (Trillions of $)')
-plt.title('FED Action Vs Reserve Response (Monthly)')
+plt.title('FED Action Vs Reserve Response')
 plt.legend()
 plt.tight_layout()
 plt.show()
@@ -338,7 +338,7 @@ plt.plot(fed_action_vs_reserve_response_v2.index,
          fed_action_vs_reserve_response_v2['RRP + TGA'],
          label='RRP + TGA', color='#17293c', linewidth=2)
 plt.ylabel('30-Day Change (Trillions of $)')
-plt.title('FED Action Vs Reserve Response (Monthly)')
+plt.title('FED Action Vs Reserve Response')
 plt.legend()
 plt.tight_layout()
 plt.show()

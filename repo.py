@@ -132,7 +132,6 @@ plt.plot(volume_venue_merge_df.index, volume_venue_merge_df['GCF'],
          label="GCF", color="#2f90c5", lw=2)
 plt.plot(volume_venue_merge_df.index, volume_venue_merge_df['Triparty-RRP'],
          label="Triparty-RRP", color="#67cbe7", lw=2)
-
 plt.title("Volume per Venue", fontsize=22, fontweight="bold")
 plt.ylabel("Dollars (Trillions)")
 plt.legend()
