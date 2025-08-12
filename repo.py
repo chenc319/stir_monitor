@@ -108,7 +108,7 @@ plt.plot(nccbr_proxy_merge.index, nccbr_proxy_merge['black'],
          label="Tri Party-RRP / (Tri Party+DVP+GCF-RRP)", color="#f8772d", lw=2)
 plt.title("Proxy of % of Non Cleared Repos", fontsize=22, fontweight="bold")
 plt.ylabel("%")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.18), ncol=1)
 plt.tight_layout()
 plt.show()
 
@@ -134,7 +134,7 @@ plt.plot(volume_venue_merge_df.index, volume_venue_merge_df['Triparty-RRP'],
          label="Triparty-RRP", color="#67cbe7", lw=2)
 plt.title("Volume per Venue", fontsize=22, fontweight="bold")
 plt.ylabel("Dollars (Trillions)")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -181,7 +181,7 @@ plt.plot(mmf_repo_non_repo_merge.index, mmf_repo_non_repo_merge['US_Repo_Allocat
 plt.title('Investment of MMF by Asset', fontsize=18, fontweight='bold', pad=18)
 plt.ylabel('% Allocation')
 plt.yticks(fontsize=11)
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.grid(alpha=0.3)
 plt.tight_layout()
 plt.show()
@@ -207,7 +207,7 @@ plt.plot(roc_6m_volume.index, roc_6m_volume['Triparty-RRP'],
          label="Triparty-RRP", color="#67cbe7", lw=2)
 plt.title("Volume per Venue", fontsize=22, fontweight="bold")
 plt.ylabel("%")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -251,7 +251,7 @@ plt.plot(rrp_foreign_rrp_merge.index, rrp_foreign_rrp_merge['Foreign_RRP'],
          label="Foreign RRP", color="#F57235", lw=2)
 plt.title("RRP vs. Foreign RRP", fontsize=22, fontweight="bold")
 plt.ylabel("%")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -288,7 +288,7 @@ plt.plot(mmf_repo_non_repo_merge.index, mmf_repo_non_repo_merge['mmf_repo'],
 
 plt.title("MMF Repo vs Nono Repo", fontsize=22, fontweight="bold")
 plt.ylabel('Dollars')
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -313,7 +313,7 @@ plt.plot(triparty_merge.index, triparty_merge['residual_flows'],
          label="Residual Flow", color="#2f90c5", lw=2)
 plt.title("Tri-Party Adjusted for RRP", fontsize=22, fontweight="bold")
 plt.ylabel("Trillions")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()
 
@@ -364,6 +364,6 @@ plt.plot(mmf_allocations_merge.index, mmf_allocations_merge['ficc'],
          label="FICC", color="#67cbe7", lw=2)
 plt.title("Allocation of MMF by Counterparties", fontsize=22, fontweight="bold")
 plt.ylabel("Trillions")
-plt.legend()
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
 plt.tight_layout()
 plt.show()

@@ -47,7 +47,7 @@ plt.figure(figsize=(10, 6))
 plt.plot(agg_monthly.index, agg_monthly.get('Bill', pd.Series(index=agg_monthly.index)), label='Bill', color='#8ed6f8')
 plt.plot(agg_monthly.index, agg_monthly.get('Bond', pd.Series(index=agg_monthly.index)), label='Bond', color='#008fd5')
 plt.plot(agg_monthly.index, agg_monthly.get('Note', pd.Series(index=agg_monthly.index)), label='Note', color='#ffc650')
-plt.title("Monthly EOM Issuance in Auction By Security", fontsize=20, fontweight='bold', pad=20)
+plt.title("Issuance in Auction By Security", fontsize=20, fontweight='bold', pad=20)
 plt.ylabel("Dollars (Trillions)")
 plt.legend()
 plt.grid(True)
@@ -58,12 +58,103 @@ plt.show()
 ### -------------------------------------- NET BILL ISSUANCE OF TOTAL ---------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### DATA PULL ###
+bill_issuance = auction_issuance_df[
+    (auction_issuance_df['security_term'] == '4-Week') |
+    (auction_issuance_df['security_term'] == '8-Week') |
+    (auction_issuance_df['security_term'] == '13-Week') |
+    (auction_issuance_df['security_term'] == '26-Week') |
+    (auction_issuance_df['security_term'] == '52-Week')
+    ]
+bill_issuance['record_date'] = pd.to_datetime(bill_issuance['record_date'])
+bill_issuance['eom'] = bill_issuance['record_date'].dt.to_period('M').dt.to_timestamp('M')
+bill_issuance = bill_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0)
+bill_issuance = bill_issuance / 1e12
+bill_issuance = bill_issuance['2020-01-01':]
 
+### PLOT ###
+plt.figure(figsize=(10, 6))
+plt.plot(bill_issuance.index,
+         bill_issuance.get('4-Week', pd.Series(index=bill_issuance.index)), label='4-Week', color='#9bdaf6')
+plt.plot(bill_issuance.index,
+         bill_issuance.get('8-Week', pd.Series(index=bill_issuance.index)), label='8-Week', color='#4dc6c6')
+plt.plot(bill_issuance.index,
+         bill_issuance.get('13-Week', pd.Series(index=bill_issuance.index)), label='13-Week', color='#356c82')
+plt.plot(bill_issuance.index,
+         bill_issuance.get('26-Week', pd.Series(index=bill_issuance.index)), label='26-Week', color='#001f35')
+plt.plot(bill_issuance.index,
+         bill_issuance.get('52-Week', pd.Series(index=bill_issuance.index)), label='52-Week', color='#fbc430')
+plt.title("Bill Issuances", fontsize=20, fontweight='bold', pad=20)
+plt.ylabel("Dollars (Trillions)")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
 
+### ---------------------------------------------------------------------------------------------------------- ###
+### -------------------------------------- NET NOTES ISSUANCE OF TOTAL --------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
+### DATA PULL ###
+notes_issuance = auction_issuance_df[
+    (auction_issuance_df['security_term'] == '2-Year') |
+    (auction_issuance_df['security_term'] == '3-Year') |
+    (auction_issuance_df['security_term'] == '5-Year') |
+    (auction_issuance_df['security_term'] == '7-Year') |
+    (auction_issuance_df['security_term'] == '10-Year')
+    ]
+notes_issuance['record_date'] = pd.to_datetime(notes_issuance['record_date'])
+notes_issuance['eom'] = notes_issuance['record_date'].dt.to_period('M').dt.to_timestamp('M')
+notes_issuance = notes_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0)
+notes_issuance = notes_issuance / 1e12
+notes_issuance = notes_issuance['2020-01-01':]
 
+### PLOT ###
+plt.figure(figsize=(10, 6))
+plt.plot(notes_issuance.index,
+         notes_issuance.get('2-Year', pd.Series(index=notes_issuance.index)), label='2-Year', color='#9bdaf6')
+plt.plot(notes_issuance.index,
+         notes_issuance.get('3-Year', pd.Series(index=notes_issuance.index)), label='3-Year', color='#4dc6c6')
+plt.plot(notes_issuance.index,
+         notes_issuance.get('5-Year', pd.Series(index=notes_issuance.index)), label='5-Year', color='#356c82')
+plt.plot(notes_issuance.index,
+         notes_issuance.get('7-Year', pd.Series(index=notes_issuance.index)), label='7-Year', color='#001f35')
+plt.plot(notes_issuance.index,
+         notes_issuance.get('10-Year', pd.Series(index=notes_issuance.index)), label='10-Year', color='#fbc430')
+plt.title("Notes Issuances", fontsize=20, fontweight='bold', pad=20)
+plt.ylabel("Dollars (Trillions)")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
 
+### ---------------------------------------------------------------------------------------------------------- ###
+### -------------------------------------- NET BONDS ISSUANCE OF TOTAL --------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
+### DATA PULL ###
+bonds_issuance = auction_issuance_df[
+    (auction_issuance_df['security_term'] == '20-Year') |
+    (auction_issuance_df['security_term'] == '30-Year')
+    ]
+bonds_issuance['record_date'] = pd.to_datetime(bonds_issuance['record_date'])
+bonds_issuance['eom'] = bonds_issuance['record_date'].dt.to_period('M').dt.to_timestamp('M')
+bonds_issuance = bonds_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0)
+bonds_issuance = bonds_issuance / 1e12
+bonds_issuance = bonds_issuance['2020-01-01':]
+
+### PLOT ###
+plt.figure(figsize=(10, 6))
+plt.plot(bonds_issuance.index,
+         bonds_issuance.get('20-Year', pd.Series(index=bonds_issuance.index)), label='20-Year', color='#9bdaf6')
+plt.plot(bonds_issuance.index,
+         bonds_issuance.get('30-Year', pd.Series(index=bonds_issuance.index)), label='30-Year', color='#fbc430')
+plt.title("Bonds Issuances", fontsize=20, fontweight='bold', pad=20)
+plt.ylabel("Dollars (Trillions)")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ----------------------------------- BILLS DEALER TO NON DEALER RATIO ------------------------------------- ###
