@@ -69,7 +69,7 @@ def plot_new_sofr_system(start, end, **kwargs):
         rrp.rename(columns={'RRPONTSYAWARD': 'RRP'})
     ], axis=1) * 100
     df_bp = df_bp.dropna()
-    df_bp = df_bp['2025-01-01':]
+    df_bp = df_bp['2025-04-01':]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -120,7 +120,7 @@ def plot_repo_rate_complex(start, end, **kwargs):
     repo_df.columns = ['RRP', 'SRF', 'SOFR', 'DVP', 'GCF', 'TRIPARTY']
     colors = {'SOFR': '#0B2138', 'DVP': '#48DEE9', 'TRIPARTY': '#7EC0EE',
               'GCF': '#F9D15B', 'SRF': '#F9C846', 'RRP': '#F39C12'}
-    repo_df = repo_df['2025-01-01':]
+    repo_df = repo_df['2025-04-01':]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -168,7 +168,7 @@ def plot_sofr_distribution(start, end, **kwargs):
     df = merge_dfs([sofr, sofr1, sofr25, sofr75, sofr99]).dropna()
     colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
     names = ['SOFR', 'SOFR1', 'SOFR25', 'SOFR75', 'SOFR99']
-    df = df['2025-01-01':end]
+    df = df['2025-04-01':]
 
     # ### PLOT ###
     # plt.figure(figsize=(10, 7))
