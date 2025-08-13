@@ -396,7 +396,7 @@ def plot_sofr_floor_ceiling(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------ UNSECURED LENDING FLOOR AND CEILING --------------------------------------------- ###
+### ---------------------------------- UNSECURED LENDING FLOOR AND CEILING ----------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_unsecured_lending_floor_ceiling(start, end, **kwargs):
