@@ -4,10 +4,10 @@
 
 ### IMPORT OTHER SCRIPTS ###
 import streamlit as st
-from app_risk_checks import *
+import app_risk_checks
 # from app_auctions import *
 # from app_cash import *
-from app_cross_rate import *
+import app_cross_rate
 # from app_futures import *
 # from app_primary_dealers import *
 # from app_system import *
@@ -107,14 +107,14 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(['Risk Checks',
 
 with tab1:
     st.title("Risk Checks")
-    plot_dash_for_cash_spread(start_date, end_date)
-    plot_new_sofr_system(start_date, end_date)
-    plot_repo_rate_complex(start_date, end_date)
-    plot_sofr_distribution(start_date, end_date)
-    plot_fed_balance_sheet(start_date, end_date)
-    plot_monitoring_reserves(start_date, end_date)
-    plot_fed_action_vs_reserve_response(start_date, end_date)
-    plot_fed_action_vs_reserve_response_v2(start_date, end_date)
+    app_risk_checks.plot_dash_for_cash_spread(start_date, end_date)
+    app_risk_checks.plot_new_sofr_system(start_date, end_date)
+    app_risk_checks.plot_repo_rate_complex(start_date, end_date)
+    app_risk_checks.plot_sofr_distribution(start_date, end_date)
+    app_risk_checks.plot_fed_balance_sheet(start_date, end_date)
+    app_risk_checks.plot_monitoring_reserves(start_date, end_date)
+    app_risk_checks.plot_fed_action_vs_reserve_response(start_date, end_date)
+    app_risk_checks.plot_fed_action_vs_reserve_response_v2(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ---------------------------- HISTORICAL VOLATILITY ANALYSIS ---------------------------- ###
