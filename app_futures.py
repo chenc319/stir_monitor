@@ -1,3 +1,7 @@
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------------ FUTURES ------------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
 import pandas as pd
 import requests
 import functools as ft
@@ -5,12 +9,13 @@ from pandas_datareader import data as pdr
 import streamlit as st
 import plotly.graph_objs as go
 from io import StringIO
+from matplotlib import pyplot as plt
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right, left_index=True, right_index=True, how='outer'), array_of_dfs)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### -------------------------- FUTURES LEVERAGE MONEY SHORT -------------------------------------------------- ###
+### -------------------------------------- FUTURES LEVERAGE MONEY SHORT -------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_futures_leverage_money_short(start, end, **kwargs):
@@ -35,6 +40,19 @@ def plot_futures_leverage_money_short(start, end, **kwargs):
         aggfunc='sum'
     )
     pivot = pivot.loc[str(start):str(end)]
+
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 6))
+    # for col in pivot.columns:
+    #     plt.plot(pivot.index, pivot[col], label=col)
+    # plt.title("Leverage Money Short Positions by Treasury Futures Bucket", fontsize=15)
+    # plt.xlabel("Date")
+    # plt.ylabel("Leverage Money Short Positions")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.grid(True)
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     for col in pivot.columns:
         fig.add_trace(go.Scatter(x=pivot.index, y=pivot[col], name=col))
@@ -47,7 +65,7 @@ def plot_futures_leverage_money_short(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------ END OF QUARTER SPREADS ---------------------------------------------------- ###
+### ---------------------------------------- END OF QUARTER SPREADS ------------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_end_of_quarter_spreads(start, end, **kwargs):
@@ -75,6 +93,21 @@ def plot_end_of_quarter_spreads(start, end, **kwargs):
     quarter_spreads_merge['gc_effr'] = quarter_spreads_merge['gc'] - quarter_spreads_merge['effr']
     quarter_spreads_merge['gc_dvp'] = quarter_spreads_merge['gc'] - quarter_spreads_merge['dvp']
     quarter_spreads_merge['gc_gcf'] = quarter_spreads_merge['gc'] - quarter_spreads_merge['gcf']
+
+    # ### PLOT ###
+    # plt.figure(figsize=(10, 7))
+    # plt.plot(quarter_spreads_merge.index, quarter_spreads_merge['gc_effr'],
+    #          label='GC-EFFR', color='#9DDCF9', lw=2)  # light blue
+    # plt.plot(quarter_spreads_merge.index, quarter_spreads_merge['gc_dvp'],
+    #          label='GC-DVP', color='#4CD0E9', lw=2)  # cyan
+    # plt.plot(quarter_spreads_merge.index, quarter_spreads_merge['gc_gcf'],
+    #          label='GC-GCF', color='#233852', lw=2)  # dark blue
+    # plt.ylabel("Basis Points")
+    # plt.title("End of Quarter Spreads", fontsize=17, fontweight="bold")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=quarter_spreads_merge.index, y=quarter_spreads_merge['gc_effr'],
                              name="GC-EFFR", line=dict(color="#9DDCF9", width=2)))
@@ -90,7 +123,7 @@ def plot_end_of_quarter_spreads(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------ END OF MONTH SPREADS ------------------------------------------------------ ###
+### ----------------------------------------- END OF MONTH SPREADS ------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_end_of_month_spreads(start, end, **kwargs):
@@ -119,6 +152,22 @@ def plot_end_of_month_spreads(start, end, **kwargs):
     monthly_spreads_merge['gc_gcf'] = monthly_spreads_merge['gc'] - monthly_spreads_merge['gcf']
     monthly_spreads_merge['gc_rrp'] = monthly_spreads_merge['gc'] - monthly_spreads_merge['rrp']
 
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_effr'],
+    #          label="GC-EFFR", color="#f8b62d", lw=2)
+    # plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_dvp'],
+    #          label="GC-DVP", color="#f8772d", lw=2)
+    # plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_gcf'],
+    #          label="GC-GCF", color="#2f90c5", lw=2)
+    # plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_rrp'],
+    #          label="GC-RRP", color="#67cbe7", lw=2)
+    # plt.title("End of Month Spreads", fontsize=22, fontweight="bold")
+    # plt.ylabel("Basis Points")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=monthly_spreads_merge.index, y=monthly_spreads_merge['gc_effr'],
                              name="GC-EFFR", line=dict(color="#f8b62d", width=2)))
@@ -136,7 +185,7 @@ def plot_end_of_month_spreads(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ---------------------------- IS THE STABILITY LOWER ROC -------------------------------------------------- ###
+### --------------------------------------- IS THE STABILITY LOWER ROC --------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_stability_lower_roc(start, end, **kwargs):
@@ -177,6 +226,26 @@ def plot_stability_lower_roc(start, end, **kwargs):
     plot_data = clean_data.dropna(subset=['Fed_Facility_Z','Private_Repo_Z'])
     plot_data = plot_data.loc[str(start):str(end)]
 
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(plot_data.index, plot_data['Fed_Facility_Z'],
+    #          label="Fed Facility to Repo Spreads", color="#1f77b4", lw=2)
+    # plt.plot(plot_data.index, plot_data['Private_Repo_Z'],
+    #          label="Private Repo Spreads", color="#2E3A59", lw=2)
+    # for y_val in [-2, -1, 1, 2]:
+    #     plt.axhline(y=y_val, color='gray', linestyle='--', alpha=0.6, linewidth=1)
+    # plt.title("Is the Stability Lower\nRate of Change", fontsize=22, fontweight="bold")
+    # plt.ylabel("Z-Score")
+    # plt.ylim(-5, 5)
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.grid(True, alpha=0.3)
+    # plt.figtext(0.02, 0.02, 'Fonte: FED, MacroDispatch. Note: Calculations on a 30 MA Difference',
+    #             fontsize=9, color='gray')
+    # plt.figtext(0.95, 0.02, 'ie', fontsize=14, color='steelblue',
+    #             fontweight='bold', ha='right')
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=plot_data.index, y=plot_data['Fed_Facility_Z'],
                              name="Fed Facility to Repo Spreads", line=dict(color="#1f77b4", width=2)))
@@ -192,9 +261,8 @@ def plot_stability_lower_roc(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------ HOW DID LEVELS CHANGE ----------------------------------------------------- ###
+### ----------------------------------------- HOW DID LEVELS CHANGE ------------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_how_did_levels_change(start, end, **kwargs):
@@ -232,6 +300,24 @@ def plot_how_did_levels_change(start, end, **kwargs):
     )
     plot_static_data = clean_data.dropna(subset=['Fed_Facility_static_Z','Private_Repo_static_Z'])
     plot_static_data = plot_static_data.loc[str(start):str(end)]
+
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(plot_static_data.index, plot_static_data['Fed_Facility_static_Z'],
+    #          label="Fed Facility to Repo Spreads", color="#1f77b4", lw=2)
+    # plt.plot(plot_static_data.index, plot_static_data['Private_Repo_static_Z'],
+    #          label="Private Repo Spreads", color="#2E3A59", lw=2)
+    # for y_val in [-2, -1, 1, 2]:
+    #     plt.axhline(y=y_val, color='gray', linestyle='--', alpha=0.6, linewidth=1)
+    # plt.title("Is the Stability Lower\nRate of Change", fontsize=22, fontweight="bold")
+    # plt.ylabel("Z-Score")
+    # plt.ylim(-5, 5)
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.grid(True, alpha=0.3)
+    # plt.figtext(0.95, 0.02, 'ie', fontsize=14, color='steelblue',
+    #             fontweight='bold', ha='right')
+    # plt.tight_layout()
+    # plt.show()
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=plot_static_data.index, y=plot_static_data['Fed_Facility_static_Z'],

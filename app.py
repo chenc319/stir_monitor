@@ -7,13 +7,15 @@ import streamlit as st
 import pandas as pd
 import functools as ft
 import app_risk_checks
-import app_auctions
-import app_cash
-import app_cross_rate
-import app_futures
-# import app_primary_dealers
 # import app_system
 import app_repo
+import app_cross_rate
+import app_cash
+import app_auctions
+import app_futures
+import app_primary_dealers
+
+
 
 ### FUNCTIONS ###
 def merge_dfs(array_of_dfs):
@@ -217,12 +219,16 @@ elif menu == 'Futures':
 ### ------------------------------------ PRIMARY DEALERS ----------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# elif menu == 'Primary Dealers':
-#     st.markdown('<div class="tab-title">', unsafe_allow_html=True)
-#     st.title("Primary Dealers")
-#     st.markdown('</div>', unsafe_allow_html=True)
-#     stock_ownership(ticker)
-
+elif menu == 'Primary Dealers':
+    st.markdown('<div class="tab-title">', unsafe_allow_html=True)
+    st.title("Primary Dealers")
+    st.markdown('</div>', unsafe_allow_html=True)
+    app_primary_dealers.plot_sponsored_volumes_solution(start_date, end_date)
+    app_primary_dealers.plot_sponsored_volumes(start_date, end_date)
+    app_primary_dealers.plot_pct_dvp_sponsored(start_date, end_date)
+    app_primary_dealers.plot_net_positions_bills_vs_bonds(start_date, end_date)
+    app_primary_dealers.plot_net_positions_by_bond_tenor(start_date, end_date)
+    app_primary_dealers.plot_net_change_by_bond_tenor(start_date, end_date)
 
 
 
