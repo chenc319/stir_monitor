@@ -8,7 +8,7 @@ import pandas as pd
 import functools as ft
 import app_risk_checks
 import app_auctions
-# import app_cash
+import app_cash
 import app_cross_rate
 # import app_futures
 # import app_primary_dealers
@@ -109,7 +109,7 @@ menu = st.sidebar.radio(
 
 
 ### ---------------------------------------------------------------------------------------- ###
-### -------------------------------------- BASIC INFO -------------------------------------- ###
+### -------------------------------------- RISK CHECKS ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
 if menu == 'Risk Checks':
@@ -124,10 +124,10 @@ if menu == 'Risk Checks':
     app_risk_checks.plot_fed_action_vs_reserve_response_v2(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
-### ---------------------------- HISTORICAL VOLATILITY ANALYSIS ---------------------------- ###
+### ------------------------------ SHADOW BANK SYSTEM MAPPING ------------------------------ ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab2:
+# elif menu == 'Bank System Mapping':
     # st.markdown('<div class="tab-title">', unsafe_allow_html=True)
     # st.title("Bank System Mapping")
     # st.markdown('</div>', unsafe_allow_html=True)
@@ -136,7 +136,7 @@ if menu == 'Risk Checks':
     #                       end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
-### ------------------------------- RESPECTIVE PEERS ANALYSIS ------------------------------ ###
+### ------------------------------------------ REPO ---------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Repo':
@@ -152,7 +152,7 @@ elif menu == 'Repo':
     app_repo.plot_mmf_allocation_by_counterparty(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
-### ------------------------------- HISTORICAL VOLUME AND ADV ------------------------------ ###
+### --------------------------------------- CROSS RATE ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Cross Rate':
@@ -167,19 +167,23 @@ elif menu == 'Cross Rate':
     app_cross_rate.plot_unsecured_lending_floor_ceiling(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
-### --------------------------------- PRICE-IMPACT MODELING -------------------------------- ###
+### ----------------------------------------- CASH ----------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# elif menu == 'Repo':
-    # st.markdown('<div class="tab-title">', unsafe_allow_html=True)
-    # st.title("Cash")
-    # st.markdown('</div>', unsafe_allow_html=True)
-    # price_impact(ticker,
-    #              start_date,
-    #              end_date)
+elif menu == 'Cash':
+    st.markdown('<div class="tab-title">', unsafe_allow_html=True)
+    st.title("Cash")
+    st.markdown('</div>', unsafe_allow_html=True)
+    app_cash.plot_tga(start_date, end_date)
+    app_cash.plot_rrp(start_date, end_date)
+    app_cash.plot_reserves(start_date, end_date)
+    app_cash.plot_mmf_repo_vs_non_repo(start_date, end_date)
+    app_cash.plot_asset_allocation_mmf(start_date, end_date)
+    app_cash.plot_reserves_non_fed_repo_rrp(start_date, end_date)
+    app_cash.plot_reserves_liabilities_system(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
-### --------------------------------- STOCK OWNERSHIP INFO --------------------------------- ###
+### --------------------------------------- AUCTIONS --------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Auctions':
@@ -196,20 +200,20 @@ elif menu == 'Auctions':
     app_auctions.plot_notes_bid_to_cover(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
-### ----------------------------------- INSIDER ACTIVITY ----------------------------------- ###
+### ---------------------------------------- FUTURES --------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# elif menu == 'Repo':
+# elif menu == 'Futures':
 #     st.markdown('<div class="tab-title">', unsafe_allow_html=True)
 #     st.title("Futures")
 #     st.markdown('</div>', unsafe_allow_html=True)
 #     stock_ownership(ticker)
 
 ### ---------------------------------------------------------------------------------------- ###
-### --------------------------------- PROFITABILITY METRICS -------------------------------- ###
+### ------------------------------------ PRIMARY DEALERS ----------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# elif menu == 'Repo':
+# elif menu == 'Primary Dealers':
 #     st.markdown('<div class="tab-title">', unsafe_allow_html=True)
 #     st.title("Primary Dealers")
 #     st.markdown('</div>', unsafe_allow_html=True)
