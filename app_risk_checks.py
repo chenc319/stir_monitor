@@ -90,7 +90,7 @@ def plot_sofr_distribution(start, end, **kwargs):
     sofr25 = pdr.DataReader('SOFR25', 'fred', start, end)
     sofr75 = pdr.DataReader('SOFR75', 'fred', start, end)
     sofr99 = pdr.DataReader('SOFR99', 'fred', start, end)
-    df = merge_dfs([sofr, sofr1, sofr25, sofr75, sofr99]).loc['2025-04-01':].dropna()
+    df = merge_dfs([sofr, sofr1, sofr25, sofr75, sofr99]).dropna()
     colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
     names = ['SOFR', 'SOFR1', 'SOFR25', 'SOFR75', 'SOFR99']
     fig = go.Figure()

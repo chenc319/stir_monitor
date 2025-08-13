@@ -5,13 +5,13 @@
 ### IMPORT OTHER SCRIPTS ###
 import streamlit as st
 from app_risk_checks import *
-# from auctions import *
-# from cash import *
-# from cross_rate import *
-# from futures import *
-# from primary_dealers import *
-# from system import *
-# from repo import *
+# from app_auctions import *
+# from app_cash import *
+from app_cross_rate import *
+# from app_futures import *
+# from app_primary_dealers import *
+# from app_system import *
+# from app_repo import *
 
 ### FUNCTIONS ###
 def merge_dfs(array_of_dfs):
@@ -143,13 +143,16 @@ with tab1:
 ### ------------------------------- HISTORICAL VOLUME AND ADV ------------------------------ ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab4:
-    # st.markdown('<div class="tab-title">', unsafe_allow_html=True)
-    # st.title("Cross Rate")
-    # st.markdown('</div>', unsafe_allow_html=True)
-    # volume_analysis(ticker,
-    #                 start_date,
-    #                 end_date)
+with tab4:
+    st.title("Cross Rate")
+    app_cross_rate.plot_iorb_spreads(start_date, end_date)
+    app_cross_rate.plot_gcf_tri_spread(start_date, end_date)
+    app_cross_rate.plot_triparty_term_spread(start_date, end_date)
+    app_cross_rate.plot_sofr_effr_chart(start_date, end_date)
+    app_cross_rate.plot_repo_rate_complex_cross(start_date, end_date)
+    app_cross_rate.plot_dollar_lending_complex(start_date, end_date)
+    app_cross_rate.plot_sofr_floor_ceiling(start_date, end_date)
+    app_cross_rate.plot_unsecured_lending_floor_ceiling(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### --------------------------------- PRICE-IMPACT MODELING -------------------------------- ###
