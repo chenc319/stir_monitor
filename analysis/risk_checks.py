@@ -98,7 +98,6 @@ plt.plot(new_sofr_system_bp.index, new_sofr_system_bp['SOFR 1M'], label='SOFR 1M
 plt.plot(new_sofr_system_bp.index, new_sofr_system_bp['SOFR'], label='SOFR', color='#001f35', linewidth=2)
 plt.plot(new_sofr_system_bp.index, new_sofr_system_bp['SRF'], label='SRF', color='#fbc430')
 plt.plot(new_sofr_system_bp.index, new_sofr_system_bp['RRP'], label='RRP', color='#fdad23')
-
 plt.ylabel("Basis Points")
 plt.title("The New SOFR System", fontsize=20, fontweight='bold')
 plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)

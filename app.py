@@ -93,6 +93,17 @@ st.markdown("""
 
 ### SIDEBAR ###
 st.sidebar.title("Mistral STIR Monitor")
+menu = st.sidebar.radio(
+    "Go to section:",
+    ['Risk Checks',
+     'Bank System Mapping',
+     'Repo',
+     'Cross Rate',
+     'Cash',
+     'Auctions',
+     'Futures',
+     'Primary Dealers']
+)
 start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime('2019-12-31'))
 end_date = st.sidebar.date_input("End Date", value=pd.to_datetime('today'))
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(['Risk Checks',
@@ -109,7 +120,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(['Risk Checks',
 ### -------------------------------------- BASIC INFO -------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-with tab1:
+with menu == 'Risk Checks':
     st.title("Risk Checks")
     app_risk_checks.plot_dash_for_cash_spread(start_date, end_date)
     app_risk_checks.plot_new_sofr_system(start_date, end_date)
