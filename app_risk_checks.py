@@ -1,4 +1,6 @@
-# app_risk_checks.py
+### ---------------------------------------------------------------------------------------------------------- ###
+### ---------------------------------------------- RISK CHECKS ----------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
 import pandas as pd
 import requests
@@ -13,6 +15,10 @@ def merge_dfs(array_of_dfs):
                                                   left_index=True,
                                                   right_index=True,
                                                   how='outer'), array_of_dfs)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### -------------------------------------------- FED FUNDS - IORB -------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_dash_for_cash_spread(start, end, **kwargs):
     iorb = pdr.DataReader('IORB', 'fred', start, end)
@@ -41,6 +47,10 @@ def plot_dash_for_cash_spread(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### -------------------------------------------- NEW SOFR SYSTEM --------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_new_sofr_system(start, end, **kwargs):
     fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
@@ -78,7 +88,10 @@ def plot_new_sofr_system(start, end, **kwargs):
     fig = go.Figure()
     for col, color in zip(['EFFR', 'SOFR 3M', 'SOFR 1M', 'SOFR', 'SRF', 'RRP'],
                           ['#9bdaf6', '#4dc6c6', '#356c82', '#001f35', '#fbc430', '#fdad23']):
-        fig.add_trace(go.Scatter(x=df_bp.index, y=df_bp[col], mode='lines+markers', name=col, line=dict(color=color)))
+        fig.add_trace(go.Scatter(x=df_bp.index, y=df_bp[col],
+                                 mode='lines+markers',
+                                 name=col,
+                                 line=dict(color=color)))
     fig.update_layout(
         title="The New SOFR System",
         yaxis_title="Basis Points",
@@ -86,6 +99,10 @@ def plot_new_sofr_system(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### --------------------------------------- VISIBLE REPO RATE COMPLEX ---------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_repo_rate_complex(start, end, **kwargs):
     base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
@@ -101,7 +118,8 @@ def plot_repo_rate_complex(start, end, **kwargs):
     tri_df = ofr_to_df('REPO-TRI_AR_OO-P')
     repo_df = merge_dfs([rrp, srf, sofr, dvp_df, gcf_df, tri_df]).dropna()
     repo_df.columns = ['RRP', 'SRF', 'SOFR', 'DVP', 'GCF', 'TRIPARTY']
-    colors = {'SOFR': '#0B2138', 'DVP': '#48DEE9', 'TRIPARTY': '#7EC0EE', 'GCF': '#F9D15B', 'SRF': '#F9C846', 'RRP': '#F39C12'}
+    colors = {'SOFR': '#0B2138', 'DVP': '#48DEE9', 'TRIPARTY': '#7EC0EE',
+              'GCF': '#F9D15B', 'SRF': '#F9C846', 'RRP': '#F39C12'}
     repo_df = repo_df['2025-01-01':]
 
     # ### PLOT ###
@@ -126,7 +144,9 @@ def plot_repo_rate_complex(start, end, **kwargs):
 
     fig = go.Figure()
     for col in repo_df.columns:
-        fig.add_trace(go.Scatter(x=repo_df.index, y=repo_df[col], mode='lines+markers', name=col, line=dict(color=colors.get(col))))
+        fig.add_trace(go.Scatter(x=repo_df.index, y=repo_df[col],
+                                 mode='lines+markers',
+                                 name=col, line=dict(color=colors.get(col))))
     fig.update_layout(
         title="Visible Repo Rate Complex",
         yaxis_title="Basis Points",
@@ -134,6 +154,10 @@ def plot_repo_rate_complex(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------- SOFR DISTRIBUTION -------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_sofr_distribution(start, end, **kwargs):
     sofr = pdr.DataReader('SOFR', 'fred', start, end)
@@ -166,7 +190,10 @@ def plot_sofr_distribution(start, end, **kwargs):
 
     fig = go.Figure()
     for col, color in zip(names, colors):
-        fig.add_trace(go.Scatter(x=df.index, y=df[col], mode='lines+markers', name=col, line=dict(color=color)))
+        fig.add_trace(go.Scatter(x=df.index, y=df[col],
+                                 mode='lines+markers',
+                                 name=col,
+                                 line=dict(color=color)))
     fig.update_layout(
         title="SOFR Distribution",
         yaxis_title="Basis Points",
@@ -174,6 +201,10 @@ def plot_sofr_distribution(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------- FED BALANCE SHEET -------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_balance_sheet(start, end, **kwargs):
     treasury = pdr.DataReader('TREAST', 'fred', start, end) / 1e6
@@ -195,8 +226,14 @@ def plot_fed_balance_sheet(start, end, **kwargs):
     # plt.show()
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df.index, y=df['SOMA Treasury'], mode='lines+markers', name='SOMA Treasury', line=dict(color="#46b5ca", width=3)))
-    fig.add_trace(go.Scatter(x=df.index, y=df['SOMA MBS'], mode='lines+markers', name='SOMA MBS', line=dict(color="#17354c", width=3)))
+    fig.add_trace(go.Scatter(x=df.index, y=df['SOMA Treasury'],
+                             mode='lines+markers',
+                             name='SOMA Treasury',
+                             line=dict(color="#46b5ca", width=3)))
+    fig.add_trace(go.Scatter(x=df.index, y=df['SOMA MBS'],
+                             mode='lines+markers',
+                             name='SOMA MBS',
+                             line=dict(color="#17354c", width=3)))
     fig.update_layout(
         title="FED Balance Sheet",
         yaxis_title="Dollars (Trillions)",
@@ -205,17 +242,24 @@ def plot_fed_balance_sheet(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------ MONITORING RESERVES ------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
 def plot_monitoring_reserves(start, end, **kwargs):
     reserves = pdr.DataReader('WRESBAL', 'fred', start, end) / 1e3
     tga = pdr.DataReader('WTREGEN', 'fred', start, end) / 1e3
     rrp_on = pdr.DataReader('RRPONTSYD', 'fred', start, end) / 1e3
     rrp = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
-    tri_volume_df = pd.DataFrame(requests.get('https://data.financialresearch.gov/v1/series/timeseries?mnemonic=REPO-TRI_TV_TOT-P').json(), columns=["date", "value"])
+    tri_volume_df = pd.DataFrame(
+        requests.get('https://data.financialresearch.gov/v1/series/timeseries?mnemonic=REPO-TRI_TV_TOT-P').json(),
+        columns=["date", "value"])
     tri_volume_df['date'] = pd.to_datetime(tri_volume_df['date'])
     tri_volume_df.set_index('date', inplace=True)
     tri_volume_df = tri_volume_df / 1e12
     triparty_rrp_merge = merge_dfs([tri_volume_df, rrp]).dropna()
-    tri_repo_diff = pd.DataFrame(triparty_rrp_merge.iloc[:, 0] - triparty_rrp_merge.iloc[:, 1], columns=['Triparty - RRP'])
+    tri_repo_diff = pd.DataFrame(triparty_rrp_merge.iloc[:, 0] -
+                                 triparty_rrp_merge.iloc[:, 1], columns=['Triparty - RRP'])
     df = merge_dfs([reserves, tga, rrp, tri_repo_diff, rrp_on]).loc[start:end].dropna()
     df.columns = ['Bank Reserves', 'TGA', 'RRP', 'Triparty - RRP', 'RRP ON']
     series = [
@@ -246,7 +290,10 @@ def plot_monitoring_reserves(start, end, **kwargs):
 
     fig = go.Figure()
     for col, color in series:
-        fig.add_trace(go.Scatter(x=df.index, y=df[col], mode='lines+markers', name=col, line=dict(color=color)))
+        fig.add_trace(go.Scatter(x=df.index, y=df[col],
+                                 mode='lines+markers',
+                                 name=col,
+                                 line=dict(color=color)))
     fig.update_layout(
         title="Monitoring reserves",
         yaxis_title="Dollars (Trillions)",
@@ -254,6 +301,10 @@ def plot_monitoring_reserves(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------ FED ACTION VS RESERVE RESPONSE -------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_action_vs_reserve_response(start, end, **kwargs):
     fed_action = pdr.DataReader('WALCL', 'fred', start, end) / 1e6
@@ -277,8 +328,14 @@ def plot_fed_action_vs_reserve_response(start, end, **kwargs):
     # plt.show()
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df.index, y=df['Fed Action'], mode='lines+markers', name='Fed Action', line=dict(color='#30b0c1', width=2)))
-    fig.add_trace(go.Scatter(x=df.index, y=df['Reserve Response'], mode='lines+markers', name='Reserve Response', line=dict(color='#17293c', width=2)))
+    fig.add_trace(go.Scatter(x=df.index, y=df['Fed Action'],
+                             mode='lines+markers',
+                             name='Fed Action',
+                             line=dict(color='#30b0c1', width=2)))
+    fig.add_trace(go.Scatter(x=df.index, y=df['Reserve Response'],
+                             mode='lines+markers',
+                             name='Reserve Response',
+                             line=dict(color='#17293c', width=2)))
     fig.update_layout(
         title="FED Action Vs Reserve Response",
         yaxis_title="30-Day Change (Trillions of $)",
@@ -286,6 +343,10 @@ def plot_fed_action_vs_reserve_response(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------ FED ACTION VS RESERVE RESPONSE -------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_action_vs_reserve_response_v2(start, end, **kwargs):
     fed_action = pdr.DataReader('WALCL', 'fred', start, end) / 1e6
@@ -312,8 +373,14 @@ def plot_fed_action_vs_reserve_response_v2(start, end, **kwargs):
     # plt.show()
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df.index, y=df['Fed Action'], mode='lines+markers', name='Fed Action', line=dict(color='#30b0c1', width=2)))
-    fig.add_trace(go.Scatter(x=df.index, y=df['RRP + TGA'], mode='lines+markers', name='RRP + TGA', line=dict(color='#17293c', width=2)))
+    fig.add_trace(go.Scatter(x=df.index, y=df['Fed Action'],
+                             mode='lines+markers',
+                             name='Fed Action',
+                             line=dict(color='#30b0c1', width=2)))
+    fig.add_trace(go.Scatter(x=df.index, y=df['RRP + TGA'],
+                             mode='lines+markers',
+                             name='RRP + TGA',
+                             line=dict(color='#17293c', width=2)))
     fig.update_layout(
         title="FED Action Vs Reserve Response",
         yaxis_title="30-Day Change (Trillions of $)",
