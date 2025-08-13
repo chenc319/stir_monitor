@@ -140,7 +140,6 @@ def plot_end_of_month_spreads(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_stability_lower_roc(start, end, **kwargs):
-    # Pull all required time series
     sof = pdr.DataReader('SOFR', 'fred', start, end)
     rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
     gc_rate = ('https://markets.newyorkfed.org/api/rates/secured/bgcr/search.'
@@ -190,13 +189,19 @@ def plot_stability_lower_roc(start, end, **kwargs):
         yaxis_title="Z-Score",
         xaxis_title="Date",
         yaxis_range=[-5,5],
-        annotations=[dict(
-            x=plot_data.index[-1], y=-4.5, text='Fonte: FED, MacroDispatch. Note: Calculations on a 30 MA Difference',
-            showarrow=False, font=dict(size=10, color='gray'), xanchor='left', yanchor='bottom'
-        ),dict(
-            x=plot_data.index[-1], y=-4.7, text='ie', showarrow=False,
-            font=dict(size=14, color='steelblue', family="Arial", bold=True), xanchor='right', yanchor='bottom'
-        )]
+        annotations=[
+            dict(
+                x=plot_data.index[-1], y=-4.5,
+                text='Fonte: FED, MacroDispatch. Note: Calculations on a 30 MA Difference',
+                showarrow=False, font=dict(size=10, color='gray'), xanchor='left', yanchor='bottom'
+            ),
+            dict(
+                x=plot_data.index[-1], y=-4.7,
+                text='<b>ie</b>', showarrow=False,
+                font=dict(size=14, color='steelblue', family="Arial"),
+                xanchor='right', yanchor='bottom'
+            )
+        ]
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -205,7 +210,6 @@ def plot_stability_lower_roc(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_how_did_levels_change(start, end, **kwargs):
-    # Reuse previous data wrangling for columns up to clean_data
     sof = pdr.DataReader('SOFR', 'fred', start, end)
     rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
     gc_rate = ('https://markets.newyorkfed.org/api/rates/secured/bgcr/search.'
@@ -253,9 +257,13 @@ def plot_how_did_levels_change(start, end, **kwargs):
         yaxis_title="Z-Score",
         xaxis_title="Date",
         yaxis_range=[-5,5],
-        annotations=[dict(
-            x=plot_static_data.index[-1], y=-4.7, text='ie', showarrow=False,
-            font=dict(size=14, color='steelblue', family="Arial", bold=True), xanchor='right', yanchor='bottom'
-        )]
+        annotations=[
+            dict(
+                x=plot_static_data.index[-1], y=-4.7,
+                text='<b>ie</b>', showarrow=False,
+                font=dict(size=14, color='steelblue', family="Arial"),
+                xanchor='right', yanchor='bottom'
+            )
+        ]
     )
     st.plotly_chart(fig, use_container_width=True)
