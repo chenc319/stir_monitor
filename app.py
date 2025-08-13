@@ -1,235 +1,235 @@
+### ---------------------------------------------------------------------------------------- ###
+### -------------------------------- PACKAGES AND FUNCTIONS -------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+
+### IMPORT OTHER SCRIPTS ###
+import streamlit as st
 import pandas as pd
 import functools as ft
-import requests
-import streamlit as st
-import plotly.graph_objs as go
+import app_risk_checks
+# import app_system
+import app_repo
+import app_cross_rate
+import app_cash
+import app_auctions
+import app_futures
+import app_primary_dealers
 
+
+
+### FUNCTIONS ###
 def merge_dfs(array_of_dfs):
-    """Merge a list of DataFrames on index (outer join)."""
-    if not array_of_dfs:
-        return pd.DataFrame()
-    return ft.reduce(lambda left, right: pd.merge(left, right, left_index=True, right_index=True, how='outer'), array_of_dfs)
+    new_df = ft.reduce(lambda left,
+                              right: pd.merge(left,
+                                                    right,
+                                                    left_index=True,
+                                                    right_index=True,
+                                                    how='outer'), array_of_dfs)
+    return(new_df)
 
-### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------ SPONSORED VOLUMES - THE SOLUTION? ----------------------------------------- ###
-### ---------------------------------------------------------------------------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+### --------------------------------- CONFIGURE STREAMLIT ---------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
 
-def plot_sponsored_volumes_solution(start, end, path_to_csv="data/SponsoredVolume.csv", **kwargs):
-    sponsored_volume = pd.read_csv(path_to_csv).dropna()
-    sponsored_volume = sponsored_volume.iloc[::-1].reset_index(drop=True)
-    sponsored_volume.index = pd.to_datetime(sponsored_volume['BUSINESS_DATE'].values)
-    sponsored_volume = sponsored_volume.drop('BUSINESS_DATE', axis=1)
-    sponsored_volume['DVP_TOTAL_AMOUNT'] = (
-        sponsored_volume['DVP_TOTAL_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
-    sponsored_volume['GC_TOTAL_AMOUNT'] = (
-        sponsored_volume['GC_TOTAL_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
-    sponsored_volume = sponsored_volume.sort_index()
-    sponsored_volume = sponsored_volume.loc[str(start):str(end)]
+### CONFIGURE PAGE SETTINGS ###
+st.set_page_config(
+    page_title="Mistral STIR Monitor",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=sponsored_volume.index, y=sponsored_volume['DVP_TOTAL_AMOUNT'], name='DVP Sponsored',
-                             line=dict(color='#4CD0E9', width=2)))
-    fig.add_trace(go.Scatter(x=sponsored_volume.index, y=sponsored_volume['GC_TOTAL_AMOUNT'], name='GC Sponsored',
-                             line=dict(color='#233852', width=2)))
-    fig.update_layout(
-        title="Sponsored Volumes - The Solutions?",
-        yaxis_title="Trillions",
-        xaxis_title="Date"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+# Initialize session state if not already done
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
 
-### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------------------- SPONSORED VOLUMES -------------------------------------------- ###
-### ---------------------------------------------------------------------------------------------------------- ###
+def check_password():
+    """Returns True if the user had the correct password."""
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if st.session_state.get("password", None) == st.secrets["password"]:
+            st.session_state.authenticated = True
+            if "password" in st.session_state:
+                del st.session_state["password"]  # Don't store password
+        else:
+            st.session_state.authenticated = False
 
-def plot_sponsored_volumes(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/hf/v1/series/full?mnemonic='
+    if not st.session_state.get('authenticated', False):
+        st.text_input(
+            "Password", type="password", on_change=password_entered, key="password"
+        )
+        return False
+    return True
 
-    repo_json = requests.get(base_url + 'FICC-SPONSORED_REPO_VOL').json()
-    repo_vol = pd.DataFrame(repo_json['FICC-SPONSORED_REPO_VOL']['timeseries']['aggregation'], columns=["date", "Value"])
-    repo_vol['date'] = pd.to_datetime(repo_vol['date'])
-    repo_vol.set_index('date', inplace=True)
-    repo_vol = repo_vol.sort_index().loc[str(start):str(end)]
 
-    rrp_json = requests.get(base_url + 'FICC-SPONSORED_REVREPO_VOL').json()
-    rrp_vol = pd.DataFrame(rrp_json['FICC-SPONSORED_REVREPO_VOL']['timeseries']['aggregation'], columns=["date", "Value"])
-    rrp_vol['date'] = pd.to_datetime(rrp_vol['date'])
-    rrp_vol.set_index('date', inplace=True)
-    rrp_vol = rrp_vol.sort_index().loc[str(start):str(end)]
+# Main app logic
+if not check_password():
+    st.stop()
 
-    merge = merge_dfs([repo_vol, rrp_vol])
-    merge.columns = ['sponsored_repo', 'sponsored_rrp']
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=merge.index, y=merge['sponsored_repo'], name='Repo Sponsored',
-                             line=dict(color='#4CD0E9', width=2)))
-    fig.add_trace(go.Scatter(x=merge.index, y=merge['sponsored_rrp'], name='RRP Sponsored',
-                             line=dict(color='#233852', width=2)))
-    fig.update_layout(
-        title="Sponsored Volumes",
-        yaxis_title="Trillions",
-        xaxis_title="Date"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+st.markdown("""
+    <style>
+    .header-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 8px;
+        background-color: white;
+        z-index: 999;
+        border-bottom: 1px solid #f0f2f6;
+        font-size: 14px;
+    }
+    .main {
+        margin-top: 60px;
+    }
+    .stMetric {
+        background-color: #ffffff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-right: 10px;
+        font-size: 12px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------ % OF DVP VOLUME THAT IS SPONSORED ----------------------------------------------- ###
-### ---------------------------------------------------------------------------------------------------------- ###
+### SIDEBAR ###
+st.sidebar.title("Mistral STIR Monitor")
+start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime('2019-12-31'))
+end_date = st.sidebar.date_input("End Date", value=pd.to_datetime('today'))
+menu = st.sidebar.radio(
+    "Go to section:",
+    ['Risk Checks',
+     'Bank System Mapping',
+     'Repo',
+     'Cross Rate',
+     'Cash',
+     'Auctions',
+     'Futures',
+     'Primary Dealers']
+)
 
-def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-    dvp_volume = pd.DataFrame(requests.get(base_url + 'REPO-DVP_TV_TOT-P').json(), columns=["date", "value"])
-    dvp_volume['date'] = pd.to_datetime(dvp_volume['date'])
-    dvp_volume.set_index('date', inplace=True)
-    dvp_volume = dvp_volume.sort_index().loc[str(start):str(end)]
 
-    sponsored_volume = pd.read_csv(path_to_csv).dropna()
-    sponsored_volume = sponsored_volume.iloc[::-1].reset_index(drop=True)
-    sponsored_volume.index = pd.to_datetime(sponsored_volume['BUSINESS_DATE'].values)
-    sponsored_volume = sponsored_volume.drop('BUSINESS_DATE', axis=1)
-    sponsored_volume['DVP_TOTAL_AMOUNT'] = (
-        sponsored_volume['DVP_TOTAL_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
-    sponsored_volume = sponsored_volume.sort_index().loc[str(start):str(end)]
-    dvp_sponsored_vol = pd.DataFrame(sponsored_volume['DVP_TOTAL_AMOUNT'])
+### ---------------------------------------------------------------------------------------- ###
+### -------------------------------------- RISK CHECKS ------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
 
-    merge = merge_dfs([dvp_sponsored_vol, dvp_volume]).dropna()
-    merge.columns = ['dvp_sponsored', 'total_dvp']
-    merge['pct'] = merge['dvp_sponsored'] / merge['total_dvp']
+if menu == 'Risk Checks':
+    st.title("Risk Checks")
+    app_risk_checks.plot_dash_for_cash_spread(start_date, end_date)
+    app_risk_checks.plot_new_sofr_system(start_date, end_date)
+    app_risk_checks.plot_repo_rate_complex(start_date, end_date)
+    app_risk_checks.plot_sofr_distribution(start_date, end_date)
+    app_risk_checks.plot_fed_balance_sheet(start_date, end_date)
+    app_risk_checks.plot_monitoring_reserves(start_date, end_date)
+    app_risk_checks.plot_fed_action_vs_reserve_response(start_date, end_date)
+    app_risk_checks.plot_fed_action_vs_reserve_response_v2(start_date, end_date)
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=merge.index, y=merge['pct'] * 100,
-                             name="% of DVP that is Sponsored", line=dict(color='#4CD0E9', width=2)))
-    fig.update_layout(
-        title="% of DVP that is Sponsored",
-        yaxis_title="Percent",
-        xaxis_title="Date"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+### ---------------------------------------------------------------------------------------- ###
+### ------------------------------ SHADOW BANK SYSTEM MAPPING ------------------------------ ###
+### ---------------------------------------------------------------------------------------- ###
 
-### ---------------------------------------------------------------------------------------------------------- ###
-### -------------- PRIMARY DEALERS NET POSITIONS: BILLS VS BONDS, BOND TENORS, TENOR CHANGE ----------------- ###
-### ---------------------------------------------------------------------------------------------------------- ###
+# elif menu == 'Bank System Mapping':
+    # st.markdown('<div class="tab-title">', unsafe_allow_html=True)
+    # st.title("Bank System Mapping")
+    # st.markdown('</div>', unsafe_allow_html=True)
+    # return_and_volatility(ticker,
+    #                       start_date,
+    #                       end_date)
 
-def plot_net_positions_bills_vs_bonds(start, end, **kwargs):
-    urls = [
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-B.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-L2.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G2L3.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G3L6.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G6L7.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G7L11.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G11L21.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G21.json'
-    ]
-    names = ['bills','l2','g2l3','g3l6','g6l7','g7l11','g11l21','g21']
-    all_pd = pd.DataFrame()
-    for idx in range(len(urls)):
-        pos = pd.DataFrame(requests.get(urls[idx]).json()['pd']['timeseries']).drop('keyid', axis=1)
-        pos['value'] = pd.to_numeric(pos['value'], errors='coerce') / 1e3
-        pos.dropna(subset=['value'], inplace=True)
-        pos['asofdate'] = pd.to_datetime(pos['asofdate'])
-        pos.set_index('asofdate', inplace=True)
-        pos = pos[['value']]
-        pos.columns = [names[idx]]
-        pos = pos.sort_index()
-        all_pd = merge_dfs([all_pd, pos])
-    all_pd = all_pd.sort_index().loc[str(start):str(end)]
-    all_pd['net_nominal_bonds'] = (
-        all_pd['l2'] + all_pd['g2l3'] + all_pd['g3l6'] + all_pd['g6l7'] + all_pd['g7l11']
-    )
+### ---------------------------------------------------------------------------------------- ###
+### ------------------------------------------ REPO ---------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=all_pd.index, y=all_pd['bills'], name="Bills",
-                             line=dict(color='#43c4e6', width=2)))
-    fig.add_trace(go.Scatter(x=all_pd.index, y=all_pd['net_nominal_bonds'], name="Net Nominal Bonds",
-                             line=dict(color='#262e39', width=2)))
-    fig.update_layout(
-        title="Primary Dealers Net Positions Bills VS Bonds",
-        yaxis_title="Billions",
-        xaxis_title="Date"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+elif menu == 'Repo':
+    st.title("Repo")
+    app_repo.plot_proxy_percent_without_clearing(start_date, end_date)
+    app_repo.plot_volume_per_venue(start_date, end_date)
+    app_repo.plot_mmf_by_asset(start_date, end_date)
+    app_repo.plot_6m_volume_change(start_date, end_date)
+    app_repo.plot_volume_invested_in_mmf(start_date, end_date)
+    app_repo.plot_rrp_vs_foreign_rrp(start_date, end_date)
+    app_repo.plot_mmf_repo_vs_non_repo(start_date, end_date)
+    app_repo.plot_triparty_adjusted_for_rrp(start_date, end_date)
+    app_repo.plot_mmf_allocation_by_counterparty(start_date, end_date)
 
-def plot_net_positions_by_bond_tenor(start, end, **kwargs):
-    urls = [
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-B.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-L2.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G2L3.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G3L6.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G6L7.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G7L11.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G11L21.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G21.json'
-    ]
-    names = ['bills','l2','g2l3','g3l6','g6l7','g7l11','g11l21','g21']
-    all_pd = pd.DataFrame()
-    for idx in range(len(urls)):
-        pos = pd.DataFrame(requests.get(urls[idx]).json()['pd']['timeseries']).drop('keyid', axis=1)
-        pos['value'] = pd.to_numeric(pos['value'], errors='coerce') / 1e3
-        pos.dropna(subset=['value'], inplace=True)
-        pos['asofdate'] = pd.to_datetime(pos['asofdate'])
-        pos.set_index('asofdate', inplace=True)
-        pos = pos[['value']]
-        pos.columns = [names[idx]]
-        pos = pos.sort_index()
-        all_pd = merge_dfs([all_pd, pos])
-    all_pd = all_pd.sort_index().loc[str(start):str(end)]
+### ---------------------------------------------------------------------------------------- ###
+### --------------------------------------- CROSS RATE ------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
 
-    fig = go.Figure()
-    tenors = [
-        ('l2', 'Bond <2Y', '#9DDCF9'),
-        ('g2l3', 'Bond 2-3Y', '#4CD0E9'),
-        ('g3l6', 'Bond 3-6Y', '#233852'),
-        ('g6l7', 'Bond 6-7Y', '#F5B820'),
-        ('g7l11', 'Bond 7-10Y', '#E69B93'),
-    ]
-    for k, name, color in tenors:
-        fig.add_trace(go.Scatter(x=all_pd.index, y=all_pd[k], name=name, line=dict(color=color, width=2)))
-    fig.update_layout(
-        title="Primary Dealers Net Positions By Bond Tenor",
-        yaxis_title="Billions",
-        xaxis_title="Date"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+elif menu == 'Cross Rate':
+    st.title("Cross Rate")
+    app_cross_rate.plot_iorb_spreads(start_date, end_date)
+    app_cross_rate.plot_gcf_tri_spread(start_date, end_date)
+    app_cross_rate.plot_triparty_term_spread(start_date, end_date)
+    app_cross_rate.plot_sofr_effr_chart(start_date, end_date)
+    app_cross_rate.plot_repo_rate_complex_cross(start_date, end_date)
+    app_cross_rate.plot_dollar_lending_complex(start_date, end_date)
+    app_cross_rate.plot_sofr_floor_ceiling(start_date, end_date)
+    app_cross_rate.plot_unsecured_lending_floor_ceiling(start_date, end_date)
 
-def plot_net_change_by_bond_tenor(start, end, **kwargs):
-    urls = [
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-L2C.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G2L3C.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G3L6C.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G6L7C.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G7L11C.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G11L21C.json',
-        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G21C.json'
-    ]
-    names = ['bills','l2','g2l3','g3l6','g6l7','g7l11','g11l21','g21']
-    all_pd_change = pd.DataFrame()
-    for idx in range(len(urls)):
-        pos = pd.DataFrame(requests.get(urls[idx]).json()['pd']['timeseries']).drop('keyid', axis=1)
-        pos['value'] = pd.to_numeric(pos['value'], errors='coerce')
-        pos.dropna(subset=['value'], inplace=True)
-        pos['asofdate'] = pd.to_datetime(pos['asofdate'])
-        pos.set_index('asofdate', inplace=True)
-        pos = pos[['value']]
-        pos.columns = [names[idx]]
-        pos = pos.sort_index()
-        all_pd_change = merge_dfs([all_pd_change, pos])
-    all_pd_change = all_pd_change.sort_index().loc[str(start):str(end)].dropna()
+### ---------------------------------------------------------------------------------------- ###
+### ----------------------------------------- CASH ----------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
 
-    fig = go.Figure()
-    tenors = [
-        ('l2', 'Bond <2Y', '#9DDCF9'),
-        ('g2l3', 'Bond 2-3Y', '#4CD0E9'),
-        ('g3l6', 'Bond 3-6Y', '#233852'),
-        ('g6l7', 'Bond 6-7Y', '#F5B820'),
-        ('g7l11', 'Bond 7-10Y', '#E69B93'),
-    ]
-    for k, name, color in tenors:
-        fig.add_trace(go.Scatter(x=all_pd_change.index, y=all_pd_change[k], name=name, line=dict(color=color, width=2)))
-    fig.update_layout(
-        title="Primary Dealers Net Position Change By Bond Tenor",
-        yaxis_title="Billions",
-        xaxis_title="Date"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+elif menu == 'Cash':
+    st.markdown('<div class="tab-title">', unsafe_allow_html=True)
+    st.title("Cash")
+    st.markdown('</div>', unsafe_allow_html=True)
+    app_cash.plot_tga(start_date, end_date)
+    app_cash.plot_rrp(start_date, end_date)
+    app_cash.plot_reserves(start_date, end_date)
+    app_cash.plot_mmf_repo_vs_non_repo(start_date, end_date)
+    app_cash.plot_asset_allocation_mmf(start_date, end_date)
+    app_cash.plot_reserves_non_fed_repo_rrp(start_date, end_date)
+    app_cash.plot_reserves_liabilities_system(start_date, end_date)
+
+### ---------------------------------------------------------------------------------------- ###
+### --------------------------------------- AUCTIONS --------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+
+elif menu == 'Auctions':
+    st.title("Auctions")
+    app_auctions.plot_issuance_by_security(start_date, end_date)
+    app_auctions.plot_bills_issuance(start_date, end_date)
+    app_auctions.plot_notes_issuance(start_date, end_date)
+    app_auctions.plot_bonds_issuance(start_date, end_date)
+    app_auctions.plot_bills_dealer_ratio(start_date, end_date)
+    app_auctions.plot_bonds_dealer_ratio(start_date, end_date)
+    app_auctions.plot_notes_dealer_ratio(start_date, end_date)
+    app_auctions.plot_bills_bid_to_cover(start_date, end_date)
+    app_auctions.plot_bonds_bid_to_cover(start_date, end_date)
+    app_auctions.plot_notes_bid_to_cover(start_date, end_date)
+
+### ---------------------------------------------------------------------------------------- ###
+### ---------------------------------------- FUTURES --------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+
+elif menu == 'Futures':
+    st.markdown('<div class="tab-title">', unsafe_allow_html=True)
+    st.title("Futures")
+    st.markdown('</div>', unsafe_allow_html=True)
+    app_futures.plot_futures_leverage_money_short(start_date, end_date)
+    app_futures.plot_end_of_quarter_spreads(start_date, end_date)
+    app_futures.plot_end_of_month_spreads(start_date, end_date)
+    app_futures.plot_stability_lower_roc(start_date, end_date)
+    app_futures.plot_how_did_levels_change(start_date, end_date)
+
+### ---------------------------------------------------------------------------------------- ###
+### ------------------------------------ PRIMARY DEALERS ----------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+
+elif menu == 'Primary Dealers':
+    st.markdown('<div class="tab-title">', unsafe_allow_html=True)
+    st.title("Primary Dealers")
+    st.markdown('</div>', unsafe_allow_html=True)
+    app_primary_dealers.plot_sponsored_volumes_solution(start_date, end_date)
+    app_primary_dealers.plot_sponsored_volumes(start_date, end_date)
+    app_primary_dealers.plot_pct_dvp_sponsored(start_date, end_date)
+    app_primary_dealers.plot_net_positions_bills_vs_bonds(start_date, end_date)
+    app_primary_dealers.plot_net_positions_by_bond_tenor(start_date, end_date)
+    app_primary_dealers.plot_net_change_by_bond_tenor(start_date, end_date)
+
+
+
+
