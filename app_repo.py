@@ -15,7 +15,7 @@ def merge_dfs(array_of_dfs):
                      array_of_dfs)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------ PROXY OF % WITHOUT CENTRAL CLEARING --------------------------------------- ###
+### ------------------------------- PROXY OF PERCENT WITHOUT CENTRAL CLEARING -------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_proxy_percent_without_clearing(start, end, **kwargs):
@@ -135,7 +135,6 @@ def plot_proxy_percent_without_clearing(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------------- VOLUME PER VENUE --------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
@@ -164,6 +163,22 @@ def plot_volume_per_venue(start, end, **kwargs):
     volume_venue_merge_df = merge_dfs([dvp, rrp, gcf, triparty_rrp_diff]).loc[str(start):str(end)].dropna()
     volume_venue_merge_df.columns = ['DVP', 'RRP', 'GCF', 'Triparty-RRP']
 
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(volume_venue_merge_df.index, volume_venue_merge_df['DVP'],
+    #          label="DVP", color="#f8b62d", lw=2)
+    # plt.plot(volume_venue_merge_df.index, volume_venue_merge_df['RRP'],
+    #          label="RRP", color="#f8772d", lw=2)
+    # plt.plot(volume_venue_merge_df.index, volume_venue_merge_df['GCF'],
+    #          label="GCF", color="#2f90c5", lw=2)
+    # plt.plot(volume_venue_merge_df.index, volume_venue_merge_df['Triparty-RRP'],
+    #          label="Triparty-RRP", color="#67cbe7", lw=2)
+    # plt.title("Volume per Venue", fontsize=22, fontweight="bold")
+    # plt.ylabel("Dollars (Trillions)")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     for col, color in zip(volume_venue_merge_df.columns,
                           ['#f8b62d', '#f8772d', '#2f90c5', '#67cbe7']):
@@ -177,9 +192,8 @@ def plot_volume_per_venue(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------- INVESTMENT OF MMF BY ASSET ---------------------------------------------- ###
+### -------------------------------------- INVESTMENT OF MMF BY ASSET ---------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_mmf_by_asset(start, end, **kwargs):
@@ -206,6 +220,20 @@ def plot_mmf_by_asset(start, end, **kwargs):
                                                   mmf_repo_non_repo_merge['mmf_total']
     mmf_repo_non_repo_merge = mmf_repo_non_repo_merge.dropna()
 
+    # ### PLOT ###
+    # plt.figure(figsize=(8, 6))
+    # plt.plot(mmf_repo_non_repo_merge.index, mmf_repo_non_repo_merge['US_TS_Allocation'],
+    #          label='U.S. Treasury Sec.', color='#29B6D9', lw=2)
+    # plt.plot(mmf_repo_non_repo_merge.index, mmf_repo_non_repo_merge['US_Repo_Allocation'],
+    #          label='U.S. Treasury Repo', color='#272f37', lw=2)
+    # plt.title('Investment of MMF by Asset', fontsize=18, fontweight='bold', pad=18)
+    # plt.ylabel('% Allocation')
+    # plt.yticks(fontsize=11)
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.grid(alpha=0.3)
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=mmf_repo_non_repo_merge.index,
@@ -223,9 +251,8 @@ def plot_mmf_by_asset(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------------- 6M VOLUME CHANGE --------------------------------------------------- ###
+### ------------------------------------------- 6M VOLUME CHANGE --------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_6m_volume_change(start, end, **kwargs):
@@ -254,6 +281,22 @@ def plot_6m_volume_change(start, end, **kwargs):
     roc_6m_volume = volume_venue_merge_df.resample('ME').last().diff(1)
     roc_6m_volume = roc_6m_volume.loc[str(start):str(end)]
 
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(roc_6m_volume.index, roc_6m_volume['DVP'],
+    #          label="DVP", color="#f8b62d", lw=2)
+    # plt.plot(roc_6m_volume.index, roc_6m_volume['RRP'],
+    #          label="RRP", color="#f8772d", lw=2)
+    # plt.plot(roc_6m_volume.index, roc_6m_volume['GCF'],
+    #          label="GCF", color="#2f90c5", lw=2)
+    # plt.plot(roc_6m_volume.index, roc_6m_volume['Triparty-RRP'],
+    #          label="Triparty-RRP", color="#67cbe7", lw=2)
+    # plt.title("Monthly Change in Volume per Venue", fontsize=22, fontweight="bold")
+    # plt.ylabel("Dollars (Trillions)")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     for col, color in zip(roc_6m_volume.columns, ['#f8b62d', '#f8772d', '#2f90c5', '#67cbe7']):
         fig.add_trace(go.Scatter(x=roc_6m_volume.index, y=roc_6m_volume[col],
@@ -266,9 +309,8 @@ def plot_6m_volume_change(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ----------------------------- VOLUME INVESTED IN MMF ----------------------------------------------------- ###
+### ---------------------------------------- VOLUME INVESTED IN MMF ------------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_volume_invested_in_mmf(start, end, **kwargs):
@@ -279,6 +321,15 @@ def plot_volume_invested_in_mmf(start, end, **kwargs):
     mmf = mmf / 1e12
     mmf.columns = ['MMF_TOTAL']
     mmf = mmf.loc[str(start):str(end)]
+
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(mmf.index, mmf['MMF_TOTAL'],
+    #          color="#67cbe7", lw=2)
+    # plt.title("Volume Invested in MMF", fontsize=22, fontweight="bold")
+    # plt.ylabel("Trillions")
+    # plt.tight_layout()
+    # plt.show()
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -293,7 +344,7 @@ def plot_volume_invested_in_mmf(start, end, **kwargs):
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------- RRP AND FOREIGN RRP ------------------------------------------------------ ###
+### ----------------------------------------- RRP AND FOREIGN RRP -------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_rrp_vs_foreign_rrp(start, end, **kwargs):
@@ -304,6 +355,18 @@ def plot_rrp_vs_foreign_rrp(start, end, **kwargs):
     merge = merge_dfs([rrp, foreign_rrp]).dropna()
     merge.columns = ['RRP', 'Foreign_RRP']
     merge = merge.loc[str(start):str(end)]
+
+    # ### PLOT DATA ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(merge.index, merge['RRP'],
+    #          label="RRP", color="#07AFE3", lw=2)
+    # plt.plot(merge.index, merge['Foreign_RRP'],
+    #          label="Foreign RRP", color="#F57235", lw=2)
+    # plt.title("RRP vs. Foreign RRP", fontsize=22, fontweight="bold")
+    # plt.ylabel("%")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge.index, y=merge['RRP'],
@@ -318,9 +381,8 @@ def plot_rrp_vs_foreign_rrp(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ----------------------------- MMF REPO VS NON REPO ------------------------------------------------------- ###
+### ----------------------------------------- MMF REPO VS NON REPO ------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_mmf_repo_vs_non_repo(start, end, **kwargs):
@@ -341,6 +403,19 @@ def plot_mmf_repo_vs_non_repo(start, end, **kwargs):
     mmf_repo_non_repo_merge['non_repo'] = mmf_repo_non_repo_merge['mmf_total'] - mmf_repo_non_repo_merge['mmf_repo']
     mmf_repo_non_repo_merge = mmf_repo_non_repo_merge.loc[str(start):str(end)]
 
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(mmf_repo_non_repo_merge.index, mmf_repo_non_repo_merge['non_repo'],
+    #          label="Non-Repo Allocation", color="#f8b62d", lw=2)
+    # plt.plot(mmf_repo_non_repo_merge.index, mmf_repo_non_repo_merge['mmf_repo'],
+    #          label="Repo Allocation", color="#f8772d", lw=2)
+    #
+    # plt.title("MMF Repo vs Nono Repo", fontsize=22, fontweight="bold")
+    # plt.ylabel('Dollars')
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=mmf_repo_non_repo_merge.index, y=mmf_repo_non_repo_merge['non_repo'],
                              mode='lines+markers', name="Non-Repo Allocation", line=dict(color="#f8b62d", width=2)))
@@ -354,9 +429,8 @@ def plot_mmf_repo_vs_non_repo(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------ TRIPARTY ADJUSTED FOR RRP ------------------------------------------------------- ###
+### -------------------------------------- TRIPARTY ADJUSTED FOR RRP ----------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_triparty_adjusted_for_rrp(start, end, **kwargs):
@@ -381,6 +455,20 @@ def plot_triparty_adjusted_for_rrp(start, end, **kwargs):
     triparty_merge['residual_flows'] = triparty_merge['dvp'] - triparty_merge['triparty-rrp']
     triparty_merge = triparty_merge.loc[str(start):str(end)].dropna()
 
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(triparty_merge.index, triparty_merge['triparty-rrp'],
+    #          label="Triparty-RRP", color="#f8b62d", lw=2)
+    # plt.plot(triparty_merge.index, triparty_merge['dvp'],
+    #          label="DVP", color="#f8772d", lw=2)
+    # plt.plot(triparty_merge.index, triparty_merge['residual_flows'],
+    #          label="Residual Flow", color="#2f90c5", lw=2)
+    # plt.title("Tri-Party Adjusted for RRP", fontsize=22, fontweight="bold")
+    # plt.ylabel("Trillions")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=triparty_merge.index, y=triparty_merge['triparty-rrp'],
                              mode='lines+markers', name="Triparty-RRP", line=dict(color="#f8b62d", width=2)))
@@ -396,9 +484,8 @@ def plot_triparty_adjusted_for_rrp(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------ MMF ALLOCATION BY COUNTERPARTY -------------------------------------------------- ###
+### ------------------------------------ MMF ALLOCATION BY COUNTERPARTY -------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_mmf_allocation_by_counterparty(start, end, **kwargs):
@@ -419,6 +506,22 @@ def plot_mmf_allocation_by_counterparty(start, end, **kwargs):
 
     mmf_allocations_merge = merge_dfs([foreign, fed, us_inst, ficc]).loc[str(start):str(end)].dropna()
     mmf_allocations_merge.columns = ['foreign', 'fed', 'us_inst', 'ficc']
+
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(mmf_allocations_merge.index, mmf_allocations_merge['foreign'],
+    #          label="Foreign", color="#f8b62d", lw=2)
+    # plt.plot(mmf_allocations_merge.index, mmf_allocations_merge['fed'],
+    #          label="Fed", color="#f8772d", lw=2)
+    # plt.plot(mmf_allocations_merge.index, mmf_allocations_merge['us_inst'],
+    #          label="US Financial Institutions", color="#2f90c5", lw=2)
+    # plt.plot(mmf_allocations_merge.index, mmf_allocations_merge['ficc'],
+    #          label="FICC", color="#67cbe7", lw=2)
+    # plt.title("Allocation of MMF by Counterparties", fontsize=22, fontweight="bold")
+    # plt.ylabel("Trillions")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
 
     fig = go.Figure()
     for col, color in zip(mmf_allocations_merge.columns,
