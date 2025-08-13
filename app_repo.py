@@ -6,6 +6,7 @@ import functools as ft
 import streamlit as st
 import plotly.graph_objs as go
 from pandas_datareader import data as pdr
+from fredapi import Fred
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right,
@@ -15,7 +16,6 @@ def merge_dfs(array_of_dfs):
 
 @st.cache_data(ttl=3600)
 def get_pd_repo_data():
-    # Pull and parse all New York Fed series
     def fetch(url, colname):
         df = pd.DataFrame(requests.get(url).json()['pd']['timeseries'])
         df['value'] = pd.to_numeric(df['value'], errors='coerce')
@@ -42,8 +42,15 @@ def get_ofr_time_series():
     gcf = pull('REPO-GCF_TV_TOT-P', 'gcf', 1e12)
     return tri, dvp, gcf
 
+def get_rrp_series(start, end):
+    rrp = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
+    rrp.index = pd.to_datetime(rrp.index)
+    return rrp.rename(columns={'WLRRAL': 'RRP'})
+
+#-------------------------------------------------------
+# Proxy non-cleared percent
+#-------------------------------------------------------
 def plot_proxy_percent_without_clearing(start, end):
-    # ============== Primary Dealer proxy ==============
     total_repo, nccbr_on, nccbr_l30, nccbr_g30 = get_pd_repo_data()
     pd_merge = merge_dfs([total_repo, nccbr_on, nccbr_l30, nccbr_g30])
     pd_merge['pd_nccbr_total'] = pd_merge['pd_nccbr_on'] + pd_merge['pd_nccbr_l30'] + pd_merge['pd_nccbr_g30']
@@ -51,36 +58,37 @@ def plot_proxy_percent_without_clearing(start, end):
     pd_merge = pd_merge.dropna()
     pd_merge = pd_merge[(pd_merge.index >= pd.to_datetime(start)) & (pd_merge.index <= pd.to_datetime(end))]
 
-    # ============== OFR venue-sum proxy ===============
     tri, dvp, gcf = get_ofr_time_series()
-    rrp = pdr.DataReader('WLRRAL', 'fred', pd.to_datetime(start), pd.to_datetime(end)) / 1e6
-    rrp.index = pd.to_datetime(rrp.index)
+    rrp = get_rrp_series(pd.to_datetime(start), pd.to_datetime(end))
     tri_aligned = tri.reindex(rrp.index, method='ffill').dropna()
     dvp_aligned = dvp.reindex(rrp.index, method='ffill').dropna()
     gcf_aligned = gcf.reindex(rrp.index, method='ffill').dropna()
-    total_repo_vol = (tri_aligned['tri'] + dvp_aligned['dvp'] + gcf_aligned['gcf'] + pd_merge['pd_nccbr_total'].reindex(tri_aligned.index, method='ffill')/1e6).dropna()
+    total_repo_vol = (tri_aligned['tri'] + dvp_aligned['dvp'] + gcf_aligned['gcf']
+                      + pd_merge['pd_nccbr_total'].reindex(tri_aligned.index, method='ffill')/1e6).dropna()
     all_venues = merge_dfs([tri_aligned, dvp_aligned, gcf_aligned, rrp, total_repo_vol.to_frame('all_repo')]).dropna()
-    all_venues['black'] = (all_venues['tri'] - all_venues['WLRRAL']) / (all_venues['all_repo'] - all_venues['WLRRAL'])
-    all_venues = all_venues.resample('W').last()[(all_venues.index >= pd.to_datetime(start)) & (all_venues.index <= pd.to_datetime(end))]
-    # ============== Plot ==============
+    all_venues['black'] = (all_venues['tri'] - all_venues['RRP']) / (all_venues['all_repo'] - all_venues['RRP'])
+    all_venues = all_venues.resample('W').last()
+
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=pd_merge.index, y=pd_merge['nccbr_pct']*100, name="% nccbr PD", line=dict(color="#f8b62d")))
-    fig.add_trace(go.Scatter(x=all_venues.index, y=all_venues['black']*100, name="TriParty-RRP/(TriParty+DVP+GCF-RRP)", line=dict(color="#f8772d")))
+    fig.add_trace(go.Scatter(x=pd_merge.index, y=pd_merge['nccbr_pct']*100,
+                             name="% NCCBR PD", line=dict(color="#f8b62d")))
+    fig.add_trace(go.Scatter(x=all_venues.index, y=all_venues['black']*100,
+                             name="TriParty-RRP/(TriParty+DVP+GCF-RRP)", line=dict(color="#f8772d")))
     fig.update_layout(title="Proxy of % of Non Cleared Repos", yaxis_title="%", hovermode='x unified')
     st.plotly_chart(fig, use_container_width=True)
 
+#-------------------------------------------------------
 def plot_volume_per_venue(start, end):
     tri, dvp, gcf = get_ofr_time_series()
-    rrp = pdr.DataReader('WLRRAL', 'fred', pd.to_datetime(start), pd.to_datetime(end)) / 1e6
-    rrp.index = pd.to_datetime(rrp.index)
+    rrp = get_rrp_series(start, end)
     merge = merge_dfs([dvp, rrp, gcf, (tri - rrp).rename(columns={'tri': 'Triparty-RRP'})]).dropna()
-    merge = merge.loc[(merge.index >= pd.to_datetime(start)) & (merge.index <= pd.to_datetime(end))]
     fig = go.Figure()
-    for col, color in zip(['dvp','WLRRAL','gcf','Triparty-RRP'], ["#f8b62d","#f8772d","#2f90c5","#67cbe7"]):
-        fig.add_trace(go.Scatter(x=merge.index, y=merge[col], name=col.replace('WLRRAL','RRP'), line=dict(color=color)))
+    for col, color in zip(['dvp','RRP','gcf','Triparty-RRP'], ["#f8b62d","#f8772d","#2f90c5","#67cbe7"]):
+        fig.add_trace(go.Scatter(x=merge.index, y=merge[col], name=col, line=dict(color=color)))
     fig.update_layout(title="Volume per Venue", yaxis_title="Dollars (Trillions)", hovermode='x unified')
     st.plotly_chart(fig, use_container_width=True)
 
+#-------------------------------------------------------
 def plot_mmf_by_asset(start, end):
     base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
     repo = pd.DataFrame(requests.get(base_url+'MMF-MMF_RP_TOT-M').json(), columns=['date','value'])
@@ -90,10 +98,8 @@ def plot_mmf_by_asset(start, end):
     ts = pd.DataFrame(requests.get(base_url+'MMF-MMF_T_TOT-M').json(), columns=['date','value'])
     ts = ts.set_index(pd.to_datetime(ts['date']))[['value']].rename(columns={'value':'ts'}) / 1e12
     merge = merge_dfs([repo, total, ts])
-    merge['non_repo'] = merge['total'] - merge['repo']
     merge['US_Repo_Allocation'] = merge['repo'] / merge['total']
     merge['US_TS_Allocation'] = merge['ts'] / merge['total']
-    merge = merge['2019-01-01':]
     merge = merge.loc[(merge.index >= pd.to_datetime(start)) & (merge.index <= pd.to_datetime(end))]
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge.index, y=merge['US_TS_Allocation'], name='U.S. Treasury Sec.', line=dict(color='#29B6D9')))
@@ -101,47 +107,43 @@ def plot_mmf_by_asset(start, end):
     fig.update_layout(title='Investment of MMF by Asset', yaxis_title='% Allocation', hovermode='x unified')
     st.plotly_chart(fig, use_container_width=True)
 
+#-------------------------------------------------------
 def plot_6m_volume_change(start, end):
     tri, dvp, gcf = get_ofr_time_series()
-    rrp = pdr.DataReader('WLRRAL', 'fred', pd.to_datetime(start), pd.to_datetime(end)) / 1e6
-    rrp.index = pd.to_datetime(rrp.index)
+    rrp = get_rrp_series(start, end)
     merge = merge_dfs([dvp, rrp, gcf, (tri - rrp).rename(columns={'tri': 'Triparty-RRP'})]).dropna()
     roc_6m = merge.resample('ME').last().diff(1)
-    roc_6m = roc_6m.loc[(roc_6m.index >= pd.to_datetime(start)) & (roc_6m.index <= pd.to_datetime(end))]
     fig = go.Figure()
-    for col, color in zip(['dvp', 'WLRRAL', 'gcf', 'Triparty-RRP'], ["#f8b62d", "#f8772d", "#2f90c5", "#67cbe7"]):
-        fig.add_trace(go.Scatter(x=roc_6m.index, y=roc_6m[col], name=col.replace('WLRRAL','RRP'), line=dict(color=color)))
+    for col, color in zip(['dvp','RRP','gcf','Triparty-RRP'], ["#f8b62d", "#f8772d", "#2f90c5", "#67cbe7"]):
+        fig.add_trace(go.Scatter(x=roc_6m.index, y=roc_6m[col], name=col, line=dict(color=color)))
     fig.update_layout(title="Monthly Change in Volume per Venue", yaxis_title="Dollars (Trillions)", hovermode="x unified")
     st.plotly_chart(fig, use_container_width=True)
 
+#-------------------------------------------------------
 def plot_volume_invested_in_mmf(start, end):
     base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
     mmf = pd.DataFrame(requests.get(base_url+'MMF-MMF_TOT-M').json(), columns=["date", "value"])
     mmf = mmf.set_index(pd.to_datetime(mmf['date']))[['value']].rename(columns={'value': 'MMF_TOTAL'}) / 1e12
     mmf = mmf['2021-01-01':]
-    mmf = mmf.loc[(mmf.index >= pd.to_datetime(start)) & (mmf.index <= pd.to_datetime(end))]
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=mmf.index, y=mmf['MMF_TOTAL'], line=dict(color='#67cbe7')))
     fig.update_layout(title="Volume Invested in MMF", yaxis_title="Trillions", hovermode="x unified")
     st.plotly_chart(fig, use_container_width=True)
 
+#-------------------------------------------------------
 def plot_rrp_vs_foreign_rrp(start, end):
-    from fredapi import Fred
     fred = Fred(api_key='6905137c26f03db5c8c09f70b7839150')
-    s = pd.to_datetime(start)
-    e = pd.to_datetime(end)
-    rrp = pdr.DataReader('WLRRAL', 'fred', s, e) / 1e6
-    rrp.index = pd.to_datetime(rrp.index)
-    foreign_rrp = pd.DataFrame(fred.get_series('WREPOFOR', observation_start=s, observation_end=e) / 1e6)
+    rrp = get_rrp_series(start, end)
+    foreign_rrp = pd.DataFrame(fred.get_series('WREPOFOR', observation_start=start, observation_end=end) / 1e6)
     rrp_foreign = merge_dfs([rrp, foreign_rrp])
     rrp_foreign.columns = ['RRP','Foreign_RRP']
-    rrp_foreign = rrp_foreign.dropna()
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=rrp_foreign.index, y=rrp_foreign['RRP'], name='RRP', line=dict(color='#07AFE3')))
     fig.add_trace(go.Scatter(x=rrp_foreign.index, y=rrp_foreign['Foreign_RRP'], name='Foreign RRP', line=dict(color='#F57235')))
     fig.update_layout(title="RRP vs. Foreign RRP", yaxis_title="Trillions", hovermode="x unified")
     st.plotly_chart(fig, use_container_width=True)
 
+#-------------------------------------------------------
 def plot_mmf_repo_vs_non_repo(start, end):
     base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
     repo = pd.DataFrame(requests.get(base_url+'MMF-MMF_RP_TOT-M').json(), columns=['date','value'])
@@ -151,23 +153,21 @@ def plot_mmf_repo_vs_non_repo(start, end):
     merge = merge_dfs([repo, total])
     merge['non_repo'] = merge['total'] - merge['repo']
     merge = merge['2019-01-01':]
-    merge = merge.loc[(merge.index >= pd.to_datetime(start)) & (merge.index <= pd.to_datetime(end))]
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge.index, y=merge['non_repo'], name="Non-Repo Allocation", line=dict(color="#f8b62d")))
     fig.add_trace(go.Scatter(x=merge.index, y=merge['repo'], name="Repo Allocation", line=dict(color="#f8772d")))
     fig.update_layout(title="MMF Repo vs Non Repo", yaxis_title="Dollars", hovermode="x unified")
     st.plotly_chart(fig, use_container_width=True)
 
+#-------------------------------------------------------
 def plot_triparty_adjusted_for_rrp(start, end):
     tri, dvp, _ = get_ofr_time_series()
-    rrp = pdr.DataReader('WLRRAL', 'fred', pd.to_datetime(start), pd.to_datetime(end)) / 1e6
-    rrp.index = pd.to_datetime(rrp.index)
+    rrp = get_rrp_series(start, end)
     triparty_merge = merge_dfs([tri, rrp, dvp])
     triparty_merge.columns = ['tri','rrp','dvp']
     triparty_merge['triparty-rrp'] = triparty_merge['tri'] - triparty_merge['rrp']
     triparty_merge['residual_flows'] = triparty_merge['dvp'] - triparty_merge['triparty-rrp']
     triparty_merge = triparty_merge.dropna()
-    triparty_merge = triparty_merge.loc[(triparty_merge.index >= pd.to_datetime(start)) & (triparty_merge.index <= pd.to_datetime(end))]
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=triparty_merge.index, y=triparty_merge['triparty-rrp'], name="Triparty-RRP", line=dict(color="#f8b62d")))
     fig.add_trace(go.Scatter(x=triparty_merge.index, y=triparty_merge['dvp'], name="DVP", line=dict(color="#f8772d")))
@@ -175,6 +175,7 @@ def plot_triparty_adjusted_for_rrp(start, end):
     fig.update_layout(title="Tri-Party Adjusted for RRP", yaxis_title="Trillions", hovermode="x unified")
     st.plotly_chart(fig, use_container_width=True)
 
+#-------------------------------------------------------
 def plot_mmf_allocation_by_counterparty(start, end):
     base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
     fc = pd.DataFrame(requests.get(base_url+'MMF-MMF_RP_wFFI-M').json(), columns=['date','value'])
@@ -186,7 +187,6 @@ def plot_mmf_allocation_by_counterparty(start, end):
     ficc = pd.DataFrame(requests.get(base_url+'MMF-MMF_RP_wFICC-M').json(), columns=['date','value'])
     ficc = ficc.set_index(pd.to_datetime(ficc['date']))[['value']].rename(columns={'value':'ficc'}) / 1e12
     merge = merge_dfs([fc, fe, usf, ficc]).dropna()['2020-12-01':]
-    merge = merge.loc[(merge.index >= pd.to_datetime(start)) & (merge.index <= pd.to_datetime(end))]
     fig = go.Figure()
     for col, color in zip(['foreign','fed','us_inst','ficc'], ["#f8b62d","#f8772d","#2f90c5","#67cbe7"]):
         fig.add_trace(go.Scatter(x=merge.index, y=merge[col], name=col.replace('_',' ').title(), line=dict(color=color)))
