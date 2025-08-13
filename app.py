@@ -41,21 +41,23 @@ if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 
 def check_password():
-    """Returns `True` if the user had the correct password."""
+    """Returns True if the user had the correct password."""
     def password_entered():
         """Checks whether a password entered by the user is correct."""
-        if st.session_state["password"] == st.secrets["password"]:
+        if st.session_state.get("password", None) == st.secrets["password"]:
             st.session_state.authenticated = True
-            del st.session_state["password"]  # Don't store password
+            if "password" in st.session_state:
+                del st.session_state["password"]  # Don't store password
         else:
             st.session_state.authenticated = False
 
-    if not st.session_state.authenticated:
+    if not st.session_state.get('authenticated', False):
         st.text_input(
             "Password", type="password", on_change=password_entered, key="password"
         )
         return False
     return True
+
 
 # Main app logic
 if not check_password():

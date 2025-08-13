@@ -66,7 +66,8 @@ dash_for_cash_spread['Spread_bp'] = (dash_for_cash_spread['EFFR'] - dash_for_cas
 
 ### PLOT ###
 plt.figure(figsize=(10,5))
-plt.step(dash_for_cash_spread.index, dash_for_cash_spread['Spread_bp'], where='post', color='skyblue', alpha=0.85, linewidth=3)
+plt.step(dash_for_cash_spread.index, dash_for_cash_spread['Spread_bp'],
+         where='post', color='skyblue', alpha=0.85, linewidth=3)
 plt.title('Monitoring the Dash For Cash\nFed Funds - IORB', fontsize=18, fontweight='bold', loc='left')
 plt.ylabel('Basis Points', fontsize=13)
 plt.xlabel('')
