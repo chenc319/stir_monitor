@@ -1,8 +1,13 @@
+### ---------------------------------------------------------------------------------------------------------- ###
+### -------------------------------------------- PRIMARY DEALERS --------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
 import pandas as pd
 import functools as ft
 import requests
 import streamlit as st
 import plotly.graph_objs as go
+from matplotlib import pyplot as plt
 
 def merge_dfs(array_of_dfs):
     """Merge a list of DataFrames on index (outer join)."""
@@ -11,7 +16,7 @@ def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right, left_index=True, right_index=True, how='outer'), array_of_dfs)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------ SPONSORED VOLUMES - THE SOLUTION? ----------------------------------------- ###
+### ----------------------------------- SPONSORED VOLUMES - THE SOLUTION? ------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_sponsored_volumes_solution(start, end, path_to_csv="data/SponsoredVolume.csv", **kwargs):
@@ -25,6 +30,18 @@ def plot_sponsored_volumes_solution(start, end, path_to_csv="data/SponsoredVolum
         sponsored_volume['GC_TOTAL_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
     sponsored_volume = sponsored_volume.sort_index()
     sponsored_volume = sponsored_volume.loc[str(start):str(end)]
+
+    # ### PLOT ###
+    # plt.figure(figsize=(10, 7))
+    # plt.plot(sponsored_volume.index, sponsored_volume['DVP_TOTAL_AMOUNT'],
+    #          label='DVP Sponsored', color='#4CD0E9', lw=2)  # cyan
+    # plt.plot(sponsored_volume.index, sponsored_volume['GC_TOTAL_AMOUNT'],
+    #          label='GC Sponsored', color='#233852', lw=2)  # dark blue
+    # plt.ylabel("Trillions")
+    # plt.title("Sponsored Volumes - The Solutions?", fontsize=17, fontweight="bold")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=sponsored_volume.index, y=sponsored_volume['DVP_TOTAL_AMOUNT'], name='DVP Sponsored',
@@ -60,6 +77,18 @@ def plot_sponsored_volumes(start, end, **kwargs):
     merge = merge_dfs([repo_vol, rrp_vol])
     merge.columns = ['sponsored_repo', 'sponsored_rrp']
 
+    # ### PLOT ###
+    # plt.figure(figsize=(10, 7))
+    # plt.plot(merge.index, merge['sponsored_repo'],
+    #          label='Repo Sponsored', color='#4CD0E9', lw=2)  # cyan
+    # plt.plot(merge.index, merge['sponsored_rrp'],
+    #          label='RRP Sponsored', color='#233852', lw=2)  # dark blue
+    # plt.ylabel("Trillions")
+    # plt.title("Sponsored Volumes", fontsize=17, fontweight="bold")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge.index, y=merge['sponsored_repo'], name='Repo Sponsored',
                              line=dict(color='#4CD0E9', width=2)))
@@ -73,7 +102,7 @@ def plot_sponsored_volumes(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------ % OF DVP VOLUME THAT IS SPONSORED ----------------------------------------------- ###
+### ----------------------------------- % OF DVP VOLUME THAT IS SPONSORED ------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", **kwargs):
@@ -96,6 +125,16 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
     merge.columns = ['dvp_sponsored', 'total_dvp']
     merge['pct'] = merge['dvp_sponsored'] / merge['total_dvp']
 
+    # ### PLOT ###
+    # plt.figure(figsize=(10, 7))
+    # plt.plot(merge.index, merge['pct'],
+    #          color='#4CD0E9', lw=2)  # cyan
+    # plt.ylabel("%")
+    # plt.title("% of DVP that is Sponsored", fontsize=17, fontweight="bold")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge.index, y=merge['pct'] * 100,
                              name="% of DVP that is Sponsored", line=dict(color='#4CD0E9', width=2)))
@@ -107,7 +146,7 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
     st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### -------------- PRIMARY DEALERS NET POSITIONS: BILLS VS BONDS, BOND TENORS, TENOR CHANGE ----------------- ###
+### ------------------------------ PRIMARY DEALERS NET POSITIONS BILLS VS BONDS ------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_net_positions_bills_vs_bonds(start, end, **kwargs):
@@ -138,6 +177,20 @@ def plot_net_positions_bills_vs_bonds(start, end, **kwargs):
         all_pd['l2'] + all_pd['g2l3'] + all_pd['g3l6'] + all_pd['g6l7'] + all_pd['g7l11']
     )
 
+    # ### PLOT ###
+    # plt.figure(figsize=(13, 7))
+    # plt.plot(all_pd.index, all_pd['bills'],
+    #          label='Bills', color='#43c4e6', linewidth=2)
+    # plt.plot(all_pd.index, all_pd['net_nominal_bonds'],
+    #          label='Net Nominal Bonds', color='#262e39', linewidth=2)
+    # plt.title("Primary Dealers Net Positions Bills VS Bonds", fontsize=20, fontweight="bold")
+    # plt.ylabel("Billions")
+    # plt.xlabel("")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.grid(True, which='major', linestyle='-', color='grey', alpha=0.3)
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=all_pd.index, y=all_pd['bills'], name="Bills",
                              line=dict(color='#43c4e6', width=2)))
@@ -149,6 +202,10 @@ def plot_net_positions_bills_vs_bonds(start, end, **kwargs):
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------- PRIMARY DEALERS NET POSITIONS BY BOND TENOR ------------------------------ ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_net_positions_by_bond_tenor(start, end, **kwargs):
     urls = [
@@ -175,6 +232,24 @@ def plot_net_positions_by_bond_tenor(start, end, **kwargs):
         all_pd = merge_dfs([all_pd, pos])
     all_pd = all_pd.sort_index().loc[str(start):str(end)]
 
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(all_pd.index, all_pd['l2'],
+    #          label='Bond <2Y', color='#9DDCF9')
+    # plt.plot(all_pd.index, all_pd['g2l3'],
+    #          label='Bond 2-3Y', color='#4CD0E9')
+    # plt.plot(all_pd.index, all_pd['g3l6'],
+    #          label='Bond 3-6Y', color='#233852')
+    # plt.plot(all_pd.index, all_pd['g6l7'],
+    #          label='Bond 6-7Y', color='#F5B820', linewidth=2)
+    # plt.plot(all_pd.index, all_pd['g7l11'],
+    #          label='Bond 7-10Y', color='#E69B93')
+    # plt.ylabel("Billions")
+    # plt.title("Primary Dealers Net Positions By Bond Tenor", fontsize=20, fontweight='bold')
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
     fig = go.Figure()
     tenors = [
         ('l2', 'Bond <2Y', '#9DDCF9'),
@@ -191,6 +266,10 @@ def plot_net_positions_by_bond_tenor(start, end, **kwargs):
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### -------------------------------- PRIMARY DEALERS BOND NET POSITION CHANGE -------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_net_change_by_bond_tenor(start, end, **kwargs):
     urls = [
@@ -216,6 +295,24 @@ def plot_net_change_by_bond_tenor(start, end, **kwargs):
         pos = pos.sort_index()
         all_pd_change = merge_dfs([all_pd_change, pos])
     all_pd_change = all_pd_change.sort_index().loc[str(start):str(end)].dropna()
+
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(all_pd_change.index, all_pd_change['l2'],
+    #          label='Bond <2Y', color='#9DDCF9')
+    # plt.plot(all_pd_change.index, all_pd_change['g2l3'],
+    #          label='Bond 2-3Y', color='#4CD0E9')
+    # plt.plot(all_pd_change.index, all_pd_change['g3l6'],
+    #          label='Bond 3-6Y', color='#233852')
+    # plt.plot(all_pd_change.index, all_pd_change['g6l7'],
+    #          label='Bond 6-7Y', color='#F5B820', linewidth=2)
+    # plt.plot(all_pd_change.index, all_pd_change['g7l11'],
+    #          label='Bond 7-10Y', color='#E69B93')
+    # plt.ylabel("Billions")
+    # plt.title("Primary Dealers Net Position Change By Bond Tenor", fontsize=20, fontweight='bold')
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
 
     fig = go.Figure()
     tenors = [
