@@ -10,7 +10,7 @@ import app_risk_checks
 import app_auctions
 import app_cash
 import app_cross_rate
-# import app_futures
+import app_futures
 # import app_primary_dealers
 # import app_system
 import app_repo
@@ -203,11 +203,15 @@ elif menu == 'Auctions':
 ### ---------------------------------------- FUTURES --------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# elif menu == 'Futures':
-#     st.markdown('<div class="tab-title">', unsafe_allow_html=True)
-#     st.title("Futures")
-#     st.markdown('</div>', unsafe_allow_html=True)
-#     stock_ownership(ticker)
+elif menu == 'Futures':
+    st.markdown('<div class="tab-title">', unsafe_allow_html=True)
+    st.title("Futures")
+    st.markdown('</div>', unsafe_allow_html=True)
+    app_futures.plot_futures_leverage_money_short(start_date, end_date)
+    app_futures.plot_end_of_quarter_spreads(start_date, end_date)
+    app_futures.plot_end_of_month_spreads(start_date, end_date)
+    app_futures.plot_stability_lower_roc(start_date, end_date)
+    app_futures.plot_how_did_levels_change(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------------ PRIMARY DEALERS ----------------------------------- ###
