@@ -270,45 +270,21 @@ plt.show()
 ### ------------------------------------ FED ACTION VS RESERVE RESPONSE -------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-### RESERVE RESPONSE ###
-mmf_total_net_assets = pdr.DataReader('MMMFFAQ027S', 'fred', start, end) /1e6
-brokers_total_assets = pdr.DataReader('BOGZ1FL664090005Q', 'fred', start, end) / 1e6
-shadow_bank_reserves_merge =  merge_dfs([mmf_total_net_assets, brokers_total_assets])
-shadow_bank_reserves_merge['shadow_bank_proxy'] = (shadow_bank_reserves_merge['MMMFFAQ027S'] +
-                                                   shadow_bank_reserves_merge['BOGZ1FL664090005Q'])
-shadow_bank_reserves = pd.DataFrame(shadow_bank_reserves_merge['shadow_bank_proxy'])
-shadow_bank_reserves.columns = ['shadow_bank_proxy']
-shadow_bank_reserves.index = pd.to_datetime(shadow_bank_reserves.index.values)
-
-reserve_response_merge = merge_dfs([shadow_bank_reserves,reserves_volume])
-reserve_response_merge.index = reserve_response_merge.index.values
-reserve_response_merge.columns = ['bank','shadow_bank']
-reserve_response = pd.DataFrame(reserve_response_merge['bank'].resample('M').last() +
-                                reserve_response_merge['shadow_bank'].resample('M').last()).diff(1)
-
-### FED ACTION ###
-fed_balance_sheet_volume = pdr.DataReader('WALCL', 'fred', start, end) / 1e3
-fed_balance_sheet_volume.index = pd.to_datetime(fed_balance_sheet_volume.index.values)
-
-
-total_fed_balance_sheet = pd.DataFrame(fed_balance_sheet_merge['SOMA Treasury'] + fed_balance_sheet_merge['SOMA MBS'])
-fed_action_merge = merge_dfs([total_fed_balance_sheet,rrp_volume,tga_volume])
-fed_action_merge.columns = ['fed_balance_sheet','RRP','TGA']
-fed_action = pd.DataFrame((fed_action_merge['fed_balance_sheet'] -
-                           fed_action_merge['RRP'] -
-                           fed_action_merge['TGA']).resample('ME').last().diff(1))
-
-fed_action_vs_reserve_response = merge_dfs([fed_action,reserve_response])
-fed_action_vs_reserve_response.columns = ['Fed Balance Sheet - RRP - TGA','Bank + Shadow Bank Reserves']
+### FED ACTION AND RESERVE RESPONSE ###
+fed_action = pdr.DataReader('WALCL', 'fred', start, end) / 1e6
+fed_action.index = pd.to_datetime(fed_action.index.values)
+fed_action_vs_reserve_response = merge_dfs([fed_action,reserves_volume])
+fed_action_vs_reserve_response.columns = ['Fed Action','Reserve Response']
+fed_action_vs_reserve_response = fed_action_vs_reserve_response.resample('ME').last().diff(1)
 
 ### PLOT ###
 plt.figure(figsize=(12,7))
 plt.plot(fed_action_vs_reserve_response.index,
-         fed_action_vs_reserve_response['Bank + Shadow Bank Reserves'],
-         label='Bank + Shadow Bank Reserves', color='#30b0c1', linewidth=2)
+         fed_action_vs_reserve_response['Fed Action'],
+         label='Fed Action', color='#30b0c1', linewidth=2)
 plt.plot(fed_action_vs_reserve_response.index,
-         fed_action_vs_reserve_response['Fed Balance Sheet - RRP - TGA'],
-         label='FED Balance Sheet - RRP - TGA', color='#17293c', linewidth=2)
+         fed_action_vs_reserve_response['Reserve Response'],
+         label='Reserve Response', color='#17293c', linewidth=2)
 plt.ylabel('30-Day Change (Trillions of $)')
 plt.title('FED Action Vs Reserve Response')
 plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
@@ -320,24 +296,18 @@ plt.show()
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 ### AGGREGATE DATA ###
-fed_action_v2_merge = merge_dfs([total_fed_balance_sheet.resample('ME').last(),
-                                 reserves_volume.resample('ME').last(),
-                                 shadow_bank_reserves.resample('ME').last()])
 reserve_response_v2_merge = merge_dfs([rrp,tga_volume]).resample('ME').last()
-
-fed_action_v2 = pd.DataFrame(fed_action_v2_merge.iloc[:,0] -
-                             (fed_action_v2_merge.iloc[:,1] + fed_action_v2_merge.iloc[:,2])).diff(1)
 reserve_response_v2 = pd.DataFrame(reserve_response_v2_merge.sum(axis=1).diff(1))
 
-fed_action_vs_reserve_response_v2 = merge_dfs([fed_action_v2,reserve_response_v2])
-fed_action_vs_reserve_response_v2.columns = ['Fed Balance Sheet - (Bank + Shadow Bank Reserves)',
-                                             'RRP + TGA']
+fed_action_vs_reserve_response_v2 = merge_dfs([fed_action.resample('ME').last().diff(1),
+                                               reserve_response_v2])
+fed_action_vs_reserve_response_v2.columns = ['Fed Action','RRP + TGA']
 
 ### PLOT ###
 plt.figure(figsize=(12,7))
 plt.plot(fed_action_vs_reserve_response_v2.index,
-         fed_action_vs_reserve_response_v2['Fed Balance Sheet - (Bank + Shadow Bank Reserves)'],
-         label='Fed Balance Sheet - (Bank + Shadow Bank Reserves)', color='#30b0c1', linewidth=2)
+         fed_action_vs_reserve_response_v2['Fed Action'],
+         label='Fed Action', color='#30b0c1', linewidth=2)
 plt.plot(fed_action_vs_reserve_response_v2.index,
          fed_action_vs_reserve_response_v2['RRP + TGA'],
          label='RRP + TGA', color='#17293c', linewidth=2)

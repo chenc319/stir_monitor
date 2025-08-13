@@ -210,7 +210,8 @@ coupon_11_21c = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G11L21C.json
 coupon_21c = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G21C.json'
 
 
-urls = [bills_c,coupon_2,coupon_2_3,coupon_3_6,coupon_6_7,coupon_7_11,coupon_11_21,coupon_21]
+urls = [bills_c,coupon_2c,coupon_2_3c,coupon_3_6c,
+        coupon_6_7c,coupon_7_11c,coupon_11_21c,coupon_21c]
 column_names = ['bills','l2','g2l3','g3l6','g6l7','g7l11','g11l21','g21']
 all_bills_bonds_change_merge = pd.DataFrame()
 for idx in range(0,len(urls)):
@@ -222,6 +223,24 @@ for idx in range(0,len(urls)):
     pos.drop('asofdate', axis=1, inplace=True)
     pos.columns = [column_names[idx]]
     all_bills_bonds_change_merge = merge_dfs([all_bills_bonds_change_merge,pos])
+all_bills_bonds_change_merge = all_bills_bonds_change_merge.dropna()
 
-all_bills_bonds_change_merge.dropna()
+### PLOT ###
+plt.figure(figsize=(12,7))
+plt.plot(all_bills_bonds_change_merge.index, all_bills_bonds_change_merge['l2'],
+         label='Bond <2Y', color='#9DDCF9')
+plt.plot(all_bills_bonds_change_merge.index, all_bills_bonds_change_merge['g2l3'],
+         label='Bond 2-3Y', color='#4CD0E9')
+plt.plot(all_bills_bonds_change_merge.index, all_bills_bonds_change_merge['g3l6'],
+         label='Bond 3-6Y', color='#233852')
+plt.plot(all_bills_bonds_change_merge.index, all_bills_bonds_change_merge['g6l7'],
+         label='Bond 6-7Y', color='#F5B820', linewidth=2)
+plt.plot(all_bills_bonds_change_merge.index, all_bills_bonds_change_merge['g7l11'],
+         label='Bond 7-10Y', color='#E69B93')
+plt.ylabel("Billions")
+plt.title("Primary Dealers Net Position Change By Bond Tenor", fontsize=20, fontweight='bold')
+plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+plt.tight_layout()
+plt.show()
+
 
