@@ -115,7 +115,7 @@ with tab1:
     plot_monitoring_reserves(start_date, end_date)
     plot_fed_action_vs_reserve_response(start_date, end_date)
     plot_fed_action_vs_reserve_response_v2(start_date, end_date)
-    
+
 ### ---------------------------------------------------------------------------------------- ###
 ### ---------------------------- HISTORICAL VOLATILITY ANALYSIS ---------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###

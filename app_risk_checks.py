@@ -45,7 +45,7 @@ def plot_new_sofr_system(start, end, **kwargs):
         srf,
         rrp.rename(columns={'RRPONTSYAWARD': 'RRP'})
     ], axis=1) * 100
-    df_bp = df_bp.loc['2025-04-01':].dropna()
+    df_bp = df_bp.dropna()
     fig = go.Figure()
     for col, color in zip(['EFFR', 'SOFR 3M', 'SOFR 1M', 'SOFR', 'SRF', 'RRP'],
                           ['#9bdaf6', '#4dc6c6', '#356c82', '#001f35', '#fbc430', '#fdad23']):
@@ -70,7 +70,7 @@ def plot_repo_rate_complex(start, end, **kwargs):
     dvp_df = ofr_to_df('REPO-DVP_AR_OO-P')
     gcf_df = ofr_to_df('REPO-GCF_AR_AG-P')
     tri_df = ofr_to_df('REPO-TRI_AR_OO-P')
-    repo_df = merge_dfs([rrp, srf, sofr, dvp_df, gcf_df, tri_df]).loc['2025-04-01':].dropna()
+    repo_df = merge_dfs([rrp, srf, sofr, dvp_df, gcf_df, tri_df]).dropna()
     repo_df.columns = ['RRP', 'SRF', 'SOFR', 'DVP', 'GCF', 'TRIPARTY']
     colors = {'SOFR': '#0B2138', 'DVP': '#48DEE9', 'TRIPARTY': '#7EC0EE', 'GCF': '#F9D15B', 'SRF': '#F9C846', 'RRP': '#F39C12'}
     fig = go.Figure()
