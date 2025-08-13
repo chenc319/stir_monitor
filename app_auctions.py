@@ -12,7 +12,6 @@ def merge_dfs(array_of_dfs):
                                                   right_index=True,
                                                   how='outer'), array_of_dfs)
 
-# -- Pull once per session for performance (to avoid refetching every chart render)
 @st.cache_data(ttl=3600)
 def get_auction_data():
     url = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/"
@@ -20,9 +19,11 @@ def get_auction_data():
            "record_date:lte:2025-08-15&sort=-auction_date,-issue_date,"
            "maturity_date&page[size]=10000")
     resp = requests.get(url).json()
-    df = pd.DataFrame(resp['data'])
-    return df
+    return pd.DataFrame(resp['data'])
 
+#-------------------------------------------------------
+# Issuance by Security
+#-------------------------------------------------------
 def plot_issuance_by_security(start, end):
     df = get_auction_data()
     df['record_date'] = pd.to_datetime(df['record_date'])
@@ -37,6 +38,121 @@ def plot_issuance_by_security(start, end):
     fig.update_layout(title="Issuance in Auction By Security", yaxis_title="Dollars (Trillions)", hovermode="x unified")
     st.plotly_chart(fig, use_container_width=True)
 
+#-------------------------------------------------------
+# Helper to build dealer ratio frames
+#-------------------------------------------------------
+def build_ratio(df, sec_type, terms, freq='ME'):
+    subset = df[df['security_type'] == sec_type].copy()
+    subset['record_date'] = pd.to_datetime(subset['record_date'])
+    merges = []
+    for name in terms:
+        filt = subset[subset['security_term'] == name]
+        r = pd.DataFrame(filt['dealer_to_non_dealer_ratio'])
+        r.index = filt['record_date']  # ensure datetime index
+        r = r.sort_index()
+        colname = (name.split('-')[0] + ('week' if 'Week' in name else 'year')).lower()
+        r.columns = [colname]
+        merges.append(r.resample(freq).last())
+    return merge_dfs(merges).ffill().dropna()
+
+def build_btc(df, sec_type, terms, freq='ME'):
+    subset = df[df['security_type'] == sec_type].copy()
+    subset['record_date'] = pd.to_datetime(subset['record_date'])
+    merges = []
+    for name in terms:
+        filt = subset[subset['security_term'] == name]
+        r = pd.DataFrame(filt['bid_to_cover_ratio'])
+        r.index = filt['record_date']
+        r = r.sort_index()
+        colname = (name.split('-')[0] + ('week' if 'Week' in name else 'year')).lower()
+        r.columns = [colname]
+        merges.append(r.resample(freq).last())
+    return merge_dfs(merges).ffill().dropna()
+
+#-------------------------------------------------------
+# Dealer Ratios
+#-------------------------------------------------------
+def plot_bills_dealer_ratio(start, end):
+    df = get_auction_data()
+    cols = ['primary_dealer_accepted', 'indirect_bidder_accepted', 'direct_bidder_accepted']
+    df[cols] = df[cols].apply(pd.to_numeric, errors='coerce')
+    df['dealer_to_non_dealer_ratio'] = df['primary_dealer_accepted'] / (df['indirect_bidder_accepted'] + df['direct_bidder_accepted'])
+    bills_merge = build_ratio(df, 'Bill', ['4-Week','8-Week','13-Week','26-Week','52-Week'])
+    bills_merge = bills_merge.loc[(bills_merge.index >= pd.to_datetime(start)) & (bills_merge.index <= pd.to_datetime(end))]
+    colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
+    fig = go.Figure()
+    for col, color in zip(bills_merge.columns, colors):
+        fig.add_trace(go.Scatter(x=bills_merge.index, y=bills_merge[col], name=col, line=dict(color=color)))
+    fig.update_layout(title="Bills Dealer to Non Dealer Ratio", yaxis_title="Ratio", hovermode="x unified")
+    st.plotly_chart(fig, use_container_width=True)
+
+def plot_bonds_dealer_ratio(start, end):
+    df = get_auction_data()
+    cols = ['primary_dealer_accepted', 'indirect_bidder_accepted', 'direct_bidder_accepted']
+    df[cols] = df[cols].apply(pd.to_numeric, errors='coerce')
+    df['dealer_to_non_dealer_ratio'] = df['primary_dealer_accepted'] / (df['indirect_bidder_accepted'] + df['direct_bidder_accepted'])
+    bonds_merge = build_ratio(df, 'Bond', ['20-Year','30-Year'])
+    bonds_merge = bonds_merge.loc[(bonds_merge.index >= pd.to_datetime(start)) & (bonds_merge.index <= pd.to_datetime(end))]
+    colors = ['#9DDCF9', '#4CD0E9']
+    fig = go.Figure()
+    for col, color in zip(bonds_merge.columns, colors):
+        fig.add_trace(go.Scatter(x=bonds_merge.index, y=bonds_merge[col], name=col, line=dict(color=color)))
+    fig.update_layout(title="Bonds Dealer to Non Dealer Ratio", yaxis_title="Ratio", hovermode="x unified")
+    st.plotly_chart(fig, use_container_width=True)
+
+def plot_notes_dealer_ratio(start, end):
+    df = get_auction_data()
+    cols = ['primary_dealer_accepted', 'indirect_bidder_accepted', 'direct_bidder_accepted']
+    df[cols] = df[cols].apply(pd.to_numeric, errors='coerce')
+    df['dealer_to_non_dealer_ratio'] = df['primary_dealer_accepted'] / (df['indirect_bidder_accepted'] + df['direct_bidder_accepted'])
+    notes_merge = build_ratio(df, 'Note', ['2-Year','3-Year','5-Year','7-Year','10-Year'])
+    notes_merge = notes_merge.loc[(notes_merge.index >= pd.to_datetime(start)) & (notes_merge.index <= pd.to_datetime(end))]
+    colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
+    fig = go.Figure()
+    for col, color in zip(notes_merge.columns, colors):
+        fig.add_trace(go.Scatter(x=notes_merge.index, y=notes_merge[col], name=col, line=dict(color=color)))
+    fig.update_layout(title="Notes Dealer to Non Dealer Ratio", yaxis_title="Ratio", hovermode="x unified")
+    st.plotly_chart(fig, use_container_width=True)
+
+#-------------------------------------------------------
+# Bid to Cover Ratios
+#-------------------------------------------------------
+def plot_bills_bid_to_cover(start, end):
+    df = get_auction_data()
+    bills_merge = build_btc(df, 'Bill', ['4-Week','8-Week','13-Week','26-Week','52-Week'], freq='W')
+    bills_merge = bills_merge.loc[(bills_merge.index >= pd.to_datetime(start)) & (bills_merge.index <= pd.to_datetime(end))]
+    colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
+    fig = go.Figure()
+    for col, color in zip(bills_merge.columns, colors):
+        fig.add_trace(go.Scatter(x=bills_merge.index, y=bills_merge[col], name=col, line=dict(color=color)))
+    fig.update_layout(title="Bills Bid to Cover Ratio", yaxis_title="Ratio", hovermode="x unified")
+    st.plotly_chart(fig, use_container_width=True)
+
+def plot_bonds_bid_to_cover(start, end):
+    df = get_auction_data()
+    bonds_merge = build_btc(df, 'Bond', ['20-Year','30-Year'])
+    bonds_merge = bonds_merge.loc[(bonds_merge.index >= pd.to_datetime(start)) & (bonds_merge.index <= pd.to_datetime(end))]
+    colors = ['#9DDCF9', '#4CD0E9']
+    fig = go.Figure()
+    for col, color in zip(bonds_merge.columns, colors):
+        fig.add_trace(go.Scatter(x=bonds_merge.index, y=bonds_merge[col], name=col, line=dict(color=color)))
+    fig.update_layout(title="Bonds Bid to Cover Ratio", yaxis_title="Ratio", hovermode="x unified")
+    st.plotly_chart(fig, use_container_width=True)
+
+def plot_notes_bid_to_cover(start, end):
+    df = get_auction_data()
+    notes_merge = build_btc(df, 'Note', ['2-Year','3-Year','5-Year','7-Year','10-Year'])
+    notes_merge = notes_merge.loc[(notes_merge.index >= pd.to_datetime(start)) & (notes_merge.index <= pd.to_datetime(end))]
+    colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
+    fig = go.Figure()
+    for col, color in zip(notes_merge.columns, colors):
+        fig.add_trace(go.Scatter(x=notes_merge.index, y=notes_merge[col], name=col, line=dict(color=color)))
+    fig.update_layout(title="Notes Bid to Cover Ratio", yaxis_title="Ratio", hovermode="x unified")
+    st.plotly_chart(fig, use_container_width=True)
+
+#-------------------------------------------------------
+# Individual Issuance group plots (Bills/Notes/Bonds)
+#-------------------------------------------------------
 def plot_bills_issuance(start, end):
     df = get_auction_data()
     mask = df['security_term'].isin(['4-Week','8-Week','13-Week','26-Week','52-Week'])
@@ -89,124 +205,4 @@ def plot_bonds_issuance(start, end):
         if sec in bonds_issuance.columns:
             fig.add_trace(go.Scatter(x=bonds_issuance.index, y=bonds_issuance[sec], name=sec, line=dict(color=color)))
     fig.update_layout(title="Bonds Issuances", yaxis_title="Dollars (Trillions)", hovermode="x unified")
-    st.plotly_chart(fig, use_container_width=True)
-
-def plot_bills_dealer_ratio(start, end):
-    df = get_auction_data()
-    cols = ['primary_dealer_accepted', 'indirect_bidder_accepted', 'direct_bidder_accepted', 'noncomp_accepted', 'total_accepted']
-    df[cols] = df[cols].apply(pd.to_numeric, errors='coerce')
-    df['record_date'] = pd.to_datetime(df['record_date'])
-    df['dealer_to_non_dealer_ratio'] = df['primary_dealer_accepted'] / (df['indirect_bidder_accepted'] + df['direct_bidder_accepted'])
-    bills = df[df['security_type']=='Bill'].copy()
-    bills['eom'] = bills['record_date'].dt.to_period('M').dt.to_timestamp('M')
-    # By term
-    merges = []
-    for name in ['4-Week','8-Week','13-Week','26-Week','52-Week']:
-        r = pd.DataFrame(bills[bills['security_term'] == name]['dealer_to_non_dealer_ratio'])
-        r.columns = [name[:name.find('-')]+'week' if 'Week' in name else name[:2].lower()]
-        merges.append(r.resample('ME').last())
-    bills_merge = merge_dfs(merges).ffill().dropna()
-    bills_merge = bills_merge.loc[(bills_merge.index >= pd.to_datetime(start)) & (bills_merge.index <= pd.to_datetime(end))]
-    colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
-    fig = go.Figure()
-    for col, color in zip(bills_merge.columns, colors):
-        fig.add_trace(go.Scatter(x=bills_merge.index, y=bills_merge[col], name=col, line=dict(color=color)))
-    fig.update_layout(title="Bills Dealer to Non Dealer Ratio", yaxis_title="Ratio", hovermode="x unified")
-    st.plotly_chart(fig, use_container_width=True)
-
-def plot_bonds_dealer_ratio(start, end):
-    df = get_auction_data()
-    cols = ['primary_dealer_accepted', 'indirect_bidder_accepted', 'direct_bidder_accepted', 'total_accepted']
-    df[cols] = df[cols].apply(pd.to_numeric, errors='coerce')
-    df['record_date'] = pd.to_datetime(df['record_date'])
-    df['dealer_to_non_dealer_ratio'] = df['primary_dealer_accepted'] / (df['indirect_bidder_accepted'] + df['direct_bidder_accepted'])
-    bonds = df[df['security_type']=='Bond'].copy()
-    bonds_20 = pd.DataFrame(bonds[bonds['security_term'] == '20-Year']['dealer_to_non_dealer_ratio'])
-    bonds_30 = pd.DataFrame(bonds[bonds['security_term'] == '30-Year']['dealer_to_non_dealer_ratio'])
-    bonds_20.columns = ['20year']
-    bonds_30.columns = ['30year']
-    bonds_merge = merge_dfs([bonds_20.resample('ME').last(), bonds_30.resample('ME').last()]).dropna()
-    bonds_merge = bonds_merge.loc[(bonds_merge.index >= pd.to_datetime(start)) & (bonds_merge.index <= pd.to_datetime(end))]
-    colors = ['#9DDCF9', '#4CD0E9']
-    fig = go.Figure()
-    for col, color in zip(['20year','30year'], colors):
-        fig.add_trace(go.Scatter(x=bonds_merge.index, y=bonds_merge[col], name=col, line=dict(color=color)))
-    fig.update_layout(title="Bonds Dealer to Non Dealer Ratio", yaxis_title="Ratio", hovermode="x unified")
-    st.plotly_chart(fig, use_container_width=True)
-
-def plot_notes_dealer_ratio(start, end):
-    df = get_auction_data()
-    cols = ['primary_dealer_accepted', 'indirect_bidder_accepted', 'direct_bidder_accepted', 'total_accepted']
-    df[cols] = df[cols].apply(pd.to_numeric, errors='coerce')
-    df['record_date'] = pd.to_datetime(df['record_date'])
-    df['dealer_to_non_dealer_ratio'] = df['primary_dealer_accepted'] / (df['indirect_bidder_accepted'] + df['direct_bidder_accepted'])
-    notes = df[df['security_type']=='Note'].copy()
-    merges = []
-    for name in ['2-Year','3-Year','5-Year','7-Year','10-Year']:
-        r = pd.DataFrame(notes[notes['security_term'] == name]['dealer_to_non_dealer_ratio'])
-        r.columns = [name.split('-')[0].lower()+"year"]
-        merges.append(r.resample('ME').last())
-    notes_merge = merge_dfs(merges).ffill().dropna()
-    notes_merge = notes_merge.loc[(notes_merge.index >= pd.to_datetime(start)) & (notes_merge.index <= pd.to_datetime(end))]
-    colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
-    fig = go.Figure()
-    for col, color in zip(notes_merge.columns, colors):
-        fig.add_trace(go.Scatter(x=notes_merge.index, y=notes_merge[col], name=col, line=dict(color=color)))
-    fig.update_layout(title="Notes Dealer to Non Dealer Ratio", yaxis_title="Ratio", hovermode="x unified")
-    st.plotly_chart(fig, use_container_width=True)
-
-def plot_bills_bid_to_cover(start, end):
-    df = get_auction_data()
-    btc = df[['record_date','security_type','security_term','bid_to_cover_ratio']].copy()
-    btc['record_date'] = pd.to_datetime(btc['record_date'])
-    bills = btc[btc['security_type'] == 'Bill']
-    merges = []
-    for name in ['4-Week','8-Week','13-Week','26-Week','52-Week']:
-        r = pd.DataFrame(bills[bills['security_term'] == name]['bid_to_cover_ratio'])
-        r.columns = [name[:name.find('-')]+'week' if 'Week' in name else name[:2].lower()]
-        merges.append(r.resample('W').last())
-    bills_merge = merge_dfs(merges).ffill().dropna()
-    bills_merge = bills_merge.loc[(bills_merge.index >= pd.to_datetime(start)) & (bills_merge.index <= pd.to_datetime(end))]
-    colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
-    fig = go.Figure()
-    for col, color in zip(bills_merge.columns, colors):
-        fig.add_trace(go.Scatter(x=bills_merge.index, y=bills_merge[col], name=col, line=dict(color=color)))
-    fig.update_layout(title="Bills Bid to Cover Ratio", yaxis_title="Ratio", hovermode="x unified")
-    st.plotly_chart(fig, use_container_width=True)
-
-def plot_bonds_bid_to_cover(start, end):
-    df = get_auction_data()
-    btc = df[['record_date','security_type','security_term','bid_to_cover_ratio']].copy()
-    btc['record_date'] = pd.to_datetime(btc['record_date'])
-    bonds = btc[btc['security_type']=='Bond']
-    bonds_20 = pd.DataFrame(bonds[bonds['security_term'] == '20-Year']['bid_to_cover_ratio'])
-    bonds_20.columns = ['20year']
-    bonds_30 = pd.DataFrame(bonds[bonds['security_term'] == '30-Year']['bid_to_cover_ratio'])
-    bonds_30.columns = ['30year']
-    bonds_merge = merge_dfs([bonds_20.resample('ME').last(), bonds_30.resample('ME').last()]).dropna()
-    bonds_merge = bonds_merge.loc[(bonds_merge.index >= pd.to_datetime(start)) & (bonds_merge.index <= pd.to_datetime(end))]
-    colors = ['#9DDCF9', '#4CD0E9']
-    fig = go.Figure()
-    for col, color in zip(['20year','30year'], colors):
-        fig.add_trace(go.Scatter(x=bonds_merge.index, y=bonds_merge[col], name=col, line=dict(color=color)))
-    fig.update_layout(title="Bonds Bid to Cover Ratio", yaxis_title="Ratio", hovermode="x unified")
-    st.plotly_chart(fig, use_container_width=True)
-
-def plot_notes_bid_to_cover(start, end):
-    df = get_auction_data()
-    btc = df[['record_date','security_type','security_term','bid_to_cover_ratio']].copy()
-    btc['record_date'] = pd.to_datetime(btc['record_date'])
-    notes = btc[btc['security_type']=='Note']
-    merges = []
-    for name in ['2-Year','3-Year','5-Year','7-Year','10-Year']:
-        r = pd.DataFrame(notes[notes['security_term'] == name]['bid_to_cover_ratio'])
-        r.columns = [name.split('-')[0].lower()+"year"]
-        merges.append(r.resample('ME').last())
-    notes_merge = merge_dfs(merges).ffill().dropna()
-    notes_merge = notes_merge.loc[(notes_merge.index >= pd.to_datetime(start)) & (notes_merge.index <= pd.to_datetime(end))]
-    colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
-    fig = go.Figure()
-    for col, color in zip(notes_merge.columns, colors):
-        fig.add_trace(go.Scatter(x=notes_merge.index, y=notes_merge[col], name=col, line=dict(color=color)))
-    fig.update_layout(title="Notes Bid to Cover Ratio", yaxis_title="Ratio", hovermode="x unified")
     st.plotly_chart(fig, use_container_width=True)
