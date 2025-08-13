@@ -188,22 +188,10 @@ def plot_stability_lower_roc(start, end, **kwargs):
         title="Is the Stability Lower\nRate of Change",
         yaxis_title="Z-Score",
         xaxis_title="Date",
-        yaxis_range=[-5,5],
-        annotations=[
-            dict(
-                x=plot_data.index[-1], y=-4.5,
-                text='Fonte: FED, MacroDispatch. Note: Calculations on a 30 MA Difference',
-                showarrow=False, font=dict(size=10, color='gray'), xanchor='left', yanchor='bottom'
-            ),
-            dict(
-                x=plot_data.index[-1], y=-4.7,
-                text='<b>ie</b>', showarrow=False,
-                font=dict(size=14, color='steelblue', family="Arial"),
-                xanchor='right', yanchor='bottom'
-            )
-        ]
+        yaxis_range=[-5, 5]
     )
     st.plotly_chart(fig, use_container_width=True)
+
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------ HOW DID LEVELS CHANGE ----------------------------------------------------- ###
