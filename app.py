@@ -91,12 +91,6 @@ st.markdown("""
 st.sidebar.title("Mistral STIR Monitor")
 start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime('2025-04-01'))
 end_date = st.sidebar.date_input("End Date", value=pd.to_datetime('today'))
-
-# --- Chart Interactivity Controls ---
-st.sidebar.markdown("## Plot Options")
-show_legend = st.sidebar.checkbox("Show legend", value=True)
-log_y = st.sidebar.checkbox("Log scale Y", value=False)
-zoom_days = st.sidebar.slider("Zoom: last N days (0 = all)", min_value=0, max_value=60, value=0, step=5)
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(['Risk Checks',
                                                           'Bank System Mapping',
                                                           'Repo',
