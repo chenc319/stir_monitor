@@ -93,6 +93,8 @@ st.markdown("""
 
 ### SIDEBAR ###
 st.sidebar.title("Mistral STIR Monitor")
+start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime('2019-12-31'))
+end_date = st.sidebar.date_input("End Date", value=pd.to_datetime('today'))
 menu = st.sidebar.radio(
     "Go to section:",
     ['Risk Checks',
@@ -104,23 +106,13 @@ menu = st.sidebar.radio(
      'Futures',
      'Primary Dealers']
 )
-start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime('2019-12-31'))
-end_date = st.sidebar.date_input("End Date", value=pd.to_datetime('today'))
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(['Risk Checks',
-                                                          'Bank System Mapping',
-                                                          'Repo',
-                                                          'Cross Rate',
-                                                          'Cash',
-                                                          'Auctions',
-                                                          'Futures',
-                                                          'Primary Dealers'])
 
 
 ### ---------------------------------------------------------------------------------------- ###
 ### -------------------------------------- BASIC INFO -------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-with menu == 'Risk Checks':
+if menu == 'Risk Checks':
     st.title("Risk Checks")
     app_risk_checks.plot_dash_for_cash_spread(start_date, end_date)
     app_risk_checks.plot_new_sofr_system(start_date, end_date)
@@ -147,7 +139,7 @@ with menu == 'Risk Checks':
 ### ------------------------------- RESPECTIVE PEERS ANALYSIS ------------------------------ ###
 ### ---------------------------------------------------------------------------------------- ###
 
-with tab3:
+elif menu == 'Repo':
     st.title("Repo")
     app_repo.plot_proxy_percent_without_clearing(start_date, end_date)
     app_repo.plot_volume_per_venue(start_date, end_date)
@@ -163,7 +155,7 @@ with tab3:
 ### ------------------------------- HISTORICAL VOLUME AND ADV ------------------------------ ###
 ### ---------------------------------------------------------------------------------------- ###
 
-with tab4:
+elif menu == 'Cross Rate':
     st.title("Cross Rate")
     app_cross_rate.plot_iorb_spreads(start_date, end_date)
     app_cross_rate.plot_gcf_tri_spread(start_date, end_date)
@@ -178,7 +170,7 @@ with tab4:
 ### --------------------------------- PRICE-IMPACT MODELING -------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab5:
+# elif menu == 'Repo':
     # st.markdown('<div class="tab-title">', unsafe_allow_html=True)
     # st.title("Cash")
     # st.markdown('</div>', unsafe_allow_html=True)
@@ -190,7 +182,7 @@ with tab4:
 ### --------------------------------- STOCK OWNERSHIP INFO --------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-with tab6:
+elif menu == 'Auctions':
     st.title("Auctions")
     app_auctions.plot_issuance_by_security(start_date, end_date)
     app_auctions.plot_bills_issuance(start_date, end_date)
@@ -207,7 +199,7 @@ with tab6:
 ### ----------------------------------- INSIDER ACTIVITY ----------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab7:
+# elif menu == 'Repo':
 #     st.markdown('<div class="tab-title">', unsafe_allow_html=True)
 #     st.title("Futures")
 #     st.markdown('</div>', unsafe_allow_html=True)
@@ -217,7 +209,7 @@ with tab6:
 ### --------------------------------- PROFITABILITY METRICS -------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab8:
+# elif menu == 'Repo':
 #     st.markdown('<div class="tab-title">', unsafe_allow_html=True)
 #     st.title("Primary Dealers")
 #     st.markdown('</div>', unsafe_allow_html=True)
