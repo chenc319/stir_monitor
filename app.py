@@ -93,7 +93,7 @@ st.markdown("""
 
 ### SIDEBAR ###
 st.sidebar.title("Mistral STIR Monitor")
-start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime('2025-04-01'))
+start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime('2019-12-31'))
 end_date = st.sidebar.date_input("End Date", value=pd.to_datetime('today'))
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(['Risk Checks',
                                                           'Bank System Mapping',
