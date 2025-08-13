@@ -1,70 +1,136 @@
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------------- REPO --------------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
 import pandas as pd
 import requests
 import functools as ft
 from pandas_datareader import data as pdr
 import streamlit as st
 import plotly.graph_objs as go
-
+from matplotlib import pyplot as plt
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right, left_index=True, right_index=True, how='outer'),
                      array_of_dfs)
-
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------ PROXY OF % WITHOUT CENTRAL CLEARING --------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_proxy_percent_without_clearing(start, end, **kwargs):
-    pd_total_repo = pd.DataFrame(requests.get(
-        'https://markets.newyorkfed.org/api/pd/get/PDSORA-UTSETTOT.json').json()['pd']['timeseries']).drop('keyid',
-                                                                                                           axis=1)
+    ### DATA PULL ###
+    pd_total_repo_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UTSETTOT.json'
+    pd_total_repo = pd.DataFrame(requests.get(pd_total_repo_url).json()['pd']['timeseries']).drop('keyid', axis=1)
     pd_total_repo['value'] = pd.to_numeric(pd_total_repo['value'], errors='coerce')
     pd_total_repo.dropna(subset=['value'], inplace=True)
     pd_total_repo['asofdate'] = pd.to_datetime(pd_total_repo['asofdate'])
-    pd_total_repo.set_index('asofdate', inplace=True)
-    pd_total_repo.rename(columns={'value': 'pd_total_repo'}, inplace=True)
+    pd_total_repo.index = pd_total_repo['asofdate'].values
+    pd_total_repo.drop('asofdate', axis=1, inplace=True)
+    pd_total_repo.columns = ['pd_total_repo']
 
-    pd_nccbr_repo_on = pd.DataFrame(requests.get(
-        'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSET.json').json()['pd']['timeseries']).drop('keyid',
-                                                                                                           axis=1)
+    pd_nccbr_repo_on_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSET.json'
+    pd_nccbr_repo_on = pd.DataFrame(requests.get(pd_nccbr_repo_on_url).json()['pd']['timeseries']).drop('keyid', axis=1)
     pd_nccbr_repo_on['value'] = pd.to_numeric(pd_nccbr_repo_on['value'], errors='coerce')
     pd_nccbr_repo_on.dropna(subset=['value'], inplace=True)
     pd_nccbr_repo_on['asofdate'] = pd.to_datetime(pd_nccbr_repo_on['asofdate'])
-    pd_nccbr_repo_on.set_index('asofdate', inplace=True)
-    pd_nccbr_repo_on.rename(columns={'value': 'pd_nccbr_on'}, inplace=True)
+    pd_nccbr_repo_on.index = pd_nccbr_repo_on['asofdate'].values
+    pd_nccbr_repo_on.drop('asofdate', axis=1, inplace=True)
+    pd_nccbr_repo_on.columns = ['pd_nccbr_on']
 
-    pd_nccbr_repo_terml30 = pd.DataFrame(requests.get(
-        'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSETTAL30.json').json()['pd']['timeseries']).drop('keyid',
-                                                                                                                axis=1)
+    pd_nccbr_repo_terml30_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSETTAL30.json'
+    pd_nccbr_repo_terml30 = pd.DataFrame(requests.get(pd_nccbr_repo_terml30_url).json()['pd']['timeseries']).drop(
+        'keyid', axis=1)
     pd_nccbr_repo_terml30['value'] = pd.to_numeric(pd_nccbr_repo_terml30['value'], errors='coerce')
     pd_nccbr_repo_terml30.dropna(subset=['value'], inplace=True)
     pd_nccbr_repo_terml30['asofdate'] = pd.to_datetime(pd_nccbr_repo_terml30['asofdate'])
-    pd_nccbr_repo_terml30.set_index('asofdate', inplace=True)
-    pd_nccbr_repo_terml30.rename(columns={'value': 'pd_nccbr_l30'}, inplace=True)
+    pd_nccbr_repo_terml30.index = pd_nccbr_repo_terml30['asofdate'].values
+    pd_nccbr_repo_terml30.drop('asofdate', axis=1, inplace=True)
+    pd_nccbr_repo_terml30.columns = ['pd_nccbr_l30']
 
-    pd_nccbr_repo_termg30 = pd.DataFrame(requests.get(
-        'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSETTAG30.json').json()['pd']['timeseries']).drop('keyid',
-                                                                                                                axis=1)
+    pd_nccbr_repo_termg30_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSETTAG30.json'
+    pd_nccbr_repo_termg30 = pd.DataFrame(requests.get(pd_nccbr_repo_termg30_url).json()['pd']['timeseries']).drop(
+        'keyid', axis=1)
     pd_nccbr_repo_termg30['value'] = pd.to_numeric(pd_nccbr_repo_termg30['value'], errors='coerce')
     pd_nccbr_repo_termg30.dropna(subset=['value'], inplace=True)
     pd_nccbr_repo_termg30['asofdate'] = pd.to_datetime(pd_nccbr_repo_termg30['asofdate'])
-    pd_nccbr_repo_termg30.set_index('asofdate', inplace=True)
-    pd_nccbr_repo_termg30.rename(columns={'value': 'pd_nccbr_g30'}, inplace=True)
+    pd_nccbr_repo_termg30.index = pd_nccbr_repo_termg30['asofdate'].values
+    pd_nccbr_repo_termg30.drop('asofdate', axis=1, inplace=True)
+    pd_nccbr_repo_termg30.columns = ['pd_nccbr_g30']
 
-    merged = merge_dfs([pd_total_repo, pd_nccbr_repo_on, pd_nccbr_repo_terml30, pd_nccbr_repo_termg30])
-    merged['pd_nccbr_total'] = merged['pd_nccbr_on'] + merged['pd_nccbr_l30'] + merged['pd_nccbr_g30']
-    merged['nccbr_pct'] = merged['pd_nccbr_total'] / merged['pd_total_repo']
-    merged = merged.loc[str(start):str(end)].dropna()
+    pd_nccbr_proxy_merge = merge_dfs([pd_total_repo, pd_nccbr_repo_on, pd_nccbr_repo_terml30, pd_nccbr_repo_termg30])
+    pd_nccbr_proxy_merge['pd_nccbr_total'] = (pd_nccbr_proxy_merge['pd_nccbr_on'] +
+                                              pd_nccbr_proxy_merge['pd_nccbr_l30'] +
+                                              pd_nccbr_proxy_merge['pd_nccbr_g30'])
+    pd_nccbr_proxy_merge['nccbr_pct'] = pd_nccbr_proxy_merge['pd_nccbr_total'] / pd_nccbr_proxy_merge['pd_total_repo']
+    pd_nccbr_proxy_merge = pd_nccbr_proxy_merge.dropna()
+
+    ### OFR DATA PULLS ###
+    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+
+    tri_volume = pd.DataFrame(requests.get(base_url + 'REPO-TRI_TV_TOT-P').json(), columns=["date", "value"])
+    tri_volume['date'] = pd.to_datetime(tri_volume['date'])
+    tri_volume.index = tri_volume['date'].values
+    tri_volume.drop('date', axis=1, inplace=True)
+    tri_volume = tri_volume / 1e12
+    tri_volume.columns = ['tri']
+
+    dvp_volume = pd.DataFrame(requests.get(base_url + 'REPO-DVP_TV_TOT-P').json(), columns=["date", "value"])
+    dvp_volume['date'] = pd.to_datetime(dvp_volume['date'])
+    dvp_volume.index = dvp_volume['date'].values
+    dvp_volume.drop('date', axis=1, inplace=True)
+    dvp_volume = dvp_volume / 1e12
+    dvp_volume.columns = ['dvp']
+
+    gcf_volume = pd.DataFrame(requests.get(base_url + 'REPO-GCF_TV_TOT-P').json(), columns=["date", "value"])
+    gcf_volume['date'] = pd.to_datetime(gcf_volume['date'])
+    gcf_volume.index = gcf_volume['date'].values
+    gcf_volume.drop('date', axis=1, inplace=True)
+    gcf_volume = gcf_volume / 1e12
+    gcf_volume.columns = ['gcf']
+
+    rrp_volume = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
+    rrp_volume.index = pd.to_datetime(rrp_volume.index.values)
+    rrp_volume.columns = ['rrp']
+
+    repo_total_merge = merge_dfs(
+        [gcf_volume, dvp_volume, tri_volume, pd.DataFrame(pd_nccbr_proxy_merge['pd_nccbr_total'] / 1e6)]).dropna()
+    total_repo_volume = pd.DataFrame(repo_total_merge.sum(axis=1))
+    total_repo_volume.columns = ['Repo']
+
+    black_proxy = merge_dfs([tri_volume, rrp_volume, dvp_volume, gcf_volume, total_repo_volume])
+    black_proxy.columns = ['tri', 'rrp', 'dvp', 'gcf', 'all_repo']
+    black_proxy = black_proxy.resample('W').last().dropna()
+    black_proxy['black'] = (black_proxy['tri'] - black_proxy['rrp']) / (black_proxy['all_repo'] - black_proxy['rrp'])
+
+    nccbr_proxy_merge = merge_dfs([pd_nccbr_proxy_merge['nccbr_pct'], black_proxy['black']])
+    nccbr_proxy_merge['black'] = nccbr_proxy_merge['black'].ffill()
+    nccbr_proxy_merge = nccbr_proxy_merge.dropna()
+
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(nccbr_proxy_merge.index, nccbr_proxy_merge['nccbr_pct'] * 100,
+    #          label="(% of NCCBR of Primary Dealers)", color="#f8b62d", lw=2)
+    # plt.plot(nccbr_proxy_merge.index, nccbr_proxy_merge['black'] * 100,
+    #          label="Tri Party-RRP / (Tri Party+DVP+GCF-RRP)", color="#f8772d", lw=2)
+    # plt.title("Proxy of % of Non Cleared Repos", fontsize=22, fontweight="bold")
+    # plt.ylabel("%")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.18), ncol=1)
+    # plt.tight_layout()
+    # plt.show()
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x=merged.index, y=merged['nccbr_pct'] * 100,
-        mode='lines+markers', name='(% of NCCBR of Primary Dealers)', line=dict(color="#f8b62d")))
+        x=nccbr_proxy_merge.index,
+        y=nccbr_proxy_merge['nccbr_pct'],
+        mode='lines+markers', name='% of NCCBR of Primary Dealers', line=dict(color='#29B6D9', width=2)))
+    fig.add_trace(go.Scatter(
+        x=nccbr_proxy_merge.index,
+        y=nccbr_proxy_merge['BLACK'],
+        mode='lines+markers', name='Tri Party-RRP / (Tri Party+DVP+GCF-RRP)', line=dict(color='#272f37', width=2)))
     fig.update_layout(
         title="Proxy of % of Non Cleared Repos",
         yaxis_title="%",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
