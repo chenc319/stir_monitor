@@ -144,7 +144,7 @@ def plot_sofr_distribution(start, end, **kwargs):
     df = merge_dfs([sofr, sofr1, sofr25, sofr75, sofr99]).dropna()
     colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
     names = ['SOFR', 'SOFR1', 'SOFR25', 'SOFR75', 'SOFR99']
-    df = df['2025-01-01':]
+    df = df['2025-01-01':end]
 
     # ### PLOT ###
     # plt.figure(figsize=(10, 7))
