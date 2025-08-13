@@ -7,7 +7,7 @@ import streamlit as st
 import pandas as pd
 import functools as ft
 import app_risk_checks
-# import app_auctions
+import app_auctions
 # import app_cash
 import app_cross_rate
 # import app_futures
@@ -172,11 +172,18 @@ with tab4:
 ### --------------------------------- STOCK OWNERSHIP INFO --------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab6:
-#     st.markdown('<div class="tab-title">', unsafe_allow_html=True)
-#     st.title("Auctions")
-#     st.markdown('</div>', unsafe_allow_html=True)
-#     stock_ownership(ticker)
+with tab6:
+    st.title("Auctions")
+    app_auctions.plot_issuance_by_security(start_date, end_date)
+    app_auctions.plot_bills_issuance(start_date, end_date)
+    app_auctions.plot_notes_issuance(start_date, end_date)
+    app_auctions.plot_bonds_issuance(start_date, end_date)
+    app_auctions.plot_bills_dealer_ratio(start_date, end_date)
+    app_auctions.plot_bonds_dealer_ratio(start_date, end_date)
+    app_auctions.plot_notes_dealer_ratio(start_date, end_date)
+    app_auctions.plot_bills_bid_to_cover(start_date, end_date)
+    app_auctions.plot_bonds_bid_to_cover(start_date, end_date)
+    app_auctions.plot_notes_bid_to_cover(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ----------------------------------- INSIDER ACTIVITY ----------------------------------- ###
