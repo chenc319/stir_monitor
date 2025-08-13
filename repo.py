@@ -31,33 +31,52 @@ end = datetime.datetime.today()
 ### ------------------------------- PROXY OF PERCENT WITHOUT CENTRAL CLEARING -------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-repo_asset_backed_securities = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
-repo_ = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
-repo_asset_backed_securities = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
-repo_asset_backed_securities = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
-repo_asset_backed_securities = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
-repo_asset_backed_securities = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
-repo_asset_backed_securities = 'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json'
+### DATA PULL ###
+pd_total_repo_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UTSETTOT.json'
+pd_total_repo = pd.DataFrame(requests.get(pd_total_repo_url).json()['pd']['timeseries']).drop('keyid', axis=1)
+pd_total_repo['value'] = pd.to_numeric(pd_total_repo['value'], errors='coerce')
+pd_total_repo.dropna(subset=['value'], inplace=True)
+pd_total_repo['asofdate'] = pd.to_datetime(pd_total_repo['asofdate'])
+pd_total_repo.index = pd_total_repo['asofdate'].values
+pd_total_repo.drop('asofdate', axis=1, inplace=True)
+pd_total_repo.columns = ['pd_total_repo']
 
+pd_nccbr_repo_on_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSET.json'
+pd_nccbr_repo_on = pd.DataFrame(requests.get(pd_nccbr_repo_on_url).json()['pd']['timeseries']).drop('keyid', axis=1)
+pd_nccbr_repo_on['value'] = pd.to_numeric(pd_nccbr_repo_on['value'], errors='coerce')
+pd_nccbr_repo_on.dropna(subset=['value'], inplace=True)
+pd_nccbr_repo_on['asofdate'] = pd.to_datetime(pd_nccbr_repo_on['asofdate'])
+pd_nccbr_repo_on.index = pd_nccbr_repo_on['asofdate'].values
+pd_nccbr_repo_on.drop('asofdate', axis=1, inplace=True)
+pd_nccbr_repo_on.columns = ['pd_nccbr_on']
 
+pd_nccbr_repo_terml30_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSETTAL30.json'
+pd_nccbr_repo_terml30 = pd.DataFrame(requests.get(pd_nccbr_repo_terml30_url).json()['pd']['timeseries']).drop('keyid', axis=1)
+pd_nccbr_repo_terml30['value'] = pd.to_numeric(pd_nccbr_repo_terml30['value'], errors='coerce')
+pd_nccbr_repo_terml30.dropna(subset=['value'], inplace=True)
+pd_nccbr_repo_terml30['asofdate'] = pd.to_datetime(pd_nccbr_repo_terml30['asofdate'])
+pd_nccbr_repo_terml30.index = pd_nccbr_repo_terml30['asofdate'].values
+pd_nccbr_repo_terml30.drop('asofdate', axis=1, inplace=True)
+pd_nccbr_repo_terml30.columns = ['pd_nccbr_l30']
+
+pd_nccbr_repo_termg30_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSETTAG30.json'
+pd_nccbr_repo_termg30 = pd.DataFrame(requests.get(pd_nccbr_repo_termg30_url).json()['pd']['timeseries']).drop('keyid', axis=1)
+pd_nccbr_repo_termg30['value'] = pd.to_numeric(pd_nccbr_repo_termg30['value'], errors='coerce')
+pd_nccbr_repo_termg30.dropna(subset=['value'], inplace=True)
+pd_nccbr_repo_termg30['asofdate'] = pd.to_datetime(pd_nccbr_repo_termg30['asofdate'])
+pd_nccbr_repo_termg30.index = pd_nccbr_repo_termg30['asofdate'].values
+pd_nccbr_repo_termg30.drop('asofdate', axis=1, inplace=True)
+pd_nccbr_repo_termg30.columns = ['pd_nccbr_g30']
+
+pd_nccbr_proxy_merge = merge_dfs([pd_total_repo,pd_nccbr_repo_on,pd_nccbr_repo_terml30,pd_nccbr_repo_termg30])
+pd_nccbr_proxy_merge['pd_nccbr_total'] = (pd_nccbr_proxy_merge['pd_nccbr_on'] +
+                                          pd_nccbr_proxy_merge['pd_nccbr_l30'] +
+                                          pd_nccbr_proxy_merge['pd_nccbr_g30'])
+pd_nccbr_proxy_merge['nccbr_pct'] = pd_nccbr_proxy_merge['pd_nccbr_total'] / pd_nccbr_proxy_merge['pd_total_repo']
+pd_nccbr_proxy_merge = pd_nccbr_proxy_merge.dropna()
 
 ### OFR DATA PULLS ###
 base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-
-repo_market_volumes = pd.read_csv('data/SponsoredVolume.csv').dropna()
-repo_market_volumes = repo_market_volumes.iloc[::-1].reset_index(drop=True)
-repo_market_volumes.index = pd.to_datetime(repo_market_volumes['BUSINESS_DATE'].values)
-repo_market_volumes = repo_market_volumes.drop('BUSINESS_DATE',axis=1)
-repo_market_volumes['DVP_TOTAL_AMOUNT'] = (
-    repo_market_volumes['DVP_TOTAL_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
-repo_market_volumes['GC_TOTAL_AMOUNT'] = (
-    repo_market_volumes['GC_TOTAL_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
-repo_market_volumes['TOTAL_REPO_AMOUNT'] = (
-    repo_market_volumes['TOTAL_REPO_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
-repo_market_volumes['TOTAL_REVERSE_REPO_AMOUNT'] = (
-    repo_market_volumes['TOTAL_REVERSE_REPO_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
-repo_market_volumes['TOTAL_AMOUNT'] = (
-    repo_market_volumes['TOTAL_AMOUNT'].replace('[\$,]', '', regex=True).astype(float))
 
 tri_volume = pd.DataFrame(requests.get(base_url + 'REPO-TRI_TV_TOT-P').json(), columns=["date", "value"])
 tri_volume['date'] = pd.to_datetime(tri_volume['date'])
@@ -84,37 +103,24 @@ rrp_volume = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
 rrp_volume.index = pd.to_datetime(rrp_volume.index.values)
 rrp_volume.columns = ['rrp']
 
-nccbr = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSET.json'
-nccbr_volume = pd.DataFrame(requests.get(nccbr).json()['pd']['timeseries']).drop('keyid', axis=1)
-nccbr_volume['value'] = pd.to_numeric(nccbr_volume['value'], errors='coerce')
-nccbr_volume.dropna(subset=['value'], inplace=True)
-nccbr_volume['asofdate'] = pd.to_datetime(nccbr_volume['asofdate'])
-nccbr_volume.index = nccbr_volume['asofdate'].values
-nccbr_volume.drop('asofdate', axis=1, inplace=True)
-nccbr_volume = (nccbr_volume/1e6) * 2
-nccbr_volume.columns = ['nccbr']
-
-repo_total_merge = merge_dfs([gcf_volume,dvp_volume,tri_volume,nccbr_volume]).dropna()
+repo_total_merge = merge_dfs([gcf_volume,dvp_volume,tri_volume,pd.DataFrame(pd_nccbr_proxy_merge['pd_nccbr_total']/1e6)]).dropna()
 total_repo_volume = pd.DataFrame(repo_total_merge.sum(axis=1))
 total_repo_volume.columns = ['Repo']
-
-blue_proxy = merge_dfs([tri_volume,rrp_volume,total_repo_volume,nccbr_volume])
-blue_proxy.columns = ['tri','rrp','total_repo','nccbr']
-blue_proxy = blue_proxy.resample('W').last().dropna()
-blue_proxy['blue'] = ((blue_proxy['tri']-blue_proxy['rrp']) + blue_proxy['nccbr']) / (blue_proxy['total_repo']+ blue_proxy['nccbr'] - blue_proxy['rrp'])
 
 black_proxy = merge_dfs([tri_volume,rrp_volume,dvp_volume,gcf_volume,total_repo_volume])
 black_proxy.columns = ['tri','rrp','dvp','gcf','all_repo']
 black_proxy = black_proxy.resample('W').last().dropna()
 black_proxy['black'] = (black_proxy['tri']-black_proxy['rrp']) / (black_proxy['all_repo'] - black_proxy['rrp'])
 
-nccbr_proxy_merge = merge_dfs([blue_proxy['blue'],black_proxy['black']])
+nccbr_proxy_merge = merge_dfs([pd_nccbr_proxy_merge['nccbr_pct'],black_proxy['black']])
+nccbr_proxy_merge['black'] = nccbr_proxy_merge['black'].ffill()
+nccbr_proxy_merge = nccbr_proxy_merge.dropna()
 
 ### PLOT ###
 plt.figure(figsize=(12, 7))
-plt.plot(nccbr_proxy_merge.index, nccbr_proxy_merge['blue'],
-         label="(Tri Party-RRP + 2T NCCBR)/(All Repo + 2T NCCBR-RRP)",color="#f8b62d", lw=2)
-plt.plot(nccbr_proxy_merge.index, nccbr_proxy_merge['black'],
+plt.plot(pd_nccbr_proxy_merge.index, pd_nccbr_proxy_merge['nccbr_pct']*100,
+         label="(% of NCCBR of Primary Dealers)",color="#f8b62d", lw=2)
+plt.plot(nccbr_proxy_merge.index, nccbr_proxy_merge['black']*100,
          label="Tri Party-RRP / (Tri Party+DVP+GCF-RRP)", color="#f8772d", lw=2)
 plt.title("Proxy of % of Non Cleared Repos", fontsize=22, fontweight="bold")
 plt.ylabel("%")
@@ -248,7 +254,7 @@ plt.show()
 ### PULL DATA ###
 foreign_rrp = pd.DataFrame(fred.get_series('WREPOFOR', observation_start=start, observation_end=end) / 1e6)
 rrp_foreign_rrp_merge = merge_dfs([rrp_volume,foreign_rrp])
-rrp_foreign_rrp_merge = rrp_foreign_rrp_merge.resample('W').last().dropna()
+rrp_foreign_rrp_merge = rrp_foreign_rrp_merge.dropna()
 rrp_foreign_rrp_merge.columns = ['RRP','Foreign_RRP']
 
 ### PLOT DATA ###

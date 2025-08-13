@@ -13,7 +13,7 @@ import app_cross_rate
 # import app_futures
 # import app_primary_dealers
 # import app_system
-# import app_repo
+import app_repo
 
 ### FUNCTIONS ###
 def merge_dfs(array_of_dfs):
@@ -136,12 +136,17 @@ with tab1:
 ### ------------------------------- RESPECTIVE PEERS ANALYSIS ------------------------------ ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# with tab3:
-    # st.markdown('<div class="tab-title">', unsafe_allow_html=True)
-    # st.title("Repo")
-    # st.markdown('</div>', unsafe_allow_html=True)
-    # peers(start_date,
-    #       end_date)
+with tab3:
+    st.title("Repo")
+    app_repo.plot_proxy_percent_without_clearing(start_date, end_date)
+    app_repo.plot_volume_per_venue(start_date, end_date)
+    app_repo.plot_mmf_by_asset(start_date, end_date)
+    app_repo.plot_6m_volume_change(start_date, end_date)
+    app_repo.plot_volume_invested_in_mmf(start_date, end_date)
+    app_repo.plot_rrp_vs_foreign_rrp(start_date, end_date)
+    app_repo.plot_mmf_repo_vs_non_repo(start_date, end_date)
+    app_repo.plot_triparty_adjusted_for_rrp(start_date, end_date)
+    app_repo.plot_mmf_allocation_by_counterparty(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------- HISTORICAL VOLUME AND ADV ------------------------------ ###
