@@ -122,11 +122,11 @@ def plot_proxy_percent_without_clearing(start, end, **kwargs):
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=nccbr_proxy_merge.index,
-        y=nccbr_proxy_merge['nccbr_pct'],
+        y=nccbr_proxy_merge['nccbr_pct']*100,
         mode='lines+markers', name='% of NCCBR of Primary Dealers', line=dict(color='#29B6D9', width=2)))
     fig.add_trace(go.Scatter(
         x=nccbr_proxy_merge.index,
-        y=nccbr_proxy_merge['BLACK'],
+        y=nccbr_proxy_merge['black']*100,
         mode='lines+markers', name='Tri Party-RRP / (Tri Party+DVP+GCF-RRP)', line=dict(color='#272f37', width=2)))
     fig.update_layout(
         title="Proxy of % of Non Cleared Repos",
