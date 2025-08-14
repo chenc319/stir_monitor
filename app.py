@@ -15,8 +15,6 @@ import app_auctions
 import app_futures
 import app_primary_dealers
 
-
-
 ### FUNCTIONS ###
 def merge_dfs(array_of_dfs):
     new_df = ft.reduce(lambda left,
@@ -38,32 +36,32 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Initialize session state if not already done
-if 'authenticated' not in st.session_state:
-    st.session_state.authenticated = False
-
-def check_password():
-    """Returns True if the user had the correct password."""
-    def password_entered():
-        """Checks whether a password entered by the user is correct."""
-        if st.session_state.get("password", None) == st.secrets["password"]:
-            st.session_state.authenticated = True
-            if "password" in st.session_state:
-                del st.session_state["password"]  # Don't store password
-        else:
-            st.session_state.authenticated = False
-
-    if not st.session_state.get('authenticated', False):
-        st.text_input(
-            "Password", type="password", on_change=password_entered, key="password"
-        )
-        return False
-    return True
-
-
-# Main app logic
-if not check_password():
-    st.stop()
+# # Initialize session state if not already done
+# if 'authenticated' not in st.session_state:
+#     st.session_state.authenticated = False
+#
+# def check_password():
+#     """Returns True if the user had the correct password."""
+#     def password_entered():
+#         """Checks whether a password entered by the user is correct."""
+#         if st.session_state.get("password", None) == st.secrets["password"]:
+#             st.session_state.authenticated = True
+#             if "password" in st.session_state:
+#                 del st.session_state["password"]  # Don't store password
+#         else:
+#             st.session_state.authenticated = False
+#
+#     if not st.session_state.get('authenticated', False):
+#         st.text_input(
+#             "Password", type="password", on_change=password_entered, key="password"
+#         )
+#         return False
+#     return True
+#
+#
+# # Main app logic
+# if not check_password():
+#     st.stop()
 
 
 st.markdown("""

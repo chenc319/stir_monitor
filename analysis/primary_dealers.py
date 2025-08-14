@@ -33,7 +33,7 @@ end = datetime.datetime.today()
 ### OFR DATA PULLS ###
 # https://www.dtcc.com/charts/membership - note that we need paid account to pull in the data
 
-sponsored_volume = pd.read_csv('data/SponsoredVolume.csv').dropna()
+sponsored_volume = pd.read_csv('../data/SponsoredVolume.csv').dropna()
 sponsored_volume = sponsored_volume.iloc[::-1].reset_index(drop=True)
 sponsored_volume.index = pd.to_datetime(sponsored_volume['BUSINESS_DATE'].values)
 sponsored_volume = sponsored_volume.drop('BUSINESS_DATE',axis=1)
