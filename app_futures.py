@@ -90,9 +90,9 @@ def plot_end_of_quarter_spreads(start, end, **kwargs):
     quarter_spreads_merge = merge_dfs([gc_df, dvp_df, gcf_df, fed_funds]).resample('QE').last()
     quarter_spreads_merge.columns = ['gc','dvp','gcf','effr']
     quarter_spreads_merge = quarter_spreads_merge.loc[str(start):str(end)]
-    quarter_spreads_merge['gc_effr'] = quarter_spreads_merge['gc'] - quarter_spreads_merge['effr']
-    quarter_spreads_merge['gc_dvp'] = quarter_spreads_merge['gc'] - quarter_spreads_merge['dvp']
-    quarter_spreads_merge['gc_gcf'] = quarter_spreads_merge['gc'] - quarter_spreads_merge['gcf']
+    quarter_spreads_merge['gc_effr'] = (quarter_spreads_merge['gc'] - quarter_spreads_merge['effr']) * 100
+    quarter_spreads_merge['gc_dvp'] = (quarter_spreads_merge['gc'] - quarter_spreads_merge['dvp']) * 100
+    quarter_spreads_merge['gc_gcf'] = (quarter_spreads_merge['gc'] - quarter_spreads_merge['gcf']) * 100
 
     # ### PLOT ###
     # plt.figure(figsize=(10, 7))
@@ -147,10 +147,10 @@ def plot_end_of_month_spreads(start, end, **kwargs):
     monthly_spreads_merge = merge_dfs([gc_df, dvp_df, gcf_df, fed_funds, rrp]).resample('ME').last()
     monthly_spreads_merge.columns = ['gc','dvp','gcf','effr','rrp']
     monthly_spreads_merge = monthly_spreads_merge.loc[str(start):str(end)]
-    monthly_spreads_merge['gc_effr'] = monthly_spreads_merge['gc'] - monthly_spreads_merge['effr']
-    monthly_spreads_merge['gc_dvp'] = monthly_spreads_merge['gc'] - monthly_spreads_merge['dvp']
-    monthly_spreads_merge['gc_gcf'] = monthly_spreads_merge['gc'] - monthly_spreads_merge['gcf']
-    monthly_spreads_merge['gc_rrp'] = monthly_spreads_merge['gc'] - monthly_spreads_merge['rrp']
+    monthly_spreads_merge['gc_effr'] = (monthly_spreads_merge['gc'] - monthly_spreads_merge['effr']) * 100
+    monthly_spreads_merge['gc_dvp'] = (monthly_spreads_merge['gc'] - monthly_spreads_merge['dvp']) * 100
+    monthly_spreads_merge['gc_gcf'] = (monthly_spreads_merge['gc'] - monthly_spreads_merge['gcf']) * 100
+    monthly_spreads_merge['gc_rrp'] = (monthly_spreads_merge['gc'] - monthly_spreads_merge['rrp']) * 100
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
