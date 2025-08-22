@@ -14,6 +14,7 @@ import app_cash
 import app_auctions
 import app_futures
 import app_primary_dealers
+import app_fed_operations
 
 ### FUNCTIONS ###
 def merge_dfs(array_of_dfs):
@@ -98,6 +99,7 @@ end_date = st.sidebar.date_input("End Date", value=pd.to_datetime('today'))
 menu = st.sidebar.radio(
     "Go to section:",
     ['Risk Checks',
+     'Fed SRF & ONRRP Operations'
      'Bank System Mapping',
      'Repo',
      'Cross Rate',
@@ -122,6 +124,15 @@ if menu == 'Risk Checks':
     app_risk_checks.plot_monitoring_reserves(start_date, end_date)
     app_risk_checks.plot_fed_action_vs_reserve_response(start_date, end_date)
     app_risk_checks.plot_fed_action_vs_reserve_response_v2(start_date, end_date)
+### ---------------------------------------------------------------------------------------- ###
+### -------------------------------------- RISK CHECKS ------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+
+elif menu == 'Fed SRF & ONRRP Operations':
+    st.title("Fed SRF & ONRRP Operations")
+    app_fed_operations.plot_soma_holdings(start_date, end_date)
+    app_fed_operations.plot_fed_repo_operations(start_date, end_date)
+    app_fed_operations.plot_fed_rrp_operations(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------ SHADOW BANK SYSTEM MAPPING ------------------------------ ###
