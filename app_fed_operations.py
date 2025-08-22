@@ -310,7 +310,7 @@ def plot_fed_rrp_operations(start, end, **kwargs):
                              name='Ctpy Participation',
                              line=dict(color='#17293c', width=2)))
     fig.update_layout(
-        title="ONRRP Facility: Acceptes Rates",
+        title="ONRRP Facility: Accepted Rates",
         yaxis_title="%",
         hovermode='x unified'
     )
