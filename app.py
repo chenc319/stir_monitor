@@ -99,7 +99,7 @@ end_date = st.sidebar.date_input("End Date", value=pd.to_datetime('today'))
 menu = st.sidebar.radio(
     "Go to section:",
     ['Risk Checks',
-     'Fed SRF & ONRRP Operations'
+     'Fed SRF & ONRRP Operations',
      'Bank System Mapping',
      'Repo',
      'Cross Rate',
