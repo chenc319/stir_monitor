@@ -28,7 +28,7 @@ def plot_soma_holdings(start, end, **kwargs):
     df.index = pd.to_datetime(df['asOfDate'].values)
     df.drop(['asOfDate','total'], axis=1, inplace=True)
     df = df.apply(pd.to_numeric)
-    df = df.loc[start:]
+    df = df.loc[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -144,9 +144,9 @@ def plot_fed_repo_operations(start, end, **kwargs):
     repo_agency_df = repo_fed_df.groupby('operationDate', as_index=False)['agency_amt'].sum()
     repo_agency_df.index = pd.to_datetime(repo_agency_df['operationDate'].values)
     repo_agency_df.drop('operationDate', axis=1, inplace=True)
-    repo_agency_df = repo_agency_df.loc[start:]
-    repo_treasury_df = repo_treasury_df.loc[start:]
-    repo_mbs_df = repo_mbs_df.loc[start:]
+    repo_agency_df = repo_agency_df.loc[start:end]
+    repo_treasury_df = repo_treasury_df.loc[start:end]
+    repo_mbs_df = repo_mbs_df.loc[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -242,9 +242,9 @@ def plot_fed_rrp_operations(start, end, **kwargs):
     ctpy_rrp_fed_df = pd.DataFrame(rrp_fed_df['acceptedCpty'])
     amount_rrp_fed_df = pd.DataFrame(rrp_fed_df['totalAmtAccepted'])
     rate_rrp_fed_df = pd.DataFrame(rrp_fed_df['rate'])
-    ctpy_rrp_fed_df = ctpy_rrp_fed_df.loc[start:]
-    amount_rrp_fed_df = amount_rrp_fed_df.loc[start:]
-    rate_rrp_fed_df = rate_rrp_fed_df.loc[start:]
+    ctpy_rrp_fed_df = ctpy_rrp_fed_df.loc[start:end]
+    amount_rrp_fed_df = amount_rrp_fed_df.loc[start:end]
+    rate_rrp_fed_df = rate_rrp_fed_df.loc[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
