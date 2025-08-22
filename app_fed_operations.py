@@ -106,7 +106,7 @@ def plot_soma_holdings(start, end, **kwargs):
                              mode='lines+markers',
                              name='Agencies',
                              line=dict(color='#f5b9ad', width=2)))
-    fig.add_trace(go.Scatter(x=df.index, y=df['cbms'],
+    fig.add_trace(go.Scatter(x=df.index, y=df['cmbs'],
                              mode='lines+markers',
                              name='CMBS',
                              line=dict(color='#4da3d7', width=2)))
