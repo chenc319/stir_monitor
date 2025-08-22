@@ -93,7 +93,7 @@ def plot_soma_holdings(start, end, **kwargs):
     fig.add_trace(go.Scatter(x=df.index, y=df['frn'],
                              mode='lines+markers',
                              name='FRN',
-                             line=dict(color='#green', width=2)))
+                             line=dict(color='#2f90c5', width=2)))
     fig.add_trace(go.Scatter(x=df.index, y=df['tipsInflationCompensation'],
                              mode='lines+markers',
                              name='Inflation Compensation',
