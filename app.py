@@ -143,6 +143,9 @@ elif menu == 'Shadow Banks':
     st.subheader('Money Market Funds')
     app_system.plot_shadow_bank_mmf_repo(start_date,end_date)
     app_system.plot_shadow_bank_mmf_on_repo(start_date,end_date)
+    st.subheader('Private Investment Funds')
+    app_system.plot_shadow_bank_private_investments(start_date,end_date)
+
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------------------ REPO ---------------------------------------- ###

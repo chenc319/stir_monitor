@@ -9,6 +9,7 @@ import functools as ft
 import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt
+from io import StringIO
 
 ### FUNCTIONS ###
 def merge_dfs(array_of_dfs):
@@ -73,7 +74,7 @@ def plot_shadow_bank_mmf_repo(start, end, **kwargs):
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------- MONEY MARKET FUNDS INVOLVEMENTS IN ON repo SPECIFICALLY TO CAPTURE STIR ACTIVITY ------------ ###
+### ------------- MONEY MARKET FUNDS INVOLVEMENTS IN ON REPO SPECIFICALLY TO CAPTURE STIR ACTIVITY ----------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_shadow_bank_mmf_on_repo(start, end, **kwargs):
@@ -105,3 +106,80 @@ def plot_shadow_bank_mmf_on_repo(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ---------------------------------------- PRIVATE INVESTMENT FUNDS ---------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_shadow_bank_private_investments(start, end, **kwargs):
+    url = "https://publicreporting.cftc.gov/resource/gpe5-46if.csv?$limit=60000"
+    response = requests.get(url)
+    cftc_all_futures = pd.read_csv(StringIO(response.text))
+    cftc_all_futures.columns
+    cftc_all_futures.index = pd.to_datetime(cftc_all_futures['report_date_as_yyyy_mm_dd'].values)
+    cftc_all_futures.drop('report_date_as_yyyy_mm_dd',axis=1)
+
+    fed_funds_futures = cftc_all_futures[
+        cftc_all_futures['contract_market_name'] == 'FED FUNDS']
+    fed_funds_futures = fed_funds_futures.sort_index()
+    sofr3m_futures = cftc_all_futures[
+        cftc_all_futures['contract_market_name'] == 'SOFR-3M']
+    sofr3m_futures = sofr3m_futures.sort_index()
+    sofr1m_futures = cftc_all_futures[
+        cftc_all_futures['contract_market_name'] == 'SOFR-1M']
+    sofr1m_futures = sofr1m_futures.sort_index()
+
+    merge_df = merge_dfs([fed_funds_futures['lev_money_positions_long'],
+                          sofr3m_futures['lev_money_positions_long'],
+                          sofr1m_futures['lev_money_positions_long']]).dropna()
+    merge_df.columns = ['fedfunds','sofr3m','sofr1m']
+
+    # ### PLOT ###
+    # plt.figure(figsize=(10, 7))
+    # plt.plot(fed_funds_futures.index,
+    #          fed_funds_futures['lev_money_positions_long'],
+    #          color='#9DDCF9', lw=2)
+    # plt.plot(sofr3m_futures.index,
+    #          sofr3m_futures['lev_money_positions_long'],
+    #          color='#4CD0E9', lw=2)
+    # plt.plot(sofr1m_futures.index,
+    #          sofr1m_futures['lev_money_positions_long'],
+    #          color='#233852', lw=2)
+    # plt.ylabel("$ (Trillions)")
+    # plt.title("MMF's Investments in Overnight/Open Repo", fontsize=17, fontweight="bold")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['fedfunds'],
+                             mode='lines+markers',
+                             name='Fed Funds',
+                             line=dict(color="#46b5ca", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['sofr1m'],
+                             mode='lines+markers',
+                             name='SOFR 1M',
+                             line=dict(color="#4CD0E9", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['sofrm3'],
+                             mode='lines+markers',
+                             name='SOFR 3M',
+                             line=dict(color="#233852", width=3)))
+    fig.update_layout(
+        title="Private Investments Long Positions",
+        yaxis_title="Contracts",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+
+
+
+
+
+
+
+
+euroshortterm_futures.columns
