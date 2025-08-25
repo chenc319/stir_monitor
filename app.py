@@ -147,6 +147,8 @@ elif menu == 'Shadow Banks':
     app_system.plot_shadow_bank_mmf_on_repo(start_date,end_date)
     st.title('Private Investment Funds')
     app_system.plot_shadow_bank_private_investments(start_date,end_date)
+    st.title('Asset-Backed Commercial Paper')
+    app_system.plot_shadow_bank_reit(start_date,end_date)
 
 
 ### ---------------------------------------------------------------------------------------- ###

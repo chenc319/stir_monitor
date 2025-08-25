@@ -260,5 +260,23 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_shadow_bank_reit(start, end, **kwargs):
-    reit_repo_volume = pdr.DataReader('BOGZ1FL642151073A',
-                                      'fred', start, end) / 1e3
+    abcp = pdr.DataReader('ABCOMP',
+                          'fred', start, end) * 1e9
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=abcp.index,
+                             y=abcp['ABCOMP'],
+                             mode='lines+markers',
+                             name='ABCOMP',
+                             line=dict(color="#46b5ca", width=3)))
+    fig.update_layout(
+        title="Asset-Backed Commercial Paper Volume",
+        yaxis_title="$",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+
+
+
+
+
