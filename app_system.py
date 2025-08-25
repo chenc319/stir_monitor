@@ -163,7 +163,7 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
                              name='SOFR 1M',
                              line=dict(color="#4CD0E9", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['sofrm3'],
+                             y=merge_df['sofr3m'],
                              mode='lines+markers',
                              name='SOFR 3M',
                              line=dict(color="#233852", width=3)))
