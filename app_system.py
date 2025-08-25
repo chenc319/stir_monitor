@@ -155,26 +155,16 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
                              mode='lines+markers',
                              name='Fed Funds',
                              line=dict(color="#46b5ca", width=3)))
-    fig.add_trace(go.Scatter(x=long_merge_df.index,
-                             y=long_merge_df['sofr1m'],
-                             mode='lines+markers',
-                             name='SOFR 1M',
-                             line=dict(color="#4CD0E9", width=3)))
-    fig.add_trace(go.Scatter(x=long_merge_df.index,
-                             y=long_merge_df['sofr3m'],
-                             mode='lines+markers',
-                             name='SOFR 3M',
-                             line=dict(color="#233852", width=3)))
     fig.update_layout(
-        title="Private Investments Long Positions",
-        yaxis_title="Contracts",
+        title="Private Investments Long Positions - Fed Funds",
+        yaxis_title="$",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
     short_merge_df = merge_dfs([fed_funds_futures['lev_money_positions_short']*5000000,
                                 sofr3m_futures['lev_money_positions_short']*2500,
-                                sofr1m_futures['lev_money_positions_short'*4167]]).dropna()
+                                sofr1m_futures['lev_money_positions_short']*4167]).dropna()
     short_merge_df.columns = ['fedfunds', 'sofr3m', 'sofr1m']
     short_merge_df = short_merge_df[start:end]
 
@@ -184,19 +174,9 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
                              mode='lines+markers',
                              name='Fed Funds',
                              line=dict(color="#46b5ca", width=3)))
-    fig.add_trace(go.Scatter(x=short_merge_df.index,
-                             y=short_merge_df['sofr1m'],
-                             mode='lines+markers',
-                             name='SOFR 1M',
-                             line=dict(color="#4CD0E9", width=3)))
-    fig.add_trace(go.Scatter(x=short_merge_df.index,
-                             y=short_merge_df['sofr3m'],
-                             mode='lines+markers',
-                             name='SOFR 3M',
-                             line=dict(color="#233852", width=3)))
     fig.update_layout(
-        title="Private Investments Short Positions",
-        yaxis_title="Contracts",
+        title="Private Investments Short Positions - Fed Funds",
+        yaxis_title="$",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -210,6 +190,53 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
                              mode='lines+markers',
                              name='Fed Funds',
                              line=dict(color="#46b5ca", width=3)))
+    fig.update_layout(
+        title="Private Investments Net Positions - Fed Funds",
+        yaxis_title="$",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=long_merge_df.index,
+                             y=long_merge_df['sofr1m'],
+                             mode='lines+markers',
+                             name='SOFR 1M',
+                             line=dict(color="#4CD0E9", width=3)))
+    fig.add_trace(go.Scatter(x=long_merge_df.index,
+                             y=long_merge_df['sofr3m'],
+                             mode='lines+markers',
+                             name='SOFR 3M',
+                             line=dict(color="#233852", width=3)))
+    fig.update_layout(
+        title="Private Investments Long Positions - SOFR",
+        yaxis_title="$",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=short_merge_df.index,
+                             y=short_merge_df['sofr1m'],
+                             mode='lines+markers',
+                             name='SOFR 1M',
+                             line=dict(color="#4CD0E9", width=3)))
+    fig.add_trace(go.Scatter(x=short_merge_df.index,
+                             y=short_merge_df['sofr3m'],
+                             mode='lines+markers',
+                             name='SOFR 3M',
+                             line=dict(color="#233852", width=3)))
+    fig.update_layout(
+        title="Private Investments Short Positions - SOFR",
+        yaxis_title="$",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
     fig.add_trace(go.Scatter(x=net_merge_df.index,
                              y=net_merge_df['sofr1m'],
                              mode='lines+markers',
@@ -221,8 +248,8 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
                              name='SOFR 3M',
                              line=dict(color="#233852", width=3)))
     fig.update_layout(
-        title="Private Investments Net Positions",
-        yaxis_title="Contracts",
+        title="Private Investments Net Positions - SOFR",
+        yaxis_title="$",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
