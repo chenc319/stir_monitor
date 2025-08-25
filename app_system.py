@@ -125,7 +125,7 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
     sofr1m_futures = cftc_all_futures[
         cftc_all_futures['contract_market_name'] == 'SOFR-1M']
     sofr1m_futures = sofr1m_futures.sort_index()
-    sofr1m_futures['contract_units']
+
     # ### PLOT ###
     # plt.figure(figsize=(10, 7))
     # plt.plot(fed_funds_futures.index,
@@ -226,6 +226,3 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
-
-
-
