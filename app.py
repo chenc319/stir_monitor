@@ -100,7 +100,7 @@ menu = st.sidebar.radio(
     "Go to section:",
     ['Risk Checks',
      'Fed SRF & ONRRP Operations',
-     'Bank System Mapping',
+     'Shadow Banks',
      'Repo',
      'Cross Rate',
      'Cash',
@@ -138,7 +138,7 @@ elif menu == 'Fed SRF & ONRRP Operations':
 ### ------------------------------ SHADOW BANK SYSTEM MAPPING ------------------------------ ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Bank System Mapping':
+elif menu == 'Shadow Banks':
     st.title("Bank System Mapping")
     app_system.plot_shadow_bank_mmf_repo(start_date,end_date)
 
