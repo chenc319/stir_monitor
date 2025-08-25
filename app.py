@@ -99,7 +99,7 @@ end_date = st.sidebar.date_input("End Date", value=pd.to_datetime('today'))
 menu = st.sidebar.radio(
     "Go to section:",
     ['Risk Checks',
-     'Fed SRF & ONRRP Operations',
+     'Fed Operations',
      'Shadow Banks',
      'Repo',
      'Cross Rate',
@@ -128,7 +128,7 @@ if menu == 'Risk Checks':
 ### -------------------------------------- RISK CHECKS ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Fed SRF & ONRRP Operations':
+elif menu == 'Fed Operations':
     st.title("Fed Balance Sheet")
     app_fed_operations.plot_soma_holdings(start_date, end_date)
     st.title("SRF Operations")
