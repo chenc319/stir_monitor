@@ -86,14 +86,14 @@ def plot_shadow_bank_mmf_on_repo(start, end, **kwargs):
     mmf_involvement_on_rrp = mmf_involvement_on_repo / 1e12
     mmf_involvement_on_rrp = mmf_involvement_on_rrp[start:end]
 
-    ### PLOT ###
-    plt.figure(figsize=(10, 7))
-    plt.plot(mmf_involvement_on_repo.index, mmf_involvement_on_repo['Values'],
-             color='#9DDCF9', lw=2)  # light blue
-    plt.ylabel("$ (Trillions)")
-    plt.title("MMF's Investments in Overnight/Open Repo", fontsize=17, fontweight="bold")
-    plt.tight_layout()
-    plt.show()
+    # ### PLOT ###
+    # plt.figure(figsize=(10, 7))
+    # plt.plot(mmf_involvement_on_repo.index, mmf_involvement_on_repo['Values'],
+    #          color='#9DDCF9', lw=2)  # light blue
+    # plt.ylabel("$ (Trillions)")
+    # plt.title("MMF's Investments in Overnight/Open Repo", fontsize=17, fontweight="bold")
+    # plt.tight_layout()
+    # plt.show()
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=mmf_involvement_on_repo.index,
@@ -129,11 +129,6 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
         cftc_all_futures['contract_market_name'] == 'SOFR-1M']
     sofr1m_futures = sofr1m_futures.sort_index()
 
-    merge_df = merge_dfs([fed_funds_futures['lev_money_positions_long'],
-                          sofr3m_futures['lev_money_positions_long'],
-                          sofr1m_futures['lev_money_positions_long']]).dropna()
-    merge_df.columns = ['fedfunds','sofr3m','sofr1m']
-
     # ### PLOT ###
     # plt.figure(figsize=(10, 7))
     # plt.plot(fed_funds_futures.index,
@@ -151,24 +146,85 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
     # plt.tight_layout()
     # plt.show()
 
+    long_merge_df = merge_dfs([fed_funds_futures['lev_money_positions_long'],
+                               sofr3m_futures['lev_money_positions_long'],
+                               sofr1m_futures['lev_money_positions_long']]).dropna()
+    long_merge_df.columns = ['fedfunds', 'sofr3m', 'sofr1m']
+
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['fedfunds'],
+    fig.add_trace(go.Scatter(x=long_merge_df.index,
+                             y=long_merge_df['fedfunds'],
                              mode='lines+markers',
                              name='Fed Funds',
                              line=dict(color="#46b5ca", width=3)))
-    fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['sofr1m'],
+    fig.add_trace(go.Scatter(x=long_merge_df.index,
+                             y=long_merge_df['sofr1m'],
                              mode='lines+markers',
                              name='SOFR 1M',
                              line=dict(color="#4CD0E9", width=3)))
-    fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['sofr3m'],
+    fig.add_trace(go.Scatter(x=long_merge_df.index,
+                             y=long_merge_df['sofr3m'],
                              mode='lines+markers',
                              name='SOFR 3M',
                              line=dict(color="#233852", width=3)))
     fig.update_layout(
         title="Private Investments Long Positions",
+        yaxis_title="Contracts",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    fed_funds_futures.columns
+    short_merge_df = merge_dfs([fed_funds_futures['lev_money_positions_short'],
+                                sofr3m_futures['lev_money_positions_short'],
+                                sofr1m_futures['lev_money_positions_short']]).dropna()
+    short_merge_df.columns = ['fedfunds', 'sofr3m', 'sofr1m']
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=short_merge_df.index,
+                             y=short_merge_df['fedfunds'],
+                             mode='lines+markers',
+                             name='Fed Funds',
+                             line=dict(color="#46b5ca", width=3)))
+    fig.add_trace(go.Scatter(x=short_merge_df.index,
+                             y=short_merge_df['sofr1m'],
+                             mode='lines+markers',
+                             name='SOFR 1M',
+                             line=dict(color="#4CD0E9", width=3)))
+    fig.add_trace(go.Scatter(x=short_merge_df.index,
+                             y=short_merge_df['sofr3m'],
+                             mode='lines+markers',
+                             name='SOFR 3M',
+                             line=dict(color="#233852", width=3)))
+    fig.update_layout(
+        title="Private Investments Short Positions",
+        yaxis_title="Contracts",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    net_merge_df = merge_dfs([fed_funds_futures['lev_money_positions_spread'],
+                              sofr3m_futures['lev_money_positions_spread'],
+                              sofr1m_futures['lev_money_positions_spread']]).dropna()
+    net_merge_df.columns = ['fedfunds', 'sofr3m', 'sofr1m']
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=net_merge_df.index,
+                             y=net_merge_df['fedfunds'],
+                             mode='lines+markers',
+                             name='Fed Funds',
+                             line=dict(color="#46b5ca", width=3)))
+    fig.add_trace(go.Scatter(x=net_merge_df.index,
+                             y=net_merge_df['sofr1m'],
+                             mode='lines+markers',
+                             name='SOFR 1M',
+                             line=dict(color="#4CD0E9", width=3)))
+    fig.add_trace(go.Scatter(x=net_merge_df.index,
+                             y=net_merge_df['sofr3m'],
+                             mode='lines+markers',
+                             name='SOFR 3M',
+                             line=dict(color="#233852", width=3)))
+    fig.update_layout(
+        title="Private Investments Net Positions",
         yaxis_title="Contracts",
         hovermode='x unified'
     )
