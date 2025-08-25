@@ -176,10 +176,3 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
 
 
 
-
-
-
-
-
-
-euroshortterm_futures.columns
