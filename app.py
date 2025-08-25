@@ -129,9 +129,11 @@ if menu == 'Risk Checks':
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Fed SRF & ONRRP Operations':
-    st.title("Fed SRF & ONRRP Operations")
+    st.title("Fed Balance Sheet")
     app_fed_operations.plot_soma_holdings(start_date, end_date)
+    st.title("SRF Operations")
     app_fed_operations.plot_fed_repo_operations(start_date, end_date)
+    st.title("ONRRP Operations")
     app_fed_operations.plot_fed_rrp_operations(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###

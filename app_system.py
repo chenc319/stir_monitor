@@ -10,6 +10,7 @@ import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt
 from io import StringIO
+from pandas_datareader import data as pdr
 
 ### FUNCTIONS ###
 def merge_dfs(array_of_dfs):
@@ -253,3 +254,11 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ---------------------------------------- PRIVATE INVESTMENT FUNDS ---------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_shadow_bank_reit(start, end, **kwargs):
+    reit_repo_volume = pdr.DataReader('BOGZ1FL642151073A',
+                                      'fred', start, end) / 1e3
