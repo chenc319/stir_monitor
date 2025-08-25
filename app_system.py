@@ -32,7 +32,6 @@ def plot_shadow_bank_mmf_repo(start, end, **kwargs):
                                         columns = ['Date','Other Repo','Agency Repo','Treasury Repo'])
     mmf_repo_allocations.index = pd.to_datetime(mmf_repo_allocations['Date'].values)
     mmf_repo_allocations.drop('Date', axis=1, inplace=True)
-    mmf_repo_allocations = mmf_repo_allocations / 1e12
     mmf_repo_allocations = mmf_repo_allocations[start:end]
 
     # ### PLOT ###
@@ -72,7 +71,6 @@ def plot_shadow_bank_mmf_repo(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------- MONEY MARKET FUNDS INVOLVEMENTS IN ON REPO SPECIFICALLY TO CAPTURE STIR ACTIVITY ----------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
@@ -83,8 +81,7 @@ def plot_shadow_bank_mmf_on_repo(start, end, **kwargs):
                                           columns = ['Date','Values'])
     mmf_involvement_on_repo.index = pd.to_datetime(mmf_involvement_on_repo['Date'].values)
     mmf_involvement_on_repo.drop('Date', axis=1, inplace=True)
-    mmf_involvement_on_rrp = mmf_involvement_on_repo / 1e12
-    mmf_involvement_on_rrp = mmf_involvement_on_rrp[start:end]
+    mmf_involvement_on_repo = mmf_involvement_on_repo[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(10, 7))
@@ -128,7 +125,7 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
     sofr1m_futures = cftc_all_futures[
         cftc_all_futures['contract_market_name'] == 'SOFR-1M']
     sofr1m_futures = sofr1m_futures.sort_index()
-
+    sofr1m_futures['contract_units']
     # ### PLOT ###
     # plt.figure(figsize=(10, 7))
     # plt.plot(fed_funds_futures.index,
@@ -146,10 +143,11 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
     # plt.tight_layout()
     # plt.show()
 
-    long_merge_df = merge_dfs([fed_funds_futures['lev_money_positions_long'],
-                               sofr3m_futures['lev_money_positions_long'],
-                               sofr1m_futures['lev_money_positions_long']]).dropna()
+    long_merge_df = merge_dfs([fed_funds_futures['lev_money_positions_long']*5000000,
+                               sofr3m_futures['lev_money_positions_long']*2500,
+                               sofr1m_futures['lev_money_positions_long']*4167]).dropna()
     long_merge_df.columns = ['fedfunds', 'sofr3m', 'sofr1m']
+    long_merge_df = long_merge_df[start:end]
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=long_merge_df.index,
@@ -173,11 +171,12 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
-    fed_funds_futures.columns
-    short_merge_df = merge_dfs([fed_funds_futures['lev_money_positions_short'],
-                                sofr3m_futures['lev_money_positions_short'],
-                                sofr1m_futures['lev_money_positions_short']]).dropna()
+
+    short_merge_df = merge_dfs([fed_funds_futures['lev_money_positions_short']*5000000,
+                                sofr3m_futures['lev_money_positions_short']*2500,
+                                sofr1m_futures['lev_money_positions_short'*4167]]).dropna()
     short_merge_df.columns = ['fedfunds', 'sofr3m', 'sofr1m']
+    short_merge_df = short_merge_df[start:end]
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=short_merge_df.index,
@@ -202,10 +201,8 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    net_merge_df = merge_dfs([fed_funds_futures['lev_money_positions_spread'],
-                              sofr3m_futures['lev_money_positions_spread'],
-                              sofr1m_futures['lev_money_positions_spread']]).dropna()
-    net_merge_df.columns = ['fedfunds', 'sofr3m', 'sofr1m']
+    net_merge_df = long_merge_df - short_merge_df
+    net_merge_df = net_merge_df[start:end]
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=net_merge_df.index,
