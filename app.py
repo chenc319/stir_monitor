@@ -7,7 +7,7 @@ import streamlit as st
 import pandas as pd
 import functools as ft
 import app_risk_checks
-# import app_system
+import app_system
 import app_repo
 import app_cross_rate
 import app_cash
@@ -138,13 +138,11 @@ elif menu == 'Fed SRF & ONRRP Operations':
 ### ------------------------------ SHADOW BANK SYSTEM MAPPING ------------------------------ ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# elif menu == 'Bank System Mapping':
-    # st.markdown('<div class="tab-title">', unsafe_allow_html=True)
-    # st.title("Bank System Mapping")
-    # st.markdown('</div>', unsafe_allow_html=True)
-    # return_and_volatility(ticker,
-    #                       start_date,
-    #                       end_date)
+elif menu == 'Bank System Mapping':
+    st.markdown('<div class="tab-title">', unsafe_allow_html=True)
+    st.title("Bank System Mapping")
+    st.markdown('</div>', unsafe_allow_html=True)
+    app_system.plot_shadow_bank_mmf_repo(start_date,end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------------------ REPO ---------------------------------------- ###
