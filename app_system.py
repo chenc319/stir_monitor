@@ -37,6 +37,7 @@ def plot_shadow_bank_mmf_repo(start, end, **kwargs):
     mmf_repo_allocations.drop('Date', axis=1, inplace=True)
     mmf_repo_allocations = mmf_repo_allocations / 1e12
     mmf_repo_allocations = mmf_repo_allocations[start:end]
+
     # ### PLOT ###
     # plt.figure(figsize=(10, 7))
     # plt.plot(mmf_repo_allocations.index, mmf_repo_allocations['Other Repo'],

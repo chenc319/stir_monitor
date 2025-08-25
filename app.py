@@ -139,9 +139,7 @@ elif menu == 'Fed SRF & ONRRP Operations':
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Bank System Mapping':
-    st.markdown('<div class="tab-title">', unsafe_allow_html=True)
     st.title("Bank System Mapping")
-    st.markdown('</div>', unsafe_allow_html=True)
     app_system.plot_shadow_bank_mmf_repo(start_date,end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
