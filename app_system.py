@@ -58,12 +58,12 @@ def plot_shadow_bank_mmf_repo(start, end, **kwargs):
                              y=mmf_repo_allocations['Agency Repo'],
                              mode='lines+markers',
                              name='Agency Repo',
-                             line=dict(color="#17354c", width=3)))
+                             line=dict(color="#4CD0E9", width=3)))
     fig.add_trace(go.Scatter(x=mmf_repo_allocations.index,
                              y=mmf_repo_allocations['Treasury Repo'],
                              mode='lines+markers',
                              name='Treasury Repo',
-                             line=dict(color="#17354c", width=3)))
+                             line=dict(color="#233852", width=3)))
     fig.update_layout(
         title="MMF's Investments in Repo Markets",
         yaxis_title="$ (Trillions)",

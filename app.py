@@ -141,6 +141,7 @@ elif menu == 'Fed SRF & ONRRP Operations':
 elif menu == 'Shadow Banks':
     st.title("Bank System Mapping")
     app_system.plot_shadow_bank_mmf_repo(start_date,end_date)
+    app_system.plot_shadow_bank_mmf_on_repo(start_date,end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------------------ REPO ---------------------------------------- ###
