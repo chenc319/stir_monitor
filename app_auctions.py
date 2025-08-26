@@ -8,28 +8,21 @@ import requests
 import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt
+from pathlib import Path
+import os
+import pickle
+DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right, left_index=True, right_index=True, how='outer'), array_of_dfs)
-
-# Helper: loads and preprocess Treasury auction data only once per run
-@st.cache_data(show_spinner=False)
-def load_auction_data():
-    url = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/auctions_query?"
-           "filter=record_date:gte:2000-08-16,record_date:lte:2025-08-15"
-           "&sort=-auction_date,-issue_date,maturity_date&page[size]=10000")
-    resp = requests.get(url).json()
-    df = pd.DataFrame(resp['data'])
-    df['record_date'] = pd.to_datetime(df['record_date'])
-    df['total_accepted'] = pd.to_numeric(df['total_accepted'], errors='coerce')
-    return df
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------ ISSUANCE IN AUCTION BY SECURITY ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_issuance_by_security(start, end, **kwargs):
-    df = load_auction_data()
+    with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
+        df = pickle.load(file)
     auction_issuance_df = df[['record_date','security_type','total_accepted']].copy()
     auction_issuance_df['eom'] = auction_issuance_df['record_date'].dt.to_period('M').dt.to_timestamp('M')
     agg_monthly = auction_issuance_df.groupby(['eom', 'security_type'])['total_accepted'].sum().unstack(fill_value=0)
@@ -68,7 +61,8 @@ def plot_issuance_by_security(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_bills_issuance(start, end, **kwargs):
-    df = load_auction_data()
+    with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
+        df = pickle.load(file)
     auction_issuance_df = df[['record_date','security_term','total_accepted']].copy()
     bill_terms = ['4-Week','8-Week','13-Week','26-Week','52-Week']
     bill_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(bill_terms)].copy()
@@ -115,7 +109,8 @@ def plot_bills_issuance(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_notes_issuance(start, end, **kwargs):
-    df = load_auction_data()
+    with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
+        df = pickle.load(file)
     auction_issuance_df = df[['record_date','security_term','total_accepted']].copy()
     note_terms = ['2-Year','3-Year','5-Year','7-Year','10-Year']
     notes_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(note_terms)].copy()
@@ -159,7 +154,8 @@ def plot_notes_issuance(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_bonds_issuance(start, end, **kwargs):
-    df = load_auction_data()
+    with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
+        df = pickle.load(file)
     auction_issuance_df = df[['record_date','security_term','total_accepted']].copy()
     bond_terms = ['20-Year','30-Year']
     bonds_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(bond_terms)].copy()
@@ -197,7 +193,8 @@ def plot_bonds_issuance(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_bills_dealer_ratio(start, end, **kwargs):
-    df = load_auction_data()
+    with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
+        df = pickle.load(file)
     data = df[['record_date','security_type','security_term',
                'primary_dealer_accepted','indirect_bidder_accepted','direct_bidder_accepted']].copy()
     for col in ['primary_dealer_accepted','indirect_bidder_accepted','direct_bidder_accepted']:
@@ -249,7 +246,8 @@ def plot_bills_dealer_ratio(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_bonds_dealer_ratio(start, end, **kwargs):
-    df = load_auction_data()
+    with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
+        df = pickle.load(file)
     data = df[['record_date','security_type','security_term',
                'primary_dealer_accepted','indirect_bidder_accepted','direct_bidder_accepted']].copy()
     for col in ['primary_dealer_accepted','indirect_bidder_accepted','direct_bidder_accepted']:
@@ -295,7 +293,8 @@ def plot_bonds_dealer_ratio(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_notes_dealer_ratio(start, end, **kwargs):
-    df = load_auction_data()
+    with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
+        df = pickle.load(file)
     data = df[['record_date','security_type','security_term',
                'primary_dealer_accepted','indirect_bidder_accepted','direct_bidder_accepted']].copy()
     for col in ['primary_dealer_accepted','indirect_bidder_accepted','direct_bidder_accepted']:
@@ -347,7 +346,8 @@ def plot_notes_dealer_ratio(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_bills_bid_to_cover(start, end, **kwargs):
-    df = load_auction_data()
+    with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
+        df = pickle.load(file)
     data = df[['record_date','security_type','security_term','bid_to_cover_ratio']].copy()
     for col in ['bid_to_cover_ratio']:
         data[col] = pd.to_numeric(data[col], errors='coerce')
@@ -395,7 +395,8 @@ def plot_bills_bid_to_cover(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_bonds_bid_to_cover(start, end, **kwargs):
-    df = load_auction_data()
+    with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
+        df = pickle.load(file)
     data = df[['record_date','security_type','security_term','bid_to_cover_ratio']].copy()
     for col in ['bid_to_cover_ratio']:
         data[col] = pd.to_numeric(data[col], errors='coerce')
@@ -437,7 +438,8 @@ def plot_bonds_bid_to_cover(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_notes_bid_to_cover(start, end, **kwargs):
-    df = load_auction_data()
+    with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
+        df = pickle.load(file)
     data = df[['record_date','security_type','security_term','bid_to_cover_ratio']].copy()
     for col in ['bid_to_cover_ratio']:
         data[col] = pd.to_numeric(data[col], errors='coerce')
