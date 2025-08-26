@@ -27,6 +27,7 @@ def merge_dfs(array_of_dfs):
 def plot_tga(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'tga.pkl', 'rb') as file:
         tga_volume = pickle.load(file)
+    tga_volume.columns = ['tga_volume']
     tga_roc = tga_volume.resample('W').last().diff(1)
     tga_roc.columns = ['TGA ROC']
 
