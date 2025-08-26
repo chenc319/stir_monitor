@@ -9,6 +9,10 @@ from pandas_datareader import data as pdr
 import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt
+from pathlib import Path
+import os
+import pickle
+DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right,
@@ -21,9 +25,8 @@ def merge_dfs(array_of_dfs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_tga(start, end, **kwargs):
-    tga_volume = pdr.DataReader('WTREGEN', 'fred', start, end) / 1e3
-    tga_volume.index = pd.to_datetime(tga_volume.index)
-    tga_volume.columns = ['tga_volume']
+    with open(Path(DATA_DIR) / 'tga.pkl', 'rb') as file:
+        tga_volume = pickle.load(file)
     tga_roc = tga_volume.resample('W').last().diff(1)
     tga_roc.columns = ['TGA ROC']
 
@@ -69,8 +72,8 @@ def plot_tga(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_rrp(start, end, **kwargs):
-    rrp_volume = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
-    rrp_volume.index = pd.to_datetime(rrp_volume.index)
+    with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
+        rrp_volume = pickle.load(file)
     rrp_volume.columns = ['rrp_volume']
     rrp_roc = rrp_volume.resample('W').last().diff(1)
     rrp_roc.columns = ['RRP ROC']
@@ -117,7 +120,8 @@ def plot_rrp(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_reserves(start, end, **kwargs):
-    reserves_volume = pdr.DataReader('WRESBAL', 'fred', start, end) / 1e3
+    with open(Path(DATA_DIR) / 'reserves.pkl', 'rb') as file:
+        reserves_volume = pickle.load(file)
     reserves_volume.index = pd.to_datetime(reserves_volume.index)
     reserves_volume.columns = ['reserves_volume']
     reserves_roc = reserves_volume.resample('W').last().diff(1)
@@ -165,17 +169,10 @@ def plot_reserves(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_mmf_repo_vs_non_repo(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-
-    def ofr_get(mnemonic):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        df = df / 1e12
-        return df
-
-    mmf_repo_allocation = ofr_get('MMF-MMF_RP_TOT-M')
-    mmf_total_allocation = ofr_get('MMF-MMF_TOT-M')
+    with open(Path(DATA_DIR) / 'mmf_repo.pkl', 'rb') as file:
+        mmf_repo_allocation = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_total.pkl', 'rb') as file:
+        mmf_total_allocation = pickle.load(file)
 
     mmf_repo_non_repo_merge = merge_dfs([mmf_repo_allocation, mmf_total_allocation])
     mmf_repo_non_repo_merge.columns = ['mmf_repo', 'mmf_total']
@@ -213,17 +210,10 @@ def plot_mmf_repo_vs_non_repo(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_asset_allocation_mmf(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-
-    def ofr_get(mnemonic):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        df = df / 1e12
-        return df
-
-    mmf_repo_total = ofr_get('MMF-MMF_RP_TOT-M')
-    mmf_fed_repo = ofr_get('MMF-MMF_RP_wFR-M')
+    with open(Path(DATA_DIR) / 'mmf_repo.pkl', 'rb') as file:
+        mmf_repo_total = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_fed.pkl', 'rb') as file:
+        mmf_fed_repo = pickle.load(file)
 
     mmf_fed_repo_non_repo_merge = merge_dfs([mmf_fed_repo, mmf_repo_total])
     mmf_fed_repo_non_repo_merge.columns = ['mmf_fed_repo', 'mmf_repo_total']
@@ -232,8 +222,10 @@ def plot_asset_allocation_mmf(start, end, **kwargs):
     mmf_fed_repo_non_repo_merge = mmf_fed_repo_non_repo_merge['2019-01-01':str(end)].dropna()
 
     # Reuse MMF repo/non-repo from previous function for full merge
-    mmf_repo_allocation = ofr_get('MMF-MMF_RP_TOT-M')
-    mmf_total_allocation = ofr_get('MMF-MMF_TOT-M')
+    with open(Path(DATA_DIR) / 'mmf_repo.pkl', 'rb') as file:
+        mmf_repo_allocation = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_total.pkl', 'rb') as file:
+        mmf_total_allocation = pickle.load(file)
     mmf_repo_non_repo_merge = merge_dfs([mmf_repo_allocation, mmf_total_allocation])
     mmf_repo_non_repo_merge.columns = ['mmf_repo', 'mmf_total']
     mmf_repo_non_repo_merge['non_repo'] = (mmf_repo_non_repo_merge['mmf_total'] -
@@ -278,26 +270,23 @@ def plot_asset_allocation_mmf(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_reserves_non_fed_repo_rrp(start, end, **kwargs):
-    # reuse previous results for slower requests
-    tga_volume = pdr.DataReader('WTREGEN', 'fred', start, end) / 1e3
+    with open(Path(DATA_DIR) / 'tga.pkl', 'rb') as file:
+        tga_volume = pickle.load(file)
+    with open(Path(DATA_DIR) / 'reserves.pkl', 'rb') as file:
+        reserves_volume = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
+        rrp_volume = pickle.load(file)
     tga_volume.index = pd.to_datetime(tga_volume.index)
     tga_volume.columns = ['tga_volume']
-    rrp_volume = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
     rrp_volume.index = pd.to_datetime(rrp_volume.index)
     rrp_volume.columns = ['rrp_volume']
-    reserves_volume = pdr.DataReader('WRESBAL', 'fred', start, end) / 1e3
     reserves_volume.index = pd.to_datetime(reserves_volume.index)
     reserves_volume.columns = ['reserves_volume']
 
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-    def ofr_get(mnemonic):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        df = df / 1e12
-        return df
-    mmf_repo_total = ofr_get('MMF-MMF_RP_TOT-M')
-    mmf_fed_repo = ofr_get('MMF-MMF_RP_wFR-M')
+    with open(Path(DATA_DIR) / 'mmf_repo.pkl', 'rb') as file:
+        mmf_repo_total = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_fed.pkl', 'rb') as file:
+        mmf_fed_repo = pickle.load(file)
 
     mmf_fed_repo_non_repo_merge = merge_dfs([mmf_fed_repo, mmf_repo_total])
     mmf_fed_repo_non_repo_merge.columns = ['mmf_fed_repo', 'mmf_repo_total']
@@ -342,26 +331,23 @@ def plot_reserves_non_fed_repo_rrp(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_reserves_liabilities_system(start, end, **kwargs):
-    # reuse results from previous function for performance
-    tga_volume = pdr.DataReader('WTREGEN', 'fred', start, end) / 1e3
+    with open(Path(DATA_DIR) / 'tga.pkl', 'rb') as file:
+        tga_volume = pickle.load(file)
+    with open(Path(DATA_DIR) / 'reserves.pkl', 'rb') as file:
+        reserves_volume = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
+        rrp_volume = pickle.load(file)
     tga_volume.index = pd.to_datetime(tga_volume.index)
     tga_volume.columns = ['tga_volume']
-    rrp_volume = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
     rrp_volume.index = pd.to_datetime(rrp_volume.index)
     rrp_volume.columns = ['rrp_volume']
-    reserves_volume = pdr.DataReader('WRESBAL', 'fred', start, end) / 1e3
     reserves_volume.index = pd.to_datetime(reserves_volume.index)
     reserves_volume.columns = ['reserves_volume']
 
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-    def ofr_get(mnemonic):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        df = df / 1e12
-        return df
-    mmf_repo_total = ofr_get('MMF-MMF_RP_TOT-M')
-    mmf_fed_repo = ofr_get('MMF-MMF_RP_wFR-M')
+    with open(Path(DATA_DIR) / 'mmf_repo.pkl', 'rb') as file:
+        mmf_repo_total = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_fed.pkl', 'rb') as file:
+        mmf_fed_repo = pickle.load(file)
 
     mmf_fed_repo_non_repo_merge = merge_dfs([mmf_fed_repo, mmf_repo_total])
     mmf_fed_repo_non_repo_merge.columns = ['mmf_fed_repo', 'mmf_repo_total']
