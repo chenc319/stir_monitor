@@ -42,22 +42,22 @@ def plot_proxy_percent_without_clearing(start, end, **kwargs):
     pd_nccbr_proxy_merge = pd_nccbr_proxy_merge.dropna()
 
     ### OFR DATA PULLS ###
-    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
-        dvp_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
-        gcf_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
-        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_volume_df.pkl', 'rb') as file:
+        dvp_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_volume_df.pkl', 'rb') as file:
+        gcf_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_volume_df.pkl', 'rb') as file:
+        tri_volume_df = pickle.load(file)
     with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
         rrp_volume = pickle.load(file)
 
     rrp_volume.columns = ['rrp']
     repo_total_merge = merge_dfs(
-        [gcf_df, dvp_df, tri_df, pd.DataFrame(pd_nccbr_proxy_merge['pd_nccbr_total'])]).dropna()
+        [gcf_volume_df, dvp_volume_df, tri_volume_df, pd.DataFrame(pd_nccbr_proxy_merge['pd_nccbr_total'])]).dropna()
     total_repo_volume = pd.DataFrame(repo_total_merge.sum(axis=1))
     total_repo_volume.columns = ['Repo']
 
-    black_proxy = merge_dfs([tri_df, rrp_volume, dvp_df, gcf_df, total_repo_volume])
+    black_proxy = merge_dfs([tri_volume_df, rrp_volume, dvp_volume_df, gcf_volume_df, total_repo_volume])
     black_proxy.columns = ['tri', 'rrp', 'dvp', 'gcf', 'all_repo']
     black_proxy = black_proxy.resample('W').last().dropna()
     black_proxy['black'] = (black_proxy['tri'] - black_proxy['rrp']) / (black_proxy['all_repo'] - black_proxy['rrp'])
