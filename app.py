@@ -149,6 +149,8 @@ elif menu == 'Shadow Banks':
     app_system.plot_shadow_bank_private_investments(start_date,end_date)
     st.title('Asset-Backed Commercial Paper')
     app_system.plot_shadow_bank_reit(start_date,end_date)
+    st.title('Shadow Bank Liabilities Mapping')
+    app_system.plot_shadow_bank_liabilities(start_date,end_date)
 
 
 ### ---------------------------------------------------------------------------------------- ###

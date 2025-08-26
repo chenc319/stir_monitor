@@ -256,7 +256,7 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ---------------------------------------- PRIVATE INVESTMENT FUNDS ---------------------------------------- ###
+### ---------------------------------- PRIVATE REAL ESTATE INVESTMENT FUNDS ---------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_shadow_bank_reit(start, end, **kwargs):
@@ -275,6 +275,102 @@ def plot_shadow_bank_reit(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------- SHADOW BANK ASSETS ------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_shadow_bank_assets(start, end, **kwargs):
+    mmf_repo = pdr.DataReader('BOGZ1FL632051000Q',
+                              'fred', start, end) * 1e6
+    brokers_dealers_repo = pdr.DataReader('BOGZ1FL662051003Q',
+                                          'fred', start, end) * 1e6
+    nonfinancial_corporations = pdr.DataReader('SRPSABSNNCB',
+                                          'fred', start, end) * 1e9
+    hedge_funds = pdr.DataReader('BOGZ1FL622051003Q',
+                                          'fred', start, end) * 1e6
+    us_chartered_depository_inst = pdr.DataReader('BOGZ1FL762051005Q',
+                                          'fred', start, end) * 1e6
+    all_sectors = pdr.DataReader('BOGZ1FL892050005Q',
+                                 'fred', start, end) * 1e6
+
+
+    merge_df = merge_dfs([mmf_repo,brokers_dealers_repo])
+
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ---------------------------------------- SHADOW BANK LIABILITIES ----------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_shadow_bank_liabilities(start, end, **kwargs):
+    brokers_dealers_repo = pdr.DataReader('BOGZ1FL662151003Q',
+                                          'fred', start, end) * 1e6
+    hedge_funds = pdr.DataReader('BOGZ1FL622151005Q',
+                                 'fred', start, end) * 1e6
+    reit = pdr.DataReader('BOGZ1FL642151073Q',
+                          'fred', start, end) * 1e6
+    all_sectors = pdr.DataReader('BOGZ1FL892150005Q',
+                                 'fred', start, end) * 1e6
+    other_financial_corporations = pdr.DataReader('BOGZ1FL812150005Q',
+                                        'fred', start, end) * 1e6
+    # private_depository_inst = pdr.DataReader('BOGZ1FL702150005Q',
+    #                                          'fred', start, end) * 1e6
+    # monetary_authority = pdr.DataReader('BOGZ1FL712151103Q',
+    #                                     'fred', start, end) * 1e6
+    # us_chartered_institutions = pdr.DataReader('BOGZ1FL762151003Q',
+    #                                     'fred', start, end) * 1e6
+
+    merge_df = merge_dfs([brokers_dealers_repo,
+                          hedge_funds,
+                          reit,
+                          other_financial_corporations,
+                          all_sectors])
+    merge_df.columns = ['Broker/Dealer','HFs','REITs','Other Financial Corps','All Sectors']
+
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(merge_df.index, merge_df['Broker/Dealer'],
+    #          label='Broker/Dealer', color='#0B2138')
+    # plt.plot(merge_df.index, merge_df['HFs'],
+    #          label='HFs', color='#48DEE9')
+    # plt.plot(merge_df.index,
+    #          merge_df['REITs'],
+    #          label='REITs', color='#7EC0EE')
+    # plt.plot(merge_df.index,
+    #          merge_df['Other Financial Corps'],
+    #          label='Other Financial Corps', color='#F9D15B', linewidth=2)
+    # plt.ylabel("$")
+    # plt.title("Shadow Banks: Repo Liabilities", fontsize=20, fontweight='bold')
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['Broker/Dealer'],
+                             mode='lines+markers',
+                             name='Broker/Dealer',
+                             line=dict(color="#0B2138", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['HFs'],
+                             mode='lines+markers',
+                             name='HFs',
+                             line=dict(color="#48DEE9", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['REITs'],
+                             mode='lines+markers',
+                             name='REITs',
+                             line=dict(color="#7EC0EE", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['Other Financial Corps'],
+                             mode='lines+markers',
+                             name='Other Financial Corps',
+                             line=dict(color="#F9D15B", width=3)))
+    fig.update_layout(
+        title="Shadow Banks: Repo Liabilities",
+        yaxis_title="$",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
 
 
