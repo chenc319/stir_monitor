@@ -259,21 +259,21 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
 ### ---------------------------------- PRIVATE REAL ESTATE INVESTMENT FUNDS ---------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def plot_shadow_bank_reit(start, end, **kwargs):
-    abcp = pdr.DataReader('ABCOMP',
-                          'fred', start, end) * 1e9
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=abcp.index,
-                             y=abcp['ABCOMP'],
-                             mode='lines+markers',
-                             name='ABCOMP',
-                             line=dict(color="#46b5ca", width=3)))
-    fig.update_layout(
-        title="Asset-Backed Commercial Paper Volume",
-        yaxis_title="$",
-        hovermode='x unified'
-    )
-    st.plotly_chart(fig, use_container_width=True)
+# def plot_shadow_bank_reit(start, end, **kwargs):
+#     abcp = pdr.DataReader('ABCOMP',
+#                           'fred', start, end) * 1e9
+#     fig = go.Figure()
+#     fig.add_trace(go.Scatter(x=abcp.index,
+#                              y=abcp['ABCOMP'],
+#                              mode='lines+markers',
+#                              name='ABCOMP',
+#                              line=dict(color="#46b5ca", width=3)))
+#     fig.update_layout(
+#         title="Asset-Backed Commercial Paper Volume",
+#         yaxis_title="$",
+#         hovermode='x unified'
+#     )
+#     st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------------- SHADOW BANK ASSETS ------------------------------------------- ###
@@ -326,6 +326,11 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
                           all_sectors])
     merge_df.columns = ['Broker/Dealer','HFs','REITs','Other Financial Corps','All Sectors']
 
+    merge_df['bd_pct'] = merge_df['Broker/Dealer'] / merge_df['All Sectors']
+    merge_df['hf_pct'] = merge_df['HFs'] / merge_df['All Sectors']
+    merge_df['reit_pct'] = merge_df['REITs'] / merge_df['All Sectors']
+    merge_df['others_pct'] = merge_df['Other Financial Corps'] / merge_df['All Sectors']
+
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
     # plt.plot(merge_df.index, merge_df['Broker/Dealer'],
@@ -368,6 +373,35 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
     fig.update_layout(
         title="Shadow Banks: Repo Liabilities",
         yaxis_title="$",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['bd_pct'],
+                             mode='lines+markers',
+                             name='Broker/Dealer',
+                             line=dict(color="#0B2138", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['hf_pct'],
+                             mode='lines+markers',
+                             name='HFs',
+                             line=dict(color="#48DEE9", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['reit_pct'],
+                             mode='lines+markers',
+                             name='REITs',
+                             line=dict(color="#7EC0EE", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['others_pct'],
+                             mode='lines+markers',
+                             name='Other Financial Corps',
+                             line=dict(color="#F9D15B", width=3)))
+    fig.update_layout(
+        title="Shadow Banks: Repo Liabilities",
+        yaxis_title="% of All Sector Repo Liabilities",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
