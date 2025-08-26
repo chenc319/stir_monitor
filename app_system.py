@@ -302,6 +302,23 @@ def plot_shadow_bank_assets(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_shadow_bank_liabilities(start, end, **kwargs):
+    ### OFR DATA PULLS ###
+    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+    all_repo_venus = ['REPO-TRI_TV_TOT-P',
+                      'REPO-DVP_TV_TOT-P',
+                      'REPO-GCF_TV_TOT-P']
+    repo_merge_df = pd.DataFrame()
+    for x in all_repo_venus:
+        volume_df = pd.DataFrame(requests.get(base_url + x).json(), columns=["date", "value"])
+        volume_df['date'] = pd.to_datetime(volume_df['date'])
+        volume_df.index = volume_df['date'].values
+        volume_df.drop('date', axis=1, inplace=True)
+        repo_merge_df = merge_dfs([repo_merge_df,volume_df])
+    repo_merge_df.columns = ['tri','dvp','gcf']
+    total_repo = pd.DataFrame(repo_merge_df.sum(axis=1),
+                              columns = ['total_repo'])
+
+    ### FRED DATA PULLS ###
     brokers_dealers_repo = pdr.DataReader('BOGZ1FL662151003Q',
                                           'fred', start, end) * 1e6
     hedge_funds = pdr.DataReader('BOGZ1FL622151005Q',
@@ -323,13 +340,13 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
                           hedge_funds,
                           reit,
                           other_financial_corporations,
-                          all_sectors])
-    merge_df.columns = ['Broker/Dealer','HFs','REITs','Other Financial Corps','All Sectors']
+                          total_repo])
+    merge_df.columns = ['Broker/Dealer','HFs','REITs','Other Financial Corps','Total Repo']
 
-    merge_df['bd_pct'] = merge_df['Broker/Dealer'] / merge_df['All Sectors']
-    merge_df['hf_pct'] = merge_df['HFs'] / merge_df['All Sectors']
-    merge_df['reit_pct'] = merge_df['REITs'] / merge_df['All Sectors']
-    merge_df['others_pct'] = merge_df['Other Financial Corps'] / merge_df['All Sectors']
+    merge_df['bd_pct'] = merge_df['Broker/Dealer'] / merge_df['Total Repo']
+    merge_df['hf_pct'] = merge_df['HFs'] / merge_df['Total Repo']
+    merge_df['reit_pct'] = merge_df['REITs'] / merge_df['Total Repo']
+    merge_df['others_pct'] = merge_df['Other Financial Corps'] / merge_df['Total Repo']
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -401,7 +418,7 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
                              line=dict(color="#F9D15B", width=3)))
     fig.update_layout(
         title="Shadow Banks: Repo Liabilities",
-        yaxis_title="% of All Sector Repo Liabilities",
+        yaxis_title="% of Total Repo",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
