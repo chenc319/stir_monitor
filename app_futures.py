@@ -3,13 +3,14 @@
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 import pandas as pd
-import requests
 import functools as ft
-from pandas_datareader import data as pdr
 import streamlit as st
 import plotly.graph_objs as go
-from io import StringIO
 from matplotlib import pyplot as plt
+from pathlib import Path
+import os
+import pickle
+DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right, left_index=True, right_index=True, how='outer'), array_of_dfs)
@@ -19,9 +20,8 @@ def merge_dfs(array_of_dfs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_futures_leverage_money_short(start, end, **kwargs):
-    url = "https://publicreporting.cftc.gov/resource/gpe5-46if.csv?$limit=60000"
-    response = requests.get(url)
-    cftc_all_futures = pd.read_csv(StringIO(response.text))
+    with open(Path(DATA_DIR) / 'cftc_all_futures.pkl', 'rb') as file:
+        cftc_all_futures = pickle.load(file)
     bonds_cftc_subset = cftc_all_futures[
         cftc_all_futures['contract_market_name'].isin([
             'UST 2Y NOTE', 'UST 5Y NOTE', 'UST 10Y NOTE', 'ULTRA UST 10Y'
@@ -69,24 +69,16 @@ def plot_futures_leverage_money_short(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_end_of_quarter_spreads(start, end, **kwargs):
-    gc_rate = ('https://markets.newyorkfed.org/api/rates/secured/bgcr/search.'
-               'json?startDate=2014-08-01&endDate=2025-08-11&type=rate')
-    gc_df = pd.DataFrame(requests.get(gc_rate).json()['refRates'])
-    gc_df.index = pd.to_datetime(gc_df['effectiveDate'].values)
-    gc_df = pd.DataFrame(gc_df['percentRate']).iloc[::-1]
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+    with open(Path(DATA_DIR) / 'gc_df.pkl', 'rb') as file:
+        gc_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
+        gcf_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
 
-    def ofr_df(mnemonic):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date","value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        return df.astype(float)
-
-    dvp_df = ofr_df('REPO-DVP_AR_OO-P')
-    gcf_df = ofr_df('REPO-GCF_AR_AG-P')
-    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
     fed_funds.index = pd.to_datetime(fed_funds.index)
-
     quarter_spreads_merge = merge_dfs([gc_df, dvp_df, gcf_df, fed_funds]).resample('QE').last()
     quarter_spreads_merge.columns = ['gc','dvp','gcf','effr']
     quarter_spreads_merge = quarter_spreads_merge.loc[str(start):str(end)]
@@ -127,23 +119,16 @@ def plot_end_of_quarter_spreads(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_end_of_month_spreads(start, end, **kwargs):
-    gc_rate = ('https://markets.newyorkfed.org/api/rates/secured/bgcr/search.'
-               'json?startDate=2014-08-01&endDate=2025-08-11&type=rate')
-    gc_df = pd.DataFrame(requests.get(gc_rate).json()['refRates'])
-    gc_df.index = pd.to_datetime(gc_df['effectiveDate'].values)
-    gc_df = pd.DataFrame(gc_df['percentRate']).iloc[::-1]
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-    def ofr_df(mnemonic):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date","value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        return df.astype(float)
-    dvp_df = ofr_df('REPO-DVP_AR_OO-P')
-    gcf_df = ofr_df('REPO-GCF_AR_AG-P')
-    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
-    fed_funds.index = pd.to_datetime(fed_funds.index)
-    rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
-    rrp.index = pd.to_datetime(rrp.index)
+    with open(Path(DATA_DIR) / 'gc_df.pkl', 'rb') as file:
+        gc_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
+        gcf_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
     monthly_spreads_merge = merge_dfs([gc_df, dvp_df, gcf_df, fed_funds, rrp]).resample('ME').last()
     monthly_spreads_merge.columns = ['gc','dvp','gcf','effr','rrp']
     monthly_spreads_merge = monthly_spreads_merge.loc[str(start):str(end)]
@@ -189,24 +174,20 @@ def plot_end_of_month_spreads(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_stability_lower_roc(start, end, **kwargs):
-    sof = pdr.DataReader('SOFR', 'fred', start, end)
-    rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
-    gc_rate = ('https://markets.newyorkfed.org/api/rates/secured/bgcr/search.'
-               'json?startDate=2014-08-01&endDate=2025-08-11&type=rate')
-    gc_df = pd.DataFrame(requests.get(gc_rate).json()['refRates'])
-    gc_df.index = pd.to_datetime(gc_df['effectiveDate'].values)
-    gc_df = pd.DataFrame(gc_df['percentRate']).iloc[::-1]
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-    tri_df = pd.DataFrame(requests.get(base_url + 'REPO-TRI_AR_OO-P').json(), columns=["date","value"])
-    tri_df['date'] = pd.to_datetime(tri_df['date'])
-    tri_df.set_index('date', inplace=True)
-    dvp_df = pd.DataFrame(requests.get(base_url + 'REPO-DVP_AR_OO-P').json(), columns=["date","value"])
-    dvp_df['date'] = pd.to_datetime(dvp_df['date'])
-    dvp_df.set_index('date', inplace=True)
-    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
-    fed_funds.index = pd.to_datetime(fed_funds.index)
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gc_df.pkl', 'rb') as file:
+        gc_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
 
-    combined_data = merge_dfs([sof, rrp, gc_df, fed_funds, tri_df, dvp_df])
+    combined_data = merge_dfs([sofr, rrp, gc_df, fed_funds, tri_df, dvp_df])
     combined_data.columns = ['SOFR','ON_RRP_Rate','BGCR','Fed_Funds','TGCR','DVP']
     clean_data = combined_data.dropna(subset=['SOFR','BGCR','TGCR','ON_RRP_Rate','Fed_Funds','DVP'])
 
@@ -266,24 +247,20 @@ def plot_stability_lower_roc(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_how_did_levels_change(start, end, **kwargs):
-    sof = pdr.DataReader('SOFR', 'fred', start, end)
-    rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
-    gc_rate = ('https://markets.newyorkfed.org/api/rates/secured/bgcr/search.'
-               'json?startDate=2014-08-01&endDate=2025-08-11&type=rate')
-    gc_df = pd.DataFrame(requests.get(gc_rate).json()['refRates'])
-    gc_df.index = pd.to_datetime(gc_df['effectiveDate'].values)
-    gc_df = pd.DataFrame(gc_df['percentRate']).iloc[::-1]
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-    tri_df = pd.DataFrame(requests.get(base_url + 'REPO-TRI_AR_OO-P').json(), columns=["date","value"])
-    tri_df['date'] = pd.to_datetime(tri_df['date'])
-    tri_df.set_index('date', inplace=True)
-    dvp_df = pd.DataFrame(requests.get(base_url + 'REPO-DVP_AR_OO-P').json(), columns=["date","value"])
-    dvp_df['date'] = pd.to_datetime(dvp_df['date'])
-    dvp_df.set_index('date', inplace=True)
-    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
-    fed_funds.index = pd.to_datetime(fed_funds.index)
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gc_df.pkl', 'rb') as file:
+        gc_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
 
-    combined_data = merge_dfs([sof, rrp, gc_df, fed_funds, tri_df, dvp_df])
+    combined_data = merge_dfs([sofr, rrp, gc_df, fed_funds, tri_df, dvp_df])
     combined_data.columns = ['SOFR','ON_RRP_Rate','BGCR','Fed_Funds','TGCR','DVP']
     clean_data = combined_data.dropna(subset=['SOFR','BGCR','TGCR','ON_RRP_Rate','Fed_Funds','DVP'])
 

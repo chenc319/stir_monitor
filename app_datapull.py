@@ -82,6 +82,13 @@ def refresh_all_data():
     sofr99 = pdr.DataReader('SOFR99', 'fred', start, end)
     with open(Path(DATA_DIR) / 'sofr99.pkl', 'wb') as file:
         pickle.dump(sofr99, file)
+    gc_rate = ('https://markets.newyorkfed.org/api/rates/secured/bgcr/search.'
+               'json?startDate=2014-08-01&endDate=2025-08-11&type=rate')
+    gc_df = pd.DataFrame(requests.get(gc_rate).json()['refRates'])
+    gc_df.index = pd.to_datetime(gc_df['effectiveDate'].values)
+    gc_df = pd.DataFrame(gc_df['percentRate']).iloc[::-1]
+    with open(Path(DATA_DIR) / 'gc_df.pkl', 'wb') as file:
+        pickle.dump(gc_df, file)
 
     ### VOLUME ###
     treasury = pdr.DataReader('TREAST', 'fred', start, end) * 1e6

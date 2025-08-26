@@ -3,9 +3,7 @@
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 import pandas as pd
-import requests
 import functools as ft
-from pandas_datareader import data as pdr
 import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt

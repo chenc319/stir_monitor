@@ -3,7 +3,6 @@
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 import pandas as pd
-import requests
 import functools as ft
 import streamlit as st
 import plotly.graph_objs as go
