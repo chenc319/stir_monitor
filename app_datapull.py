@@ -37,14 +37,28 @@ def refresh_all_data():
 
     ### RATES ###
     iorb = pdr.DataReader('IORB', 'fred', start, end)
-    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
-
     with open(base_path + 'iorb.pkl', 'wb') as file:
         pickle.dump(iorb, file)
+    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
+    with open(base_path + 'fed_funds.pkl', 'wb') as file:
+        pickle.dump(fed_funds, file)
+    sofr = pdr.DataReader('SOFR', 'fred', start, end)
+    with open(base_path + 'sofr.pkl', 'wb') as file:
+        pickle.dump(sofr, file)
+    sofr_1m_avg = pdr.DataReader('SOFR30DAYAVG', 'fred', start, end)
+    with open(base_path + 'sofr_1m_avg.pkl', 'wb') as file:
+        pickle.dump(sofr_1m_avg, file)
+    sofr_3m_avg = pdr.DataReader('SOFR90DAYAVG', 'fred', start, end)
+    with open(base_path + 'sofr_3m_avg.pkl', 'wb') as file:
+        pickle.dump(sofr_3m_avg, file)
+    rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
+    with open(base_path + 'rrp.pkl', 'wb') as file:
+        pickle.dump(rrp, file)
 
-    file_path = Path(DATA_DIR) / 'all_us_comps_latest_sbc_df.pkl'
-    with open(file_path, 'rb') as file:
-        all_us_comps_latest_sbc_df = pickle.load(file)
+
+
+
+
 
 
 

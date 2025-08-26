@@ -9,6 +9,7 @@ from pandas_datareader import data as pdr
 import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt
+base_path = '/Users/chenc/Documents/GitHub/stir_monitor/data/'
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right,
@@ -21,8 +22,8 @@ def merge_dfs(array_of_dfs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_dash_for_cash_spread(start, end, **kwargs):
-    iorb = pdr.DataReader('IORB', 'fred', start, end)
-    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
+    iorb = pd.read_pickle(base_path + 'iorb.pkl')
+    fed_funds = pd.read_pickle(base_path + 'fed_funds.pkl')
     dash_spread = iorb.join(fed_funds, how='inner', lsuffix='_IORB', rsuffix='_EFFR')
     dash_spread['Spread_bp'] = (dash_spread['EFFR'] - dash_spread['IORB']) * 100
 
@@ -53,18 +54,18 @@ def plot_dash_for_cash_spread(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_new_sofr_system(start, end, **kwargs):
-    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
-    sofr = pdr.DataReader('SOFR', 'fred', start, end)
-    sofr_1m = pdr.DataReader('SOFR30DAYAVG', 'fred', start, end)
-    sofr_3m = pdr.DataReader('SOFR90DAYAVG', 'fred', start, end)
-    rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
+    fed_funds = pd.read_pickle(base_path + 'fed_funds.pkl')
+    sofr = pd.read_pickle(base_path + 'sofr.pkl')
+    sofr_1m_avg = pd.read_pickle(base_path + 'sofr_1m_avg.pkl')
+    sofr_3m_avg = pd.read_pickle(base_path + 'sofr_3m_avg.pkl')
+    rrp = pd.read_pickle(base_path + 'rrp.pkl')
     srf = pd.DataFrame(index=sofr.index)
     srf['SRF'] = rrp['RRPONTSYAWARD'] + 0.25
     df_bp = pd.concat([
         fed_funds.rename(columns={'EFFR': 'EFFR'}),
         sofr.rename(columns={'SOFR': 'SOFR'}),
-        sofr_1m.rename(columns={'SOFR30DAYAVG': 'SOFR 1M'}),
-        sofr_3m.rename(columns={'SOFR90DAYAVG': 'SOFR 3M'}),
+        sofr_1m_avg.rename(columns={'SOFR30DAYAVG': 'SOFR 1M'}),
+        sofr_3m_avg.rename(columns={'SOFR90DAYAVG': 'SOFR 3M'}),
         srf,
         rrp.rename(columns={'RRPONTSYAWARD': 'RRP'})
     ], axis=1) * 100
@@ -110,9 +111,10 @@ def plot_repo_rate_complex(start, end, **kwargs):
         df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
         df['date'] = pd.to_datetime(df['date'])
         return df.set_index('date')
-    rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
-    sofr = pdr.DataReader('SOFR', 'fred', start, end)
-    srf = pd.DataFrame(index=sofr.index); srf['SRF'] = rrp['RRPONTSYAWARD'] + 0.25
+    rrp = pd.read_pickle(base_path + 'rrp.pkl')
+    sofr = pd.read_pickle(base_path + 'sofr.pkl')
+    srf = pd.DataFrame(index=sofr.index)
+    srf['SRF'] = rrp['RRPONTSYAWARD'] + 0.25
     dvp_df = ofr_to_df('REPO-DVP_AR_OO-P')
     gcf_df = ofr_to_df('REPO-GCF_AR_AG-P')
     tri_df = ofr_to_df('REPO-TRI_AR_OO-P')
