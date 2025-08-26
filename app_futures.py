@@ -13,7 +13,11 @@ import pickle
 DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 def merge_dfs(array_of_dfs):
-    return ft.reduce(lambda left, right: pd.merge(left, right, left_index=True, right_index=True, how='outer'), array_of_dfs)
+    return ft.reduce(lambda left,
+                            right: pd.merge(left, right,
+                                            left_index=True,
+                                            right_index=True,
+                                            how='outer'), array_of_dfs)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### -------------------------------------- FUTURES LEVERAGE MONEY SHORT -------------------------------------- ###

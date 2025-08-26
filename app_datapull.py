@@ -58,6 +58,7 @@ def refresh_all_data():
         df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
         df['date'] = pd.to_datetime(df['date'])
         return df.set_index('date')
+
     dvp_df = ofr_to_df('REPO-DVP_AR_OO-P')
     with open(Path(DATA_DIR) / 'dvp_df.pkl', 'wb') as file:
         pickle.dump(dvp_df, file)
@@ -296,7 +297,6 @@ def refresh_all_data():
     with open(Path(DATA_DIR) / 'mmf_ficc.pkl', 'wb') as file:
         pickle.dump(mmf_ficc, file)
 
-
     ### AUCTION DATA ###
     url = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/auctions_query?"
            "filter=record_date:gte:2000-08-16,record_date:lte:2025-08-15"
@@ -308,6 +308,90 @@ def refresh_all_data():
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'wb') as file:
         pickle.dump(auction_df, file)
 
+    ### PRIMARY DEALERS ###
+    def pd_ofr_to_df(mnemonic):
+        base_url = 'https://data.financialresearch.gov/hf/v1/series/full?mnemonic='
+        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
+        df['date'] = pd.to_datetime(df['date'])
+        return df.set_index('date')
+
+    ficc_sponsored_repo_volume = pd_ofr_to_df('FICC-SPONSORED_REPO_VOL')
+    ficc_sponsored_repo_volume.columns = ['FICC-SPONSORED_REPO_VOL']
+    with open(Path(DATA_DIR) / 'ficc_sponsored_repo_volume.pkl', 'wb') as file:
+        pickle.dump(ficc_sponsored_repo_volume, file)
+
+    ficc_sponsored_rrp_volume = pd_ofr_to_df('FICC-SPONSORED_REVREPO_VOL')
+    ficc_sponsored_rrp_volume.columns = ['FICC-SPONSORED_REVREPO_VOL']
+    with open(Path(DATA_DIR) / 'ficc_sponsored_rrp_volume.pkl', 'wb') as file:
+        pickle.dump(ficc_sponsored_rrp_volume, file)
+
+    dvp_sponsored_volume = ofr_to_df('REPO-DVP_TV_TOT-P')
+    mmf_ficc.columns = ['ficc']
+    with open(Path(DATA_DIR) / 'mmf_ficc.pkl', 'wb') as file:
+        pickle.dump(mmf_ficc, file)
+
+
+    ### PRIMARY DEALER BILLS AND BOND POSITIONS ###
+    urls = [
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-B.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-L2.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G2L3.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G3L6.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G6L7.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G7L11.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G11L21.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G21.json'
+    ]
+    names = ['bills', 'l2', 'g2l3', 'g3l6', 'g6l7', 'g7l11', 'g11l21', 'g21']
+    all_pd_bills_bonds_positions = pd.DataFrame()
+    for idx in range(len(urls)):
+        pos = pd.DataFrame(requests.get(urls[idx]).json()['pd']['timeseries']).drop('keyid', axis=1)
+        pos['value'] = pd.to_numeric(pos['value'], errors='coerce') / 1e3
+        pos.dropna(subset=['value'], inplace=True)
+        pos['asofdate'] = pd.to_datetime(pos['asofdate'])
+        pos.set_index('asofdate', inplace=True)
+        pos = pos[['value']]
+        pos.columns = [names[idx]]
+        pos = pos.sort_index()
+        all_pd_bills_bonds_positions = merge_dfs([all_pd_bills_bonds_positions, pos])
+    all_pd_bills_bonds_positions = all_pd_bills_bonds_positions.sort_index().loc[str(start):str(end)]
+    all_pd_bills_bonds_positions['net_nominal_bonds'] = (
+            all_pd_bills_bonds_positions['l2'] +
+            all_pd_bills_bonds_positions['g2l3'] +
+            all_pd_bills_bonds_positions['g3l6'] +
+            all_pd_bills_bonds_positions['g6l7'] +
+            all_pd_bills_bonds_positions['g7l11']
+    )
+    with open(Path(DATA_DIR) / 'all_pd_bills_bonds_positions.pkl', 'wb') as file:
+        pickle.dump(all_pd_bills_bonds_positions, file)
+
+    ### PRIMARY DEALER BILLS AND BOND NET CHANGES ###
+    urls = [
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGS-BC.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-L2C.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G2L3C.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G3L6C.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G6L7C.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G7L11C.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G11L21C.json',
+        'https://markets.newyorkfed.org/api/pd/get/PDPOSGSC-G21C.json'
+    ]
+    names = ['bills', 'l2', 'g2l3', 'g3l6', 'g6l7', 'g7l11', 'g11l21', 'g21']
+    all_pd_bills_bonds_net_changes = pd.DataFrame()
+    for idx in range(len(urls)):
+        pos = pd.DataFrame(requests.get(urls[idx]).json()['pd']['timeseries']).drop('keyid', axis=1)
+        pos['value'] = pd.to_numeric(pos['value'], errors='coerce')
+        pos.dropna(subset=['value'], inplace=True)
+        pos['asofdate'] = pd.to_datetime(pos['asofdate'])
+        pos.set_index('asofdate', inplace=True)
+        pos = pos[['value']]
+        pos.columns = [names[idx]]
+        pos = pos.sort_index()
+        all_pd_bills_bonds_net_changes = merge_dfs([all_pd_bills_bonds_net_changes, pos])
+    all_pd_bills_bonds_net_changes = all_pd_bills_bonds_net_changes.sort_index().loc[
+                                     str(start):str(end)].dropna()
+    with open(Path(DATA_DIR) / 'all_pd_bills_bonds_net_changes.pkl', 'wb') as file:
+        pickle.dump(all_pd_bills_bonds_net_changes, file)
 
 
 
