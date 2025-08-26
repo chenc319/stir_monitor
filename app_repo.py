@@ -53,7 +53,7 @@ def plot_proxy_percent_without_clearing(start, end, **kwargs):
 
     rrp_volume.columns = ['rrp']
     repo_total_merge = merge_dfs(
-        [gcf_df, dvp_df, tri_df, pd.DataFrame(pd_nccbr_proxy_merge['pd_nccbr_total'] / 1e6)]).dropna()
+        [gcf_df, dvp_df, tri_df, pd.DataFrame(pd_nccbr_proxy_merge['pd_nccbr_total'])]).dropna()
     total_repo_volume = pd.DataFrame(repo_total_merge.sum(axis=1))
     total_repo_volume.columns = ['Repo']
 
