@@ -162,6 +162,8 @@ elif menu == 'Shadow Banks':
     app_shadow_banks.plot_shadow_bank_mmf_on_repo(start_date,end_date)
     st.title('Private Investment Funds')
     app_shadow_banks.plot_shadow_bank_private_investments(start_date,end_date)
+    st.title('Shadow Bank Assets Mapping')
+    app_shadow_banks.plot_shadow_bank_assets(start_date, end_date)
     st.title('Shadow Bank Liabilities Mapping')
     app_shadow_banks.plot_shadow_bank_liabilities(start_date,end_date)
 
