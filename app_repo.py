@@ -99,20 +99,20 @@ def plot_proxy_percent_without_clearing(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_volume_per_venue(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
-        dvp_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
-        gcf_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
-        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_volume_df.pkl', 'rb') as file:
+        dvp_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_volume_df.pkl', 'rb') as file:
+        gcf_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_volume_df.pkl', 'rb') as file:
+        tri_volume_df = pickle.load(file)
     with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
         rrp_volume = pickle.load(file)
 
     rrp_volume.columns = ['rrp']
-    triparty_rrp_merge = merge_dfs([tri_df, rrp_volume]).dropna()
+    triparty_rrp_merge = merge_dfs([tri_volume_df, rrp_volume]).dropna()
     triparty_rrp_diff = pd.DataFrame(triparty_rrp_merge.iloc[:, 0] - triparty_rrp_merge.iloc[:, 1])
     triparty_rrp_diff.columns = ['Triparty-RRP']
-    volume_venue_merge_df = merge_dfs([dvp_df, rrp_volume, gcf_df, triparty_rrp_diff]).loc[str(start):str(end)].dropna()
+    volume_venue_merge_df = merge_dfs([dvp_volume_df, rrp_volume, gcf_volume_df, triparty_rrp_diff]).loc[str(start):str(end)].dropna()
     volume_venue_merge_df.columns = ['DVP', 'RRP', 'GCF', 'Triparty-RRP']
 
     # ### PLOT ###
@@ -202,20 +202,20 @@ def plot_mmf_by_asset(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_6m_volume_change(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
-        dvp_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
-        gcf_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
-        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_volume_df.pkl', 'rb') as file:
+        dvp_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_volume_df.pkl', 'rb') as file:
+        gcf_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_volume_df.pkl', 'rb') as file:
+        tri_volume_df = pickle.load(file)
     with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
         rrp_volume = pickle.load(file)
 
-    triparty_rrp_merge = merge_dfs([tri_df, rrp_volume]).dropna()
+    triparty_rrp_merge = merge_dfs([tri_volume_df, rrp_volume]).dropna()
     triparty_rrp_diff = pd.DataFrame(triparty_rrp_merge.iloc[:, 0] - triparty_rrp_merge.iloc[:, 1])
     triparty_rrp_diff.columns = ['Triparty-RRP']
 
-    volume_venue_merge_df = merge_dfs([dvp_df, rrp_volume, gcf_df, triparty_rrp_diff]).loc[str(start):str(end)].dropna()
+    volume_venue_merge_df = merge_dfs([dvp_volume_df, rrp_volume, gcf_volume_df, triparty_rrp_diff]).loc[str(start):str(end)].dropna()
     volume_venue_merge_df.columns = ['DVP', 'RRP', 'GCF', 'Triparty-RRP']
 
     roc_6m_volume = volume_venue_merge_df.resample('ME').last().diff(1)
@@ -367,14 +367,14 @@ def plot_mmf_repo_vs_non_repo(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_triparty_adjusted_for_rrp(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
-        dvp_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
-        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_volume_df.pkl', 'rb') as file:
+        dvp_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_volume_df.pkl', 'rb') as file:
+        tri_volume_df = pickle.load(file)
     with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
         rrp_volume = pickle.load(file)
 
-    triparty_merge = merge_dfs([tri_df, rrp_volume, dvp_df])
+    triparty_merge = merge_dfs([tri_volume_df, rrp_volume, dvp_volume_df])
     triparty_merge.columns = ['tri', 'rrp', 'dvp']
     triparty_merge['triparty-rrp'] = triparty_merge['tri'] - triparty_merge['rrp']
     triparty_merge['residual_flows'] = triparty_merge['dvp'] - triparty_merge['triparty-rrp']

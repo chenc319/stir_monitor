@@ -43,11 +43,11 @@ def plot_soma_holdings(start, end, **kwargs):
     # plt.show()
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df.index, y=df['notesbonds'] / 1e12,
+    fig.add_trace(go.Scatter(x=df.index, y=df['notesbonds'],
                              mode='lines+markers',
                              name='Notes/Bonds',
                              line=dict(color='#aad8ef', width=2)))
-    fig.add_trace(go.Scatter(x=df.index, y=df['mbs'] / 1e12,
+    fig.add_trace(go.Scatter(x=df.index, y=df['mbs'],
                              mode='lines+markers',
                              name='MBS',
                              line=dict(color='#4da3d7', width=2)))
@@ -85,27 +85,27 @@ def plot_soma_holdings(start, end, **kwargs):
     # plt.show()
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df.index, y=df['tips'] / 1e9,
+    fig.add_trace(go.Scatter(x=df.index, y=df['tips'],
                              mode='lines+markers',
                              name='TIPS',
                              line=dict(color='#aad8ef', width=2)))
-    fig.add_trace(go.Scatter(x=df.index, y=df['frn'] / 1e9,
+    fig.add_trace(go.Scatter(x=df.index, y=df['frn'],
                              mode='lines+markers',
                              name='FRN',
                              line=dict(color='#2f90c5', width=2)))
-    fig.add_trace(go.Scatter(x=df.index, y=df['tipsInflationCompensation'] / 1e9,
+    fig.add_trace(go.Scatter(x=df.index, y=df['tipsInflationCompensation'],
                              mode='lines+markers',
                              name='Inflation Compensation',
                              line=dict(color='#17293c', width=2)))
-    fig.add_trace(go.Scatter(x=df.index, y=df['bills'] / 1e9,
+    fig.add_trace(go.Scatter(x=df.index, y=df['bills'],
                              mode='lines+markers',
                              name='Bills',
                              line=dict(color='#f5c23e', width=2)))
-    fig.add_trace(go.Scatter(x=df.index, y=df['agencies'] / 1e9,
+    fig.add_trace(go.Scatter(x=df.index, y=df['agencies'],
                              mode='lines+markers',
                              name='Agencies',
                              line=dict(color='#f5b9ad', width=2)))
-    fig.add_trace(go.Scatter(x=df.index, y=df['cmbs'] / 1e9,
+    fig.add_trace(go.Scatter(x=df.index, y=df['cmbs'],
                              mode='lines+markers',
                              name='CMBS',
                              line=dict(color='#4da3d7', width=2)))
@@ -159,7 +159,7 @@ def plot_fed_repo_operations(start, end, **kwargs):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=repo_treasury_df.index,
-                             y=repo_treasury_df['treasury_amt'] / 1e9,
+                             y=repo_treasury_df['treasury_amt'],
                              mode='lines+markers',
                              name='Treasury',
                              line=dict(color='#aad8ef', width=2)))
@@ -183,7 +183,7 @@ def plot_fed_repo_operations(start, end, **kwargs):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=repo_mbs_df.index,
-                             y=repo_mbs_df['mbs_amt'] / 1e6,
+                             y=repo_mbs_df['mbs_amt'],
                              mode='lines+markers',
                              name='MBS',
                              line=dict(color='#f5c23e', width=2)))
@@ -207,7 +207,7 @@ def plot_fed_repo_operations(start, end, **kwargs):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=repo_agency_df.index,
-                             y=repo_agency_df['agency_amt'] / 1e6,
+                             y=repo_agency_df['agency_amt'],
                              mode='lines+markers',
                              name='Agency',
                              line=dict(color='#17293c', width=2)))
@@ -255,7 +255,7 @@ def plot_fed_rrp_operations(start, end, **kwargs):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=amount_rrp_fed_df.index,
-                             y=amount_rrp_fed_df['totalAmtAccepted'] / 1e12,
+                             y=amount_rrp_fed_df['totalAmtAccepted'],
                              mode='lines+markers',
                              name='ONRRP Accepted',
                              line=dict(color='#aad8ef', width=2)))

@@ -275,13 +275,13 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
 
 def plot_shadow_bank_assets(start, end, **kwargs):
     ### OFR DATA PULLS ###
-    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
-        dvp_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
-        gcf_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
-        tri_df = pickle.load(file)
-    repo_merge_df = merge_dfs([tri_df, dvp_df, gcf_df])
+    with open(Path(DATA_DIR) / 'dvp_volume_df.pkl', 'rb') as file:
+        dvp_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_volume_df.pkl', 'rb') as file:
+        gcf_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_volume_df.pkl', 'rb') as file:
+        tri_volume_df = pickle.load(file)
+    repo_merge_df = merge_dfs([tri_volume_df, dvp_volume_df, gcf_volume_df])
     repo_merge_df.columns = ['tri', 'dvp', 'gcf']
     total_repo = pd.DataFrame(repo_merge_df.sum(axis=1),
                               columns=['total_repo'])
@@ -359,13 +359,13 @@ def plot_shadow_bank_assets(start, end, **kwargs):
 
 def plot_shadow_bank_liabilities(start, end, **kwargs):
     ### OFR DATA PULLS ###
-    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
-        dvp_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
-        gcf_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
-        tri_df = pickle.load(file)
-    repo_merge_df = merge_dfs([tri_df,dvp_df,gcf_df])
+    with open(Path(DATA_DIR) / 'dvp_volume_df.pkl', 'rb') as file:
+        dvp_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_volume_df.pkl', 'rb') as file:
+        gcf_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_volume_df.pkl', 'rb') as file:
+        tri_volume_df = pickle.load(file)
+    repo_merge_df = merge_dfs([tri_volume_df,dvp_volume_df,gcf_volume_df])
     repo_merge_df.columns = ['tri','dvp','gcf']
     total_repo = pd.DataFrame(repo_merge_df.sum(axis=1),
                               columns = ['total_repo'])
