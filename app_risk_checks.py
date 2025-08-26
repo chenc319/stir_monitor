@@ -9,7 +9,10 @@ from pandas_datareader import data as pdr
 import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt
-base_path = '/Users/chenc/Documents/GitHub/stir_monitor/data/'
+from pathlib import Path
+import os
+import pickle
+DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right,
@@ -22,8 +25,11 @@ def merge_dfs(array_of_dfs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_dash_for_cash_spread(start, end, **kwargs):
-    iorb = pd.read_pickle(base_path + 'iorb.pkl')
-    fed_funds = pd.read_pickle(base_path + 'fed_funds.pkl')
+    with open(Path(DATA_DIR) / 'iorb.pkl', 'rb') as file:
+        iorb = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+
     dash_spread = iorb.join(fed_funds, how='inner', lsuffix='_IORB', rsuffix='_EFFR')
     dash_spread['Spread_bp'] = (dash_spread['EFFR'] - dash_spread['IORB']) * 100
 
@@ -54,11 +60,17 @@ def plot_dash_for_cash_spread(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_new_sofr_system(start, end, **kwargs):
-    fed_funds = pd.read_pickle(base_path + 'fed_funds.pkl')
-    sofr = pd.read_pickle(base_path + 'sofr.pkl')
-    sofr_1m_avg = pd.read_pickle(base_path + 'sofr_1m_avg.pkl')
-    sofr_3m_avg = pd.read_pickle(base_path + 'sofr_3m_avg.pkl')
-    rrp = pd.read_pickle(base_path + 'rrp.pkl')
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr_1m_avg.pkl', 'rb') as file:
+        sofr_1m_avg = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr_3m_avg.pkl', 'rb') as file:
+        sofr_3m_avg = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+
     srf = pd.DataFrame(index=sofr.index)
     srf['SRF'] = rrp['RRPONTSYAWARD'] + 0.25
     df_bp = pd.concat([
@@ -106,15 +118,19 @@ def plot_new_sofr_system(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_repo_rate_complex(start, end, **kwargs):
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
+        gcf_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
 
-
-    rrp = pd.read_pickle(base_path + 'rrp.pkl')
-    sofr = pd.read_pickle(base_path + 'sofr.pkl')
     srf = pd.DataFrame(index=sofr.index)
     srf['SRF'] = rrp['RRPONTSYAWARD'] + 0.25
-    dvp_df = pd.read_pickle(base_path + 'dvp_df.pkl')
-    gcf_df = pd.read_pickle(base_path + 'gcf_df.pkl')
-    tri_df = pd.read_pickle(base_path + 'tri_df.pkl')
     repo_df = merge_dfs([rrp, srf, sofr, dvp_df, gcf_df, tri_df]).dropna()
     repo_df.columns = ['RRP', 'SRF', 'SOFR', 'DVP', 'GCF', 'TRIPARTY']
     colors = {'SOFR': '#0B2138', 'DVP': '#48DEE9', 'TRIPARTY': '#7EC0EE',
@@ -159,11 +175,16 @@ def plot_repo_rate_complex(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_sofr_distribution(start, end, **kwargs):
-    sofr = pd.read_pickle(base_path + 'sofr.pkl')
-    sofr1 = pd.read_pickle(base_path + 'sofr1.pkl')
-    sofr25 = pd.read_pickle(base_path + 'sofr25.pkl')
-    sofr75 = pd.read_pickle(base_path + 'sofr75.pkl')
-    sofr99 = pd.read_pickle(base_path + 'sofr99.pkl')
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr1.pkl', 'rb') as file:
+        sofr1 = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr25.pkl', 'rb') as file:
+        sofr25 = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr75.pkl', 'rb') as file:
+        sofr75 = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr99.pkl', 'rb') as file:
+        sofr99 = pickle.load(file)
     df = merge_dfs([sofr, sofr1, sofr25, sofr75, sofr99]).dropna()
     colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
     names = ['SOFR', 'SOFR1', 'SOFR25', 'SOFR75', 'SOFR99']
@@ -206,8 +227,10 @@ def plot_sofr_distribution(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_balance_sheet(start, end, **kwargs):
-    treasury = pd.read_pickle(base_path + 'treasury.pkl')
-    mbs = pd.read_pickle(base_path + 'mbs.pkl')
+    with open(Path(DATA_DIR) / 'treasury.pkl', 'rb') as file:
+        treasury = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mbs.pkl', 'rb') as file:
+        mbs = pickle.load(file)
     df = merge_dfs([treasury, mbs]).loc[start:end].dropna()
     df.columns = ['SOMA Treasury', 'SOMA MBS']
 
@@ -246,11 +269,16 @@ def plot_fed_balance_sheet(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_monitoring_reserves(start, end, **kwargs):
-    reserves = pd.read_pickle(base_path + 'reserves.pkl')
-    tga = pd.read_pickle(base_path + 'tga.pkl')
-    rrp_on_volume = pd.read_pickle(base_path + 'rrp_on_volume.pkl')
-    rrp_volume = pd.read_pickle(base_path + 'rrp_volume.pkl')
-    tri_volume_df = pd.read_pickle(base_path + 'tri_volume_df.pkl')
+    with open(Path(DATA_DIR) / 'reserves.pkl', 'rb') as file:
+        reserves = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tga.pkl', 'rb') as file:
+        tga = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp_on_volume.pkl', 'rb') as file:
+        rrp_on_volume = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
+        rrp_volume = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_volume_df.pkl', 'rb') as file:
+        tri_volume_df = pickle.load(file)
     triparty_rrp_merge = merge_dfs([tri_volume_df, rrp_volume]).dropna()
     tri_repo_diff = pd.DataFrame(triparty_rrp_merge.iloc[:, 0] -
                                  triparty_rrp_merge.iloc[:, 1], columns=['Triparty - RRP'])
@@ -301,8 +329,10 @@ def plot_monitoring_reserves(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_action_vs_reserve_response(start, end, **kwargs):
-    fed_action = pd.read_pickle(base_path + 'fed_action.pkl')
-    reserves_volume = pd.read_pickle(base_path + 'reserves.pkl')
+    with open(Path(DATA_DIR) / 'fed_action.pkl', 'rb') as file:
+        fed_action = pickle.load(file)
+    with open(Path(DATA_DIR) / 'reserves.pkl', 'rb') as file:
+        reserves_volume = pickle.load(file)
     df = merge_dfs([fed_action, reserves_volume])
     df.columns = ['Fed Action', 'Reserve Response']
     df = df.resample('ME').last().diff(1).loc[start:end].dropna()
@@ -343,9 +373,12 @@ def plot_fed_action_vs_reserve_response(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_action_vs_reserve_response_v2(start, end, **kwargs):
-    fed_action = pd.read_pickle(base_path + 'fed_action.pkl')
-    rrp = pd.read_pickle(base_path + 'rrp_volume.pkl')
-    tga_volume = pd.read_pickle(base_path + 'tga.pkl')
+    with open(Path(DATA_DIR) / 'fed_action.pkl', 'rb') as file:
+        fed_action = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tga_volume.pkl', 'rb') as file:
+        tga_volume = pickle.load(file)
     reserve_response_v2_merge = merge_dfs([rrp, tga_volume]).resample('ME').last()
     reserve_response_v2 = pd.DataFrame(reserve_response_v2_merge.sum(axis=1).diff(1))
     df = merge_dfs([fed_action.resample('ME').last().diff(1), reserve_response_v2])
