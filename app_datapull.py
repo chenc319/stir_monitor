@@ -54,6 +54,60 @@ def refresh_all_data():
     rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
     with open(base_path + 'rrp.pkl', 'wb') as file:
         pickle.dump(rrp, file)
+    def ofr_to_df(mnemonic):
+        base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
+        df['date'] = pd.to_datetime(df['date'])
+        return df.set_index('date')
+    dvp_df = ofr_to_df('REPO-DVP_AR_OO-P')
+    with open(base_path + 'dvp_df.pkl', 'wb') as file:
+        pickle.dump(dvp_df, file)
+    gcf_df = ofr_to_df('REPO-GCF_AR_AG-P')
+    with open(base_path + 'gcf_df.pkl', 'wb') as file:
+        pickle.dump(gcf_df, file)
+    tri_df = ofr_to_df('REPO-TRI_AR_OO-P')
+    with open(base_path + 'tri_df.pkl', 'wb') as file:
+        pickle.dump(tri_df, file)
+    sofr1 = pdr.DataReader('SOFR1', 'fred', start, end)
+    with open(base_path + 'sofr1.pkl', 'wb') as file:
+        pickle.dump(sofr1, file)
+    sofr25 = pdr.DataReader('SOFR25', 'fred', start, end)
+    with open(base_path + 'sofr25.pkl', 'wb') as file:
+        pickle.dump(sofr25, file)
+    sofr75 = pdr.DataReader('SOFR75', 'fred', start, end)
+    with open(base_path + 'sofr75.pkl', 'wb') as file:
+        pickle.dump(sofr75, file)
+    sofr99 = pdr.DataReader('SOFR99', 'fred', start, end)
+    with open(base_path + 'sofr99.pkl', 'wb') as file:
+        pickle.dump(sofr99, file)
+
+    ### VOLUME ###
+    treasury = pdr.DataReader('TREAST', 'fred', start, end) * 1e9
+    with open(base_path + 'treasury.pkl', 'wb') as file:
+        pickle.dump(treasury, file)
+    mbs = pdr.DataReader('WSHOMCB', 'fred', start, end) * 1e9
+    with open(base_path + 'mbs.pkl', 'wb') as file:
+        pickle.dump(mbs, file)
+    reserves = pdr.DataReader('WRESBAL', 'fred', start, end) * 1e9
+    with open(base_path + 'reserves.pkl', 'wb') as file:
+        pickle.dump(reserves, file)
+    tga = pdr.DataReader('WTREGEN', 'fred', start, end) * 1e9
+    with open(base_path + 'tga.pkl', 'wb') as file:
+        pickle.dump(tga, file)
+    rrp_on_volume = pdr.DataReader('RRPONTSYD', 'fred', start, end) * 1e9
+    with open(base_path + 'rrp_on_volume.pkl', 'wb') as file:
+        pickle.dump(rrp_on_volume, file)
+    rrp_volume = pdr.DataReader('WLRRAL', 'fred', start, end) * 1e9
+    with open(base_path + 'rrp_volume.pkl', 'wb') as file:
+        pickle.dump(rrp_volume, file)
+    tri_volume_df = ofr_to_df('REPO-TRI_TV_TOT-P')
+    with open(base_path + 'tri_volume_df.pkl', 'wb') as file:
+        pickle.dump(tri_volume_df, file)
+    fed_action = pdr.DataReader('WALCL', 'fred', start, end) * 1e6
+    with open(base_path + 'fed_action.pkl', 'wb') as file:
+        pickle.dump(fed_action, file)
+
+
 
 
 

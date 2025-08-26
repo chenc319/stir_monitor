@@ -106,18 +106,15 @@ def plot_new_sofr_system(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_repo_rate_complex(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-    def ofr_to_df(mnemonic):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
-        df['date'] = pd.to_datetime(df['date'])
-        return df.set_index('date')
+
+
     rrp = pd.read_pickle(base_path + 'rrp.pkl')
     sofr = pd.read_pickle(base_path + 'sofr.pkl')
     srf = pd.DataFrame(index=sofr.index)
     srf['SRF'] = rrp['RRPONTSYAWARD'] + 0.25
-    dvp_df = ofr_to_df('REPO-DVP_AR_OO-P')
-    gcf_df = ofr_to_df('REPO-GCF_AR_AG-P')
-    tri_df = ofr_to_df('REPO-TRI_AR_OO-P')
+    dvp_df = pd.read_pickle(base_path + 'dvp_df.pkl')
+    gcf_df = pd.read_pickle(base_path + 'gcf_df.pkl')
+    tri_df = pd.read_pickle(base_path + 'tri_df.pkl')
     repo_df = merge_dfs([rrp, srf, sofr, dvp_df, gcf_df, tri_df]).dropna()
     repo_df.columns = ['RRP', 'SRF', 'SOFR', 'DVP', 'GCF', 'TRIPARTY']
     colors = {'SOFR': '#0B2138', 'DVP': '#48DEE9', 'TRIPARTY': '#7EC0EE',
@@ -162,11 +159,11 @@ def plot_repo_rate_complex(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_sofr_distribution(start, end, **kwargs):
-    sofr = pdr.DataReader('SOFR', 'fred', start, end)
-    sofr1 = pdr.DataReader('SOFR1', 'fred', start, end)
-    sofr25 = pdr.DataReader('SOFR25', 'fred', start, end)
-    sofr75 = pdr.DataReader('SOFR75', 'fred', start, end)
-    sofr99 = pdr.DataReader('SOFR99', 'fred', start, end)
+    sofr = pd.read_pickle(base_path + 'sofr.pkl')
+    sofr1 = pd.read_pickle(base_path + 'sofr1.pkl')
+    sofr25 = pd.read_pickle(base_path + 'sofr25.pkl')
+    sofr75 = pd.read_pickle(base_path + 'sofr75.pkl')
+    sofr99 = pd.read_pickle(base_path + 'sofr99.pkl')
     df = merge_dfs([sofr, sofr1, sofr25, sofr75, sofr99]).dropna()
     colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
     names = ['SOFR', 'SOFR1', 'SOFR25', 'SOFR75', 'SOFR99']
@@ -209,8 +206,8 @@ def plot_sofr_distribution(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_balance_sheet(start, end, **kwargs):
-    treasury = pdr.DataReader('TREAST', 'fred', start, end) / 1e6
-    mbs = pdr.DataReader('WSHOMCB', 'fred', start, end) / 1e6
+    treasury = pd.read_pickle(base_path + 'treasury.pkl')
+    mbs = pd.read_pickle(base_path + 'mbs.pkl')
     df = merge_dfs([treasury, mbs]).loc[start:end].dropna()
     df.columns = ['SOMA Treasury', 'SOMA MBS']
 
@@ -249,20 +246,15 @@ def plot_fed_balance_sheet(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_monitoring_reserves(start, end, **kwargs):
-    reserves = pdr.DataReader('WRESBAL', 'fred', start, end) / 1e3
-    tga = pdr.DataReader('WTREGEN', 'fred', start, end) / 1e3
-    rrp_on = pdr.DataReader('RRPONTSYD', 'fred', start, end) / 1e3
-    rrp = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
-    tri_volume_df = pd.DataFrame(
-        requests.get('https://data.financialresearch.gov/v1/series/timeseries?mnemonic=REPO-TRI_TV_TOT-P').json(),
-        columns=["date", "value"])
-    tri_volume_df['date'] = pd.to_datetime(tri_volume_df['date'])
-    tri_volume_df.set_index('date', inplace=True)
-    tri_volume_df = tri_volume_df / 1e12
-    triparty_rrp_merge = merge_dfs([tri_volume_df, rrp]).dropna()
+    reserves = pd.read_pickle(base_path + 'reserves.pkl')
+    tga = pd.read_pickle(base_path + 'tga.pkl')
+    rrp_on_volume = pd.read_pickle(base_path + 'rrp_on_volume.pkl')
+    rrp_volume = pd.read_pickle(base_path + 'rrp_volume.pkl')
+    tri_volume_df = pd.read_pickle(base_path + 'tri_volume_df.pkl')
+    triparty_rrp_merge = merge_dfs([tri_volume_df, rrp_volume]).dropna()
     tri_repo_diff = pd.DataFrame(triparty_rrp_merge.iloc[:, 0] -
                                  triparty_rrp_merge.iloc[:, 1], columns=['Triparty - RRP'])
-    df = merge_dfs([reserves, tga, rrp, tri_repo_diff, rrp_on]).loc[start:end].dropna()
+    df = merge_dfs([reserves, tga, rrp_volume, tri_repo_diff, rrp_on_volume]).loc[start:end].dropna()
     df.columns = ['Bank Reserves', 'TGA', 'RRP', 'Triparty - RRP', 'RRP ON']
     series = [
         ('Bank Reserves', "#aad8ef"),
@@ -309,8 +301,8 @@ def plot_monitoring_reserves(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_action_vs_reserve_response(start, end, **kwargs):
-    fed_action = pdr.DataReader('WALCL', 'fred', start, end) / 1e6
-    reserves_volume = pdr.DataReader('WRESBAL', 'fred', start, end) / 1e3
+    fed_action = pd.read_pickle(base_path + 'fed_action.pkl')
+    reserves_volume = pd.read_pickle(base_path + 'reserves.pkl')
     df = merge_dfs([fed_action, reserves_volume])
     df.columns = ['Fed Action', 'Reserve Response']
     df = df.resample('ME').last().diff(1).loc[start:end].dropna()
@@ -351,9 +343,9 @@ def plot_fed_action_vs_reserve_response(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_action_vs_reserve_response_v2(start, end, **kwargs):
-    fed_action = pdr.DataReader('WALCL', 'fred', start, end) / 1e6
-    rrp = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
-    tga_volume = pdr.DataReader('WTREGEN', 'fred', start, end) / 1e3
+    fed_action = pd.read_pickle(base_path + 'fed_action.pkl')
+    rrp = pd.read_pickle(base_path + 'rrp_volume.pkl')
+    tga_volume = pd.read_pickle(base_path + 'tga.pkl')
     reserve_response_v2_merge = merge_dfs([rrp, tga_volume]).resample('ME').last()
     reserve_response_v2 = pd.DataFrame(reserve_response_v2_merge.sum(axis=1).diff(1))
     df = merge_dfs([fed_action.resample('ME').last().diff(1), reserve_response_v2])
