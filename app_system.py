@@ -377,11 +377,6 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
                              mode='lines+markers',
                              name='REITs',
                              line=dict(color="#7EC0EE", width=3)))
-    fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['Other Financial Corps'],
-                             mode='lines+markers',
-                             name='Other Financial Corps',
-                             line=dict(color="#F9D15B", width=3)))
     fig.update_layout(
         title="Shadow Banks: Repo Liabilities",
         yaxis_title="$",
@@ -406,11 +401,6 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
                              mode='lines+markers',
                              name='REITs',
                              line=dict(color="#7EC0EE", width=3)))
-    fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['others_pct'],
-                             mode='lines+markers',
-                             name='Other Financial Corps',
-                             line=dict(color="#F9D15B", width=3)))
     fig.update_layout(
         title="Shadow Banks: Repo Liabilities",
         yaxis_title="% of Total Repo",
