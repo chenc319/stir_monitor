@@ -9,6 +9,10 @@ from pandas_datareader import data as pdr
 import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt
+from pathlib import Path
+import os
+import pickle
+DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right,
@@ -20,21 +24,19 @@ def merge_dfs(array_of_dfs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_iorb_spreads(start, end, **kwargs):
-    iorb = pdr.DataReader('IORB', 'fred', start, end)
-    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
-    sofr = pdr.DataReader('SOFR', 'fred', start, end)
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+    with open(Path(DATA_DIR) / 'iorb.pkl', 'rb') as file:
+        iorb = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
 
-    def ofr_df(mnemonic):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date","value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        df = df.astype(float)
-        return df
-
-    dvp_df = ofr_df('REPO-DVP_AR_OO-P')
-    gcf_df = ofr_df('REPO-GCF_AR_AG-P')
-    tri_df = ofr_df('REPO-TRI_AR_OO-P')
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
+        gcf_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
 
     # Align index and scaling to bps
     for df in [sofr, iorb, dvp_df, gcf_df, tri_df]:
@@ -87,22 +89,20 @@ def plot_iorb_spreads(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_gcf_tri_spread(start, end, **kwargs):
-    # Reuse plot_iorb_spreads merging logic for consistency
-    iorb = pdr.DataReader('IORB', 'fred', start, end)
-    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
-    sofr = pdr.DataReader('SOFR', 'fred', start, end)
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+    with open(Path(DATA_DIR) / 'iorb.pkl', 'rb') as file:
+        iorb = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
 
-    def ofr_df(mnemonic):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date","value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        df = df.astype(float)
-        return df
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
+        gcf_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
 
-    dvp_df = ofr_df('REPO-DVP_AR_OO-P')
-    gcf_df = ofr_df('REPO-GCF_AR_AG-P')
-    tri_df = ofr_df('REPO-TRI_AR_OO-P')
     for df in [sofr, iorb, dvp_df, gcf_df, tri_df]:
         df.index = pd.to_datetime(df.index)
     merged = merge_dfs([sofr, iorb, dvp_df, gcf_df, tri_df]).dropna() * 100
@@ -138,16 +138,10 @@ def plot_gcf_tri_spread(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_triparty_term_spread(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-    tri_df = pd.DataFrame(requests.get(base_url + 'REPO-TRI_AR_OO-P').json(), columns=["date", "value"])
-    tri_df['date'] = pd.to_datetime(tri_df['date'])
-    tri_df.set_index('date', inplace=True)
-    tri_df = tri_df.astype(float) * 100
-
-    term1w_df = pd.DataFrame(requests.get(base_url + 'REPO-TRI_AR_LE30-P').json(), columns=["date","value"])
-    term1w_df['date'] = pd.to_datetime(term1w_df['date'])
-    term1w_df.set_index('date', inplace=True)
-    term1w_df = term1w_df.astype(float) * 100
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'term1w_df.pkl', 'rb') as file:
+        term1w_df = pickle.load(file)
 
     tri_term_merge = merge_dfs([tri_df, term1w_df]).dropna().resample('W').last()
     tri_term_merge.columns = ['tri','dvp_30d']
@@ -182,8 +176,10 @@ def plot_triparty_term_spread(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_sofr_effr_chart(start, end, **kwargs):
-    sofr = pdr.DataReader('SOFR', 'fred', start, end)
-    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
     sofr.index = pd.to_datetime(sofr.index)
     fed_funds.index = pd.to_datetime(fed_funds.index)
     sofr_effr_merge = merge_dfs([sofr, fed_funds]).dropna()
@@ -224,20 +220,20 @@ def plot_sofr_effr_chart(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_repo_rate_complex_cross(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-    rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
-    sofr = pdr.DataReader('SOFR', 'fred', start, end)
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
+        gcf_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
     for df in [rrp, sofr]:
         df.index = pd.to_datetime(df.index)
     srf = pd.DataFrame(index=sofr.index)
     srf['SRF'] = rrp['RRPONTSYAWARD'] + 0.25
-    dvp_df = pd.DataFrame(requests.get(base_url + 'REPO-DVP_AR_OO-P').json(), columns=["date", "value"])
-    gcf_df = pd.DataFrame(requests.get(base_url + 'REPO-GCF_AR_AG-P').json(), columns=["date", "value"])
-    tri_df = pd.DataFrame(requests.get(base_url + 'REPO-TRI_AR_OO-P').json(), columns=["date", "value"])
-    for d in [dvp_df, gcf_df, tri_df]:
-        d['date'] = pd.to_datetime(d['date'])
-        d.set_index('date', inplace=True)
-        d = d.astype(float)
     repo_rate_complex_df = merge_dfs([rrp,srf,sofr,dvp_df,gcf_df,tri_df])['2025-04-01':str(end)]
     repo_rate_complex_df.columns = ['RRP','SRF','SOFR','DVP','GCF','TRIPARTY']
     repo_rate_complex_df = repo_rate_complex_df.dropna()
@@ -287,22 +283,25 @@ def plot_repo_rate_complex_cross(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_dollar_lending_complex(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-    rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
-    sofr = pdr.DataReader('SOFR', 'fred', start, end)
-    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
-    iorb = pdr.DataReader('IORB', 'fred', start, end)
+    with open(Path(DATA_DIR) / 'iorb.pkl', 'rb') as file:
+        iorb = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
+        gcf_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
+
     for df in [rrp, sofr, fed_funds, iorb]:
         df.index = pd.to_datetime(df.index)
     srf = pd.DataFrame(index=sofr.index)
     srf['SRF'] = rrp['RRPONTSYAWARD'] + 0.25
-    dvp_df = pd.DataFrame(requests.get(base_url + 'REPO-DVP_AR_OO-P').json(), columns=["date", "value"])
-    gcf_df = pd.DataFrame(requests.get(base_url + 'REPO-GCF_AR_AG-P').json(), columns=["date", "value"])
-    tri_df = pd.DataFrame(requests.get(base_url + 'REPO-TRI_AR_OO-P').json(), columns=["date", "value"])
-    for d in [dvp_df, gcf_df, tri_df]:
-        d['date'] = pd.to_datetime(d['date'])
-        d.set_index('date', inplace=True)
-        d = d.astype(float)
     repo_rate_complex_df = merge_dfs([rrp,srf,sofr,dvp_df,gcf_df,tri_df,fed_funds,iorb])['2025-04-01':str(end)]
     repo_rate_complex_df.columns = ['RRP','SRF','SOFR','DVP','GCF','TRIPARTY','EFFR','IORB']
     repo_rate_complex_df = repo_rate_complex_df.dropna()
@@ -353,8 +352,10 @@ def plot_dollar_lending_complex(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_sofr_floor_ceiling(start, end, **kwargs):
-    sofr = pdr.DataReader('SOFR', 'fred', start, end)
-    rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
     for df in [sofr, rrp]:
         df.index = pd.to_datetime(df.index)
     srf = pd.DataFrame(index=sofr.index)
@@ -400,9 +401,12 @@ def plot_sofr_floor_ceiling(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_unsecured_lending_floor_ceiling(start, end, **kwargs):
-    fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
-    iorb = pdr.DataReader('IORB', 'fred', start, end)
-    rrp = pdr.DataReader('RRPONTSYAWARD', 'fred', start, end)
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+    with open(Path(DATA_DIR) / 'iorb.pkl', 'rb') as file:
+        iorb = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
     for df in [fed_funds, iorb, rrp]:
         df.index = pd.to_datetime(df.index)
     srf = pd.DataFrame(index=fed_funds.index)

@@ -67,6 +67,9 @@ def refresh_all_data():
     tri_df = ofr_to_df('REPO-TRI_AR_OO-P')
     with open(Path(DATA_DIR) / 'tri_df.pkl', 'wb') as file:
         pickle.dump(tri_df, file)
+    term1w_df = ofr_to_df('REPO-TRI_AR_LE30-P')
+    with open(Path(DATA_DIR) / 'term1w_df.pkl', 'wb') as file:
+        pickle.dump(term1w_df, file)
     sofr1 = pdr.DataReader('SOFR1', 'fred', start, end)
     with open(Path(DATA_DIR) / 'sofr1.pkl', 'wb') as file:
         pickle.dump(sofr1, file)
