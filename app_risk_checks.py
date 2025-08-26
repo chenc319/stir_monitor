@@ -377,7 +377,7 @@ def plot_fed_action_vs_reserve_response_v2(start, end, **kwargs):
         fed_action = pickle.load(file)
     with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
         rrp = pickle.load(file)
-    with open(Path(DATA_DIR) / 'tga_volume.pkl', 'rb') as file:
+    with open(Path(DATA_DIR) / 'tga.pkl', 'rb') as file:
         tga_volume = pickle.load(file)
     reserve_response_v2_merge = merge_dfs([rrp, tga_volume]).resample('ME').last()
     reserve_response_v2 = pd.DataFrame(reserve_response_v2_merge.sum(axis=1).diff(1))

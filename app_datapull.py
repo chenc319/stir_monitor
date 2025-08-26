@@ -82,10 +82,10 @@ def refresh_all_data():
         pickle.dump(sofr99, file)
 
     ### VOLUME ###
-    treasury = pdr.DataReader('TREAST', 'fred', start, end) * 1e9
+    treasury = pdr.DataReader('TREAST', 'fred', start, end) * 1e6
     with open(base_path + 'treasury.pkl', 'wb') as file:
         pickle.dump(treasury, file)
-    mbs = pdr.DataReader('WSHOMCB', 'fred', start, end) * 1e9
+    mbs = pdr.DataReader('WSHOMCB', 'fred', start, end) * 1e6
     with open(base_path + 'mbs.pkl', 'wb') as file:
         pickle.dump(mbs, file)
     reserves = pdr.DataReader('WRESBAL', 'fred', start, end) * 1e9
@@ -97,7 +97,7 @@ def refresh_all_data():
     rrp_on_volume = pdr.DataReader('RRPONTSYD', 'fred', start, end) * 1e9
     with open(base_path + 'rrp_on_volume.pkl', 'wb') as file:
         pickle.dump(rrp_on_volume, file)
-    rrp_volume = pdr.DataReader('WLRRAL', 'fred', start, end) * 1e9
+    rrp_volume = pdr.DataReader('WLRRAL', 'fred', start, end) * 1e6
     with open(base_path + 'rrp_volume.pkl', 'wb') as file:
         pickle.dump(rrp_volume, file)
     tri_volume_df = ofr_to_df('REPO-TRI_TV_TOT-P')
