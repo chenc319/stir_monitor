@@ -310,8 +310,11 @@ def refresh_all_data():
 
     ### PRIMARY DEALERS ###
     def pd_ofr_to_df(mnemonic):
+        mnemonic = 'FICC-SPONSORED_REPO_VOL'
         base_url = 'https://data.financialresearch.gov/hf/v1/series/full?mnemonic='
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
+        df = pd.DataFrame(
+            requests.get(base_url + mnemonic).json()
+            [mnemonic]['timeseries']['aggregation'], columns=["date", "value"])
         df['date'] = pd.to_datetime(df['date'])
         return df.set_index('date')
 
