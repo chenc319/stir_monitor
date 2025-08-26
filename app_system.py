@@ -339,14 +339,12 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
     merge_df = merge_dfs([brokers_dealers_repo,
                           hedge_funds,
                           reit,
-                          other_financial_corporations,
-                          total_repo])
-    merge_df.columns = ['Broker/Dealer','HFs','REITs','Other Financial Corps','Total Repo']
+                          total_repo]).dropna()
+    merge_df.columns = ['Broker/Dealer','HFs','REITs','Total Repo']
 
     merge_df['bd_pct'] = merge_df['Broker/Dealer'] / merge_df['Total Repo']
     merge_df['hf_pct'] = merge_df['HFs'] / merge_df['Total Repo']
     merge_df['reit_pct'] = merge_df['REITs'] / merge_df['Total Repo']
-    merge_df['others_pct'] = merge_df['Other Financial Corps'] / merge_df['Total Repo']
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -357,9 +355,6 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
     # plt.plot(merge_df.index,
     #          merge_df['REITs'],
     #          label='REITs', color='#7EC0EE')
-    # plt.plot(merge_df.index,
-    #          merge_df['Other Financial Corps'],
-    #          label='Other Financial Corps', color='#F9D15B', linewidth=2)
     # plt.ylabel("$")
     # plt.title("Shadow Banks: Repo Liabilities", fontsize=20, fontweight='bold')
     # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
