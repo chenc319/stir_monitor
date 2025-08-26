@@ -5,10 +5,13 @@
 import pandas as pd
 import requests
 import functools as ft
-from pandas_datareader import data as pdr
 import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt
+from pathlib import Path
+import os
+import pickle
+DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right, left_index=True, right_index=True, how='outer'),
@@ -19,46 +22,19 @@ def merge_dfs(array_of_dfs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_proxy_percent_without_clearing(start, end, **kwargs):
-    ### DATA PULL ###
-    pd_total_repo_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UTSETTOT.json'
-    pd_total_repo = pd.DataFrame(requests.get(pd_total_repo_url).json()['pd']['timeseries']).drop('keyid', axis=1)
-    pd_total_repo['value'] = pd.to_numeric(pd_total_repo['value'], errors='coerce')
-    pd_total_repo.dropna(subset=['value'], inplace=True)
-    pd_total_repo['asofdate'] = pd.to_datetime(pd_total_repo['asofdate'])
-    pd_total_repo.index = pd_total_repo['asofdate'].values
-    pd_total_repo.drop('asofdate', axis=1, inplace=True)
-    pd_total_repo.columns = ['pd_total_repo']
+    with open(Path(DATA_DIR) / 'pd_total_repo.pkl', 'rb') as file:
+        pd_total_repo = pickle.load(file)
+    with open(Path(DATA_DIR) / 'pd_nccbr_repo_on.pkl', 'rb') as file:
+        pd_nccbr_repo_on = pickle.load(file)
+    with open(Path(DATA_DIR) / 'pd_nccbr_repo_terml30.pkl', 'rb') as file:
+        pd_nccbr_repo_terml30 = pickle.load(file)
+    with open(Path(DATA_DIR) / 'pd_nccbr_repo_termg30.pkl', 'rb') as file:
+        pd_nccbr_repo_termg30 = pickle.load(file)
 
-    pd_nccbr_repo_on_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSET.json'
-    pd_nccbr_repo_on = pd.DataFrame(requests.get(pd_nccbr_repo_on_url).json()['pd']['timeseries']).drop('keyid', axis=1)
-    pd_nccbr_repo_on['value'] = pd.to_numeric(pd_nccbr_repo_on['value'], errors='coerce')
-    pd_nccbr_repo_on.dropna(subset=['value'], inplace=True)
-    pd_nccbr_repo_on['asofdate'] = pd.to_datetime(pd_nccbr_repo_on['asofdate'])
-    pd_nccbr_repo_on.index = pd_nccbr_repo_on['asofdate'].values
-    pd_nccbr_repo_on.drop('asofdate', axis=1, inplace=True)
-    pd_nccbr_repo_on.columns = ['pd_nccbr_on']
-
-    pd_nccbr_repo_terml30_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSETTAL30.json'
-    pd_nccbr_repo_terml30 = pd.DataFrame(requests.get(pd_nccbr_repo_terml30_url).json()['pd']['timeseries']).drop(
-        'keyid', axis=1)
-    pd_nccbr_repo_terml30['value'] = pd.to_numeric(pd_nccbr_repo_terml30['value'], errors='coerce')
-    pd_nccbr_repo_terml30.dropna(subset=['value'], inplace=True)
-    pd_nccbr_repo_terml30['asofdate'] = pd.to_datetime(pd_nccbr_repo_terml30['asofdate'])
-    pd_nccbr_repo_terml30.index = pd_nccbr_repo_terml30['asofdate'].values
-    pd_nccbr_repo_terml30.drop('asofdate', axis=1, inplace=True)
-    pd_nccbr_repo_terml30.columns = ['pd_nccbr_l30']
-
-    pd_nccbr_repo_termg30_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UBGUTSETTAG30.json'
-    pd_nccbr_repo_termg30 = pd.DataFrame(requests.get(pd_nccbr_repo_termg30_url).json()['pd']['timeseries']).drop(
-        'keyid', axis=1)
-    pd_nccbr_repo_termg30['value'] = pd.to_numeric(pd_nccbr_repo_termg30['value'], errors='coerce')
-    pd_nccbr_repo_termg30.dropna(subset=['value'], inplace=True)
-    pd_nccbr_repo_termg30['asofdate'] = pd.to_datetime(pd_nccbr_repo_termg30['asofdate'])
-    pd_nccbr_repo_termg30.index = pd_nccbr_repo_termg30['asofdate'].values
-    pd_nccbr_repo_termg30.drop('asofdate', axis=1, inplace=True)
-    pd_nccbr_repo_termg30.columns = ['pd_nccbr_g30']
-
-    pd_nccbr_proxy_merge = merge_dfs([pd_total_repo, pd_nccbr_repo_on, pd_nccbr_repo_terml30, pd_nccbr_repo_termg30])
+    pd_nccbr_proxy_merge = merge_dfs([pd_total_repo,
+                                      pd_nccbr_repo_on,
+                                      pd_nccbr_repo_terml30,
+                                      pd_nccbr_repo_termg30])
     pd_nccbr_proxy_merge['pd_nccbr_total'] = (pd_nccbr_proxy_merge['pd_nccbr_on'] +
                                               pd_nccbr_proxy_merge['pd_nccbr_l30'] +
                                               pd_nccbr_proxy_merge['pd_nccbr_g30'])
@@ -66,39 +42,22 @@ def plot_proxy_percent_without_clearing(start, end, **kwargs):
     pd_nccbr_proxy_merge = pd_nccbr_proxy_merge.dropna()
 
     ### OFR DATA PULLS ###
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
+        gcf_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
+        rrp_volume = pickle.load(file)
 
-    tri_volume = pd.DataFrame(requests.get(base_url + 'REPO-TRI_TV_TOT-P').json(), columns=["date", "value"])
-    tri_volume['date'] = pd.to_datetime(tri_volume['date'])
-    tri_volume.index = tri_volume['date'].values
-    tri_volume.drop('date', axis=1, inplace=True)
-    tri_volume = tri_volume / 1e12
-    tri_volume.columns = ['tri']
-
-    dvp_volume = pd.DataFrame(requests.get(base_url + 'REPO-DVP_TV_TOT-P').json(), columns=["date", "value"])
-    dvp_volume['date'] = pd.to_datetime(dvp_volume['date'])
-    dvp_volume.index = dvp_volume['date'].values
-    dvp_volume.drop('date', axis=1, inplace=True)
-    dvp_volume = dvp_volume / 1e12
-    dvp_volume.columns = ['dvp']
-
-    gcf_volume = pd.DataFrame(requests.get(base_url + 'REPO-GCF_TV_TOT-P').json(), columns=["date", "value"])
-    gcf_volume['date'] = pd.to_datetime(gcf_volume['date'])
-    gcf_volume.index = gcf_volume['date'].values
-    gcf_volume.drop('date', axis=1, inplace=True)
-    gcf_volume = gcf_volume / 1e12
-    gcf_volume.columns = ['gcf']
-
-    rrp_volume = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
-    rrp_volume.index = pd.to_datetime(rrp_volume.index.values)
     rrp_volume.columns = ['rrp']
-
     repo_total_merge = merge_dfs(
-        [gcf_volume, dvp_volume, tri_volume, pd.DataFrame(pd_nccbr_proxy_merge['pd_nccbr_total'] / 1e6)]).dropna()
+        [gcf_df, dvp_df, tri_df, pd.DataFrame(pd_nccbr_proxy_merge['pd_nccbr_total'] / 1e6)]).dropna()
     total_repo_volume = pd.DataFrame(repo_total_merge.sum(axis=1))
     total_repo_volume.columns = ['Repo']
 
-    black_proxy = merge_dfs([tri_volume, rrp_volume, dvp_volume, gcf_volume, total_repo_volume])
+    black_proxy = merge_dfs([tri_df, rrp_volume, dvp_df, gcf_df, total_repo_volume])
     black_proxy.columns = ['tri', 'rrp', 'dvp', 'gcf', 'all_repo']
     black_proxy = black_proxy.resample('W').last().dropna()
     black_proxy['black'] = (black_proxy['tri'] - black_proxy['rrp']) / (black_proxy['all_repo'] - black_proxy['rrp'])
@@ -140,27 +99,20 @@ def plot_proxy_percent_without_clearing(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_volume_per_venue(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
+        gcf_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
+        rrp_volume = pickle.load(file)
 
-    def ofr_get(mnemonic, colname):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        df = df / 1e12
-        df.columns = [colname]
-        return df
-
-    dvp = ofr_get('REPO-DVP_TV_TOT-P', 'DVP')
-    rrp = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
-    rrp.index = pd.to_datetime(rrp.index)
-    rrp.columns = ['RRP'] if hasattr(rrp, "columns") else None
-    gcf = ofr_get('REPO-GCF_TV_TOT-P', 'GCF')
-    tri = ofr_get('REPO-TRI_TV_TOT-P', 'Tri-Party')
-
-    triparty_rrp_merge = merge_dfs([tri, rrp]).dropna()
+    rrp_volume.columns = ['rrp']
+    triparty_rrp_merge = merge_dfs([tri_df, rrp_volume]).dropna()
     triparty_rrp_diff = pd.DataFrame(triparty_rrp_merge.iloc[:, 0] - triparty_rrp_merge.iloc[:, 1])
     triparty_rrp_diff.columns = ['Triparty-RRP']
-    volume_venue_merge_df = merge_dfs([dvp, rrp, gcf, triparty_rrp_diff]).loc[str(start):str(end)].dropna()
+    volume_venue_merge_df = merge_dfs([dvp_df, rrp_volume, gcf_df, triparty_rrp_diff]).loc[str(start):str(end)].dropna()
     volume_venue_merge_df.columns = ['DVP', 'RRP', 'GCF', 'Triparty-RRP']
 
     # ### PLOT ###
@@ -197,18 +149,12 @@ def plot_volume_per_venue(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_mmf_by_asset(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-
-    def ofr_get(mnemonic):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        df = df / 1e12
-        return df
-
-    mmf_repo = ofr_get('MMF-MMF_RP_TOT-M')
-    mmf_total = ofr_get('MMF-MMF_TOT-M')
-    mmf_us_ts = ofr_get('MMF-MMF_T_TOT-M')
+    with open(Path(DATA_DIR) / 'mmf_repo.pkl', 'rb') as file:
+        mmf_repo = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_total.pkl', 'rb') as file:
+        mmf_total = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_us_ts.pkl', 'rb') as file:
+        mmf_us_ts = pickle.load(file)
 
     mmf_repo_non_repo_merge = merge_dfs([mmf_repo, mmf_total, mmf_us_ts])
     mmf_repo_non_repo_merge.columns = ['mmf_repo', 'mmf_total', 'mmf_us_treasury_sec']
@@ -256,26 +202,20 @@ def plot_mmf_by_asset(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_6m_volume_change(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
+        gcf_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
+        rrp_volume = pickle.load(file)
 
-    def ofr_get(mnemonic, colname):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        df = df / 1e12
-        df.columns = [colname]
-        return df
-
-    dvp = ofr_get('REPO-DVP_TV_TOT-P', 'DVP')
-    rrp = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
-    rrp.index = pd.to_datetime(rrp.index)
-    gcf = ofr_get('REPO-GCF_TV_TOT-P', 'GCF')
-    tri = ofr_get('REPO-TRI_TV_TOT-P', 'Tri-Party')
-    triparty_rrp_merge = merge_dfs([tri, rrp]).dropna()
+    triparty_rrp_merge = merge_dfs([tri_df, rrp_volume]).dropna()
     triparty_rrp_diff = pd.DataFrame(triparty_rrp_merge.iloc[:, 0] - triparty_rrp_merge.iloc[:, 1])
     triparty_rrp_diff.columns = ['Triparty-RRP']
 
-    volume_venue_merge_df = merge_dfs([dvp, rrp, gcf, triparty_rrp_diff]).loc[str(start):str(end)].dropna()
+    volume_venue_merge_df = merge_dfs([dvp_df, rrp_volume, gcf_df, triparty_rrp_diff]).loc[str(start):str(end)].dropna()
     volume_venue_merge_df.columns = ['DVP', 'RRP', 'GCF', 'Triparty-RRP']
 
     roc_6m_volume = volume_venue_merge_df.resample('ME').last().diff(1)
@@ -314,13 +254,10 @@ def plot_6m_volume_change(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_volume_invested_in_mmf(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-    mmf = pd.DataFrame(requests.get(base_url + 'MMF-MMF_TOT-M').json(), columns=["date", "value"])
-    mmf['date'] = pd.to_datetime(mmf['date'])
-    mmf.set_index('date', inplace=True)
-    mmf = mmf / 1e12
-    mmf.columns = ['MMF_TOTAL']
-    mmf = mmf.loc[str(start):str(end)]
+    with open(Path(DATA_DIR) / 'mmf_all_volume.pkl', 'rb') as file:
+        mmf_all_volume = pickle.load(file)
+
+    mmf = mmf_all_volume.loc[str(start):str(end)]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -348,11 +285,14 @@ def plot_volume_invested_in_mmf(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_rrp_vs_foreign_rrp(start, end, **kwargs):
-    rrp = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
-    foreign_rrp = pdr.DataReader('WREPOFOR', 'fred', start, end) / 1e6
-    rrp.index = pd.to_datetime(rrp.index)
+    with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
+        rrp_volume = pickle.load(file)
+    with open(Path(DATA_DIR) / 'foreign_rrp.pkl', 'rb') as file:
+        foreign_rrp = pickle.load(file)
+
+    rrp_volume.index = pd.to_datetime(rrp_volume.index)
     foreign_rrp.index = pd.to_datetime(foreign_rrp.index)
-    merge = merge_dfs([rrp, foreign_rrp]).dropna()
+    merge = merge_dfs([rrp_volume, foreign_rrp]).dropna()
     merge.columns = ['RRP', 'Foreign_RRP']
     merge = merge.loc[str(start):str(end)]
 
@@ -386,17 +326,10 @@ def plot_rrp_vs_foreign_rrp(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_mmf_repo_vs_non_repo(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
-
-    def ofr_get(mnemonic):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        df = df / 1e12
-        return df
-
-    mmf_repo = ofr_get('MMF-MMF_RP_TOT-M')
-    mmf_total = ofr_get('MMF-MMF_TOT-M')
+    with open(Path(DATA_DIR) / 'mmf_repo.pkl', 'rb') as file:
+        mmf_repo = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_total.pkl', 'rb') as file:
+        mmf_total = pickle.load(file)
 
     mmf_repo_non_repo_merge = merge_dfs([mmf_repo, mmf_total])
     mmf_repo_non_repo_merge.columns = ['mmf_repo', 'mmf_total']
@@ -434,22 +367,14 @@ def plot_mmf_repo_vs_non_repo(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_triparty_adjusted_for_rrp(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
+        rrp_volume = pickle.load(file)
 
-    def ofr_get(mnemonic, colname):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        df = df / 1e12
-        df.columns = [colname]
-        return df
-
-    tri = ofr_get('REPO-TRI_TV_TOT-P', 'tri')
-    rrp = pdr.DataReader('WLRRAL', 'fred', start, end) / 1e6
-    rrp.index = pd.to_datetime(rrp.index)
-    dvp = ofr_get('REPO-DVP_TV_TOT-P', 'dvp')
-
-    triparty_merge = merge_dfs([tri, rrp, dvp])
+    triparty_merge = merge_dfs([tri_df, rrp_volume, dvp_df])
     triparty_merge.columns = ['tri', 'rrp', 'dvp']
     triparty_merge['triparty-rrp'] = triparty_merge['tri'] - triparty_merge['rrp']
     triparty_merge['residual_flows'] = triparty_merge['dvp'] - triparty_merge['triparty-rrp']
@@ -489,22 +414,19 @@ def plot_triparty_adjusted_for_rrp(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_mmf_allocation_by_counterparty(start, end, **kwargs):
-    base_url = 'https://data.financialresearch.gov/v1/series/timeseries?mnemonic='
+    with open(Path(DATA_DIR) / 'mmf_foreign.pkl', 'rb') as file:
+        mmf_foreign = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_fed.pkl', 'rb') as file:
+        mmf_fed = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_us_inst.pkl', 'rb') as file:
+        mmf_us_inst = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_ficc.pkl', 'rb') as file:
+        mmf_ficc = pickle.load(file)
 
-    def ofr_get(mnemonic, colname):
-        df = pd.DataFrame(requests.get(base_url + mnemonic).json(), columns=["date", "value"])
-        df['date'] = pd.to_datetime(df['date'])
-        df.set_index('date', inplace=True)
-        df = df / 1e12
-        df.columns = [colname]
-        return df
-
-    foreign = ofr_get('MMF-MMF_RP_wFFI-M', 'foreign')
-    fed = ofr_get('MMF-MMF_RP_wFR-M', 'fed')
-    us_inst = ofr_get('MMF-MMF_RP_wDFI-M', 'us_inst')
-    ficc = ofr_get('MMF-MMF_RP_wFICC-M', 'ficc')
-
-    mmf_allocations_merge = merge_dfs([foreign, fed, us_inst, ficc]).loc[str(start):str(end)].dropna()
+    mmf_allocations_merge = merge_dfs([mmf_foreign,
+                                       mmf_fed,
+                                       mmf_us_inst,
+                                       mmf_ficc]).loc[str(start):str(end)].dropna()
     mmf_allocations_merge.columns = ['foreign', 'fed', 'us_inst', 'ficc']
 
     # ### PLOT ###

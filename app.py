@@ -7,7 +7,7 @@ import streamlit as st
 import pandas as pd
 import functools as ft
 import app_risk_checks
-import app_system
+import app_shadow_banks
 import app_repo
 import app_cross_rate
 import app_cash
@@ -158,12 +158,12 @@ elif menu == 'Fed Operations':
 elif menu == 'Shadow Banks':
     st.title("Shadow Bank Components")
     st.title('Money Market Funds')
-    app_system.plot_shadow_bank_mmf_repo(start_date,end_date)
-    app_system.plot_shadow_bank_mmf_on_repo(start_date,end_date)
+    app_shadow_banks.plot_shadow_bank_mmf_repo(start_date,end_date)
+    app_shadow_banks.plot_shadow_bank_mmf_on_repo(start_date,end_date)
     st.title('Private Investment Funds')
-    app_system.plot_shadow_bank_private_investments(start_date,end_date)
+    app_shadow_banks.plot_shadow_bank_private_investments(start_date,end_date)
     st.title('Shadow Bank Liabilities Mapping')
-    app_system.plot_shadow_bank_liabilities(start_date,end_date)
+    app_shadow_banks.plot_shadow_bank_liabilities(start_date,end_date)
 
 
 ### ---------------------------------------------------------------------------------------- ###

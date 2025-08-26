@@ -5,10 +5,13 @@
 import pandas as pd
 import requests
 import functools as ft
-from pandas_datareader import data as pdr
 import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt
+from pathlib import Path
+import os
+import pickle
+DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right,
@@ -21,14 +24,9 @@ def merge_dfs(array_of_dfs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_soma_holdings(start, end, **kwargs):
-    url = 'https://markets.newyorkfed.org/api/soma/summary.json'
-    response = requests.get(url)
-    data = response.json()
-    df = pd.DataFrame(data['soma']['summary'])
-    df.index = pd.to_datetime(df['asOfDate'].values)
-    df.drop(['asOfDate','total'], axis=1, inplace=True)
-    df = df.apply(pd.to_numeric)
-    df = df.loc[start:end]
+    with open(Path(DATA_DIR) / 'soma_holdings.pkl', 'rb') as file:
+        soma_holdings = pickle.load(file)
+    df = soma_holdings.loc[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -124,10 +122,9 @@ def plot_soma_holdings(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_repo_operations(start, end, **kwargs):
-    repo_url = 'https://markets.newyorkfed.org/api/rp/repo/all/results/last/999.json'
-    response = requests.get(repo_url)
-    data = response.json()
-    repo_fed_df = pd.DataFrame(data['repo']['operations'])
+    with open(Path(DATA_DIR) / 'repo_fed_df.pkl', 'rb') as file:
+        repo_fed_df = pickle.load(file)
+
     repo_fed_df['treasury_amt'] = 0
     repo_fed_df['agency_amt'] = 0
     repo_fed_df['mbs_amt'] = 0
@@ -226,10 +223,9 @@ def plot_fed_repo_operations(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_rrp_operations(start, end, **kwargs):
-    rrp_url = 'https://markets.newyorkfed.org/api/rp/reverserepo/all/results/last/999.json'
-    response = requests.get(rrp_url)
-    data = response.json()
-    rrp_fed_df = pd.DataFrame(data['repo']['operations'])
+    with open(Path(DATA_DIR) / 'rrp_fed_df.pkl', 'rb') as file:
+        rrp_fed_df = pickle.load(file)
+
     rrp_fed_df['rate'] = 0
     for row in rrp_fed_df.index:
         details = rrp_fed_df.loc[row,'details'][0]
