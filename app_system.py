@@ -339,8 +339,10 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
     merge_df = merge_dfs([brokers_dealers_repo,
                           hedge_funds,
                           reit,
-                          total_repo]).dropna()
+                          total_repo])
     merge_df.columns = ['Broker/Dealer','HFs','REITs','Total Repo']
+    merge_df['Total Repo'] = merge_df['Total Repo'].ffill()
+    merge_df = merge_df.dropna()
 
     merge_df['bd_pct'] = merge_df['Broker/Dealer'] / merge_df['Total Repo']
     merge_df['hf_pct'] = merge_df['HFs'] / merge_df['Total Repo']
