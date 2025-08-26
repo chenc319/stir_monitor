@@ -102,6 +102,12 @@ def refresh_all_data():
     tri_volume_df = ofr_to_df('REPO-TRI_TV_TOT-P')
     with open(Path(DATA_DIR) / 'tri_volume_df.pkl', 'wb') as file:
         pickle.dump(tri_volume_df, file)
+    gcf_volume_df = ofr_to_df('REPO-GCF_TV_TOT-P')
+    with open(Path(DATA_DIR) / 'gcf_volume_df.pkl', 'wb') as file:
+        pickle.dump(gcf_volume_df, file)
+    dvp_volume_df = ofr_to_df('REPO-DVP_TV_TOT-P')
+    with open(Path(DATA_DIR) / 'dvp_volume_df.pkl', 'wb') as file:
+        pickle.dump(dvp_volume_df, file)
     fed_action = pdr.DataReader('WALCL', 'fred', start, end) * 1e6
     with open(Path(DATA_DIR) / 'fed_action.pkl', 'wb') as file:
         pickle.dump(fed_action, file)
