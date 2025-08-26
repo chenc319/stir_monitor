@@ -35,7 +35,7 @@ def refresh_all_data():
     end = pd.to_datetime('today')
     ### RATES ###
     iorb = pdr.DataReader('IORB', 'fred', start, end)
-    with open(DATA_DIR / 'iorb.pkl', 'wb') as file:
+    with open(Path(DATA_DIR) / 'iorb.pkl', 'wb') as file:
         pickle.dump(iorb, file)
     fed_funds = pdr.DataReader('EFFR', 'fred', start, end)
     with open(Path(DATA_DIR) / 'fed_funds.pkl', 'wb') as file:
