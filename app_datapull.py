@@ -401,7 +401,7 @@ def refresh_all_data():
     ### TREASURY SECURITIES OWNERSHIP ###
     url = ('https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/tb/'
            'ofs2_estimated_ownership_treasury_securities?'
-           'filter=record_date:gte:2000-01-01,'
+           'filter=record_date:gte:2021-06-30,'
            'record_date:lte:' + str(pd.to_datetime('today').date()) +
            '&sort=-record_date&page%5Bnumber%5D=1&page%5Bsize%5D=10000')
     us_treasury_ownership = pd.DataFrame(requests.get(url).json()['data'])
