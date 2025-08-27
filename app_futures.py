@@ -67,7 +67,6 @@ def plot_futures_leverage_money_short(start, end, **kwargs):
     fig.update_layout(
         title="Leverage Money Short Positions by Treasury Futures Bucket",
         yaxis_title="Dollars",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -119,7 +118,7 @@ def plot_end_of_quarter_spreads(start, end, **kwargs):
     fig.update_layout(
         title="End of Quarter Spreads",
         yaxis_title="Basis Points",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -175,7 +174,7 @@ def plot_end_of_month_spreads(start, end, **kwargs):
     fig.update_layout(
         title="End of Month Spreads",
         yaxis_title="Basis Points",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -247,7 +246,7 @@ def plot_stability_lower_roc(start, end, **kwargs):
     fig.update_layout(
         title="Is the Stability Lower\nRate of Change",
         yaxis_title="Z-Score",
-        xaxis_title="Date",
+        hovermode='x unified',
         yaxis_range=[-5, 5]
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -316,7 +315,7 @@ def plot_how_did_levels_change(start, end, **kwargs):
     fig.update_layout(
         title="Is the Stability Lower\nRate of Change",
         yaxis_title="Z-Score",
-        xaxis_title="Date",
+        hovermode='x unified',
         yaxis_range=[-5,5],
         annotations=[
             dict(
