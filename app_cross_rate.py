@@ -77,7 +77,6 @@ def plot_iorb_spreads(start, end, **kwargs):
     fig.update_layout(
         title="IORB Spreads",
         yaxis_title="Basis Points",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -126,7 +125,6 @@ def plot_gcf_tri_spread(start, end, **kwargs):
     fig.update_layout(
         title="GCF - Triparty",
         yaxis_title="Basis Points",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -164,7 +162,6 @@ def plot_triparty_term_spread(start, end, **kwargs):
     fig.update_layout(
         title="Tri Party Term Spread (ON vs. <30d)",
         yaxis_title="Basis Points",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -209,7 +206,7 @@ def plot_sofr_effr_chart(start, end, **kwargs):
     fig.update_layout(
         title="The New System: SOFR-EFFR",
         yaxis_title="Basis Points",
-        xaxis_title="Date"
+        hovermode='x unified',
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -272,7 +269,7 @@ def plot_repo_rate_complex_cross(start, end, **kwargs):
     fig.update_layout(
         title="Visible Repo Rate Complex",
         yaxis_title="Basis Points",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -341,7 +338,7 @@ def plot_dollar_lending_complex(start, end, **kwargs):
     fig.update_layout(
         title="Visible Repo Rate",
         yaxis_title="Basis Points",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -389,7 +386,7 @@ def plot_sofr_floor_ceiling(start, end, **kwargs):
     fig.update_layout(
         title='SOFR- Floor and Ceiling',
         yaxis_title='Basis Points',
-        xaxis_title='Date',
+        hovermode='x unified',
         yaxis_range=[415, 455]
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -447,7 +444,7 @@ def plot_unsecured_lending_floor_ceiling(start, end, **kwargs):
     fig.update_layout(
         title='Unsecured Lending - Floor and Ceiling',
         yaxis_title='Basis Points',
-        xaxis_title='Date',
+        hovermode='x unified',
         yaxis_range=[415, 455]
     )
     st.plotly_chart(fig, use_container_width=True)

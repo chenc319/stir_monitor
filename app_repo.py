@@ -156,7 +156,6 @@ def plot_volume_per_venue(start, end, **kwargs):
     fig.update_layout(
         title="Volume per Venue",
         yaxis_title="Dollars",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -210,7 +209,6 @@ def plot_mmf_by_asset(start, end, **kwargs):
     fig.update_layout(
         title="Investment of MMF by Asset",
         yaxis_title="%",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -265,7 +263,6 @@ def plot_6m_volume_change(start, end, **kwargs):
     fig.update_layout(
         title="Monthly Change in Volume per Venue",
         yaxis_title="Dollars",
-        xaxis_title="Date",
         hovermode="x unified"
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -296,7 +293,7 @@ def plot_volume_invested_in_mmf(start, end, **kwargs):
     fig.update_layout(
         title="Volume Invested in MMF",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -337,7 +334,6 @@ def plot_rrp_vs_foreign_rrp(start, end, **kwargs):
     fig.update_layout(
         title="RRP vs. Foreign RRP",
         yaxis_title="Dollars",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -378,7 +374,6 @@ def plot_mmf_repo_vs_non_repo(start, end, **kwargs):
     fig.update_layout(
         title="MMF Repo vs Non Repo",
         yaxis_title="Dollars",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -425,7 +420,6 @@ def plot_triparty_adjusted_for_rrp(start, end, **kwargs):
     fig.update_layout(
         title="Tri-Party Adjusted for RRP",
         yaxis_title="Dollars",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -474,7 +468,6 @@ def plot_mmf_allocation_by_counterparty(start, end, **kwargs):
     fig.update_layout(
         title="Allocation of MMF by Counterparties",
         yaxis_title="Dollars",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)

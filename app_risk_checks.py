@@ -50,7 +50,6 @@ def plot_dash_for_cash_spread(start, end, **kwargs):
     fig.update_layout(
         title="Monitoring the Dash For Cash<br>Fed Funds - IORB",
         yaxis_title="Basis Points",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -108,7 +107,6 @@ def plot_new_sofr_system(start, end, **kwargs):
     fig.update_layout(
         title="The New SOFR System",
         yaxis_title="Basis Points",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -165,7 +163,6 @@ def plot_repo_rate_complex(start, end, **kwargs):
     fig.update_layout(
         title="Visible Repo Rate Complex",
         yaxis_title="Basis Points",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -217,7 +214,6 @@ def plot_sofr_distribution(start, end, **kwargs):
     fig.update_layout(
         title="SOFR Distribution",
         yaxis_title="Basis Points",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -259,7 +255,6 @@ def plot_fed_balance_sheet(start, end, **kwargs):
     fig.update_layout(
         title="FED Balance Sheet",
         yaxis_title="Dollars",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -319,7 +314,6 @@ def plot_monitoring_reserves(start, end, **kwargs):
     fig.update_layout(
         title="Monitoring reserves",
         yaxis_title="Dollars",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -363,7 +357,6 @@ def plot_fed_action_vs_reserve_response(start, end, **kwargs):
     fig.update_layout(
         title="FED Action Vs Reserve Response",
         yaxis_title="30-Day Change ($)",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -411,7 +404,6 @@ def plot_fed_action_vs_reserve_response_v2(start, end, **kwargs):
     fig.update_layout(
         title="FED Action Vs Reserve Response",
         yaxis_title="30-Day Change ($)",
-        xaxis_title="Date",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)

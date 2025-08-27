@@ -54,7 +54,7 @@ def plot_tga(start, end, **kwargs):
     fig.update_layout(
         title="TGA",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -64,7 +64,7 @@ def plot_tga(start, end, **kwargs):
     fig2.update_layout(
         title="TGA Weekly Rate of Change",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig2, use_container_width=True)
 
@@ -104,7 +104,7 @@ def plot_rrp(start, end, **kwargs):
     fig.update_layout(
         title="RRP",
         yaxis_title="Trillions",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -114,7 +114,7 @@ def plot_rrp(start, end, **kwargs):
     fig2.update_layout(
         title="RRP Weekly Rate of Change",
         yaxis_title="Trillions",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig2, use_container_width=True)
 
@@ -155,7 +155,7 @@ def plot_reserves(start, end, **kwargs):
     fig.update_layout(
         title="Reserves",
         yaxis_title="Trillions",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -165,7 +165,7 @@ def plot_reserves(start, end, **kwargs):
     fig2.update_layout(
         title="Reserves Weekly Rate of Change",
         yaxis_title="Trillions",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig2, use_container_width=True)
 
@@ -206,7 +206,7 @@ def plot_mmf_repo_vs_non_repo(start, end, **kwargs):
     fig.update_layout(
         title="MMF Repo vs Non Repo",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -264,7 +264,7 @@ def plot_asset_allocation_mmf(start, end, **kwargs):
     fig.update_layout(
         title="Asset Allocation: MMF vs Repo/Non-Repo",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -324,7 +324,7 @@ def plot_reserves_non_fed_repo_rrp(start, end, **kwargs):
     fig.update_layout(
         title="Non Fed Repo + Reserves + RRP",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -392,6 +392,6 @@ def plot_reserves_liabilities_system(start, end, **kwargs):
     fig.update_layout(
         title="Reserves Liabilities of the System",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)

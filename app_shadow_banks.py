@@ -90,7 +90,7 @@ def plot_shadow_bank_summary(start, end, **kwargs):
                              line=dict(color="#aad8ef", width=3)))
     fig.update_layout(
         title="Shadow Banks Components",
-        yaxis_title="DOLLARS",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)

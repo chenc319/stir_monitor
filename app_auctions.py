@@ -51,7 +51,7 @@ def plot_issuance_by_security(start, end, **kwargs):
     fig.update_layout(
         title='Issuance in Auction By Security',
         yaxis_title='Dollars',
-        xaxis_title='Date'
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -99,7 +99,7 @@ def plot_bills_issuance(start, end, **kwargs):
     fig.update_layout(
         title="Bill Issuances",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -144,7 +144,7 @@ def plot_notes_issuance(start, end, **kwargs):
     fig.update_layout(
         title="Notes Issuances",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -183,7 +183,7 @@ def plot_bonds_issuance(start, end, **kwargs):
     fig.update_layout(
         title="Bonds Issuances",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -236,7 +236,7 @@ def plot_bills_dealer_ratio(start, end, **kwargs):
     fig.update_layout(
         title="Bills Dealer to Non Dealer Ratio",
         yaxis_title="Ratio",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -283,7 +283,7 @@ def plot_bonds_dealer_ratio(start, end, **kwargs):
     fig.update_layout(
         title="Bonds Dealer to Non Dealer Ratio",
         yaxis_title="Ratio",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -336,7 +336,7 @@ def plot_notes_dealer_ratio(start, end, **kwargs):
     fig.update_layout(
         title="Notes Dealer to Non Dealer Ratio",
         yaxis_title="Ratio",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -385,7 +385,7 @@ def plot_bills_bid_to_cover(start, end, **kwargs):
     fig.update_layout(
         title="Bills Bid to Cover Ratio",
         yaxis_title="Ratio",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -428,7 +428,7 @@ def plot_bonds_bid_to_cover(start, end, **kwargs):
     fig.update_layout(
         title="Bonds Bid to Cover Ratio",
         yaxis_title="Ratio",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -477,6 +477,6 @@ def plot_notes_bid_to_cover(start, end, **kwargs):
     fig.update_layout(
         title="Notes Bid to Cover Ratio",
         yaxis_title="Ratio",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)

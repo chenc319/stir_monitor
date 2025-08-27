@@ -55,7 +55,7 @@ def plot_sponsored_volumes_solution(start, end, path_to_csv="data/SponsoredVolum
     fig.update_layout(
         title="Sponsored Volumes - The Solutions?",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -93,7 +93,7 @@ def plot_sponsored_volumes(start, end, **kwargs):
     fig.update_layout(
         title="Sponsored Volumes",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -135,7 +135,7 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
     fig.update_layout(
         title="% of DVP that is Sponsored",
         yaxis_title="%",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -172,7 +172,7 @@ def plot_net_positions_bills_vs_bonds(start, end, **kwargs):
     fig.update_layout(
         title="Primary Dealers Net Positions Bills VS Bonds",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -217,7 +217,7 @@ def plot_net_positions_by_bond_tenor(start, end, **kwargs):
     fig.update_layout(
         title="Primary Dealers Net Positions By Bond Tenor",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -262,6 +262,6 @@ def plot_net_change_by_bond_tenor(start, end, **kwargs):
     fig.update_layout(
         title="Primary Dealers Net Position Change By Bond Tenor",
         yaxis_title="Dollars",
-        xaxis_title="Date"
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
