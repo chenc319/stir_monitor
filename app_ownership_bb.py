@@ -48,7 +48,7 @@ def plot_treasury_ownership(start,end, **kwargs):
         entity_df.drop('date', axis=1, inplace=True)
         entity_df.columns = [entity]
         us_treasury_ownership_timeseries = merge_dfs([us_treasury_ownership_timeseries,entity_df])
-
+    us_treasury_ownership_timeseries = us_treasury_ownership_timeseries.ffill()
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=us_treasury_ownership_timeseries.index,
                              y=us_treasury_ownership_timeseries['U.S. Savings Bonds'],
