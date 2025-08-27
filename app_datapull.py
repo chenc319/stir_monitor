@@ -398,6 +398,22 @@ def refresh_all_data():
         pickle.dump(all_pd_bills_bonds_net_changes, file)
 
 
+    ### TREASURY SECURITIES OWNERSHIP ###
+    url = ('https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/tb/'
+           'ofs2_estimated_ownership_treasury_securities?'
+           'filter=record_date:gte:2000-01-01,'
+           'record_date:lte:' + str(pd.to_datetime('today').date()) +
+           '&sort=-record_date&page%5Bnumber%5D=1&page%5Bsize%5D=10000')
+    us_treasury_ownership = pd.DataFrame(requests.get(url).json()['data'])
+    us_treasury_ownership.index = pd.to_datetime(us_treasury_ownership['record_date'].values)
+    us_treasury_ownership.drop('record_date', axis=1, inplace=True)
+    us_treasury_ownership = us_treasury_ownership[us_treasury_ownership['securities_bil_amt'] != 'null']
+    us_treasury_ownership['securities_bil_amt'] = pd.to_numeric(us_treasury_ownership['securities_bil_amt']) * 1e9
+    us_treasury_ownership = pd.DataFrame(us_treasury_ownership[['securities_owner', 'securities_bil_amt']])[::-1]
+    with open(Path(DATA_DIR) / 'us_treasury_ownership.pkl', 'wb') as file:
+        pickle.dump(us_treasury_ownership, file)
+
+
 
 
 
