@@ -26,6 +26,103 @@ def merge_dfs(array_of_dfs):
     return(new_df)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------- SHADOW BANK ASSETS ------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_shadow_bank_summary(start, end, **kwargs):
+    ### OFR DATA PULLS ###
+    with open(Path(DATA_DIR) / 'dvp_volume_df.pkl', 'rb') as file:
+        dvp_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_volume_df.pkl', 'rb') as file:
+        gcf_volume_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_volume_df.pkl', 'rb') as file:
+        tri_volume_df = pickle.load(file)
+    repo_merge_df = merge_dfs([tri_volume_df, dvp_volume_df, gcf_volume_df])
+    repo_merge_df.columns = ['tri', 'dvp', 'gcf']
+    total_repo = pd.DataFrame(repo_merge_df.sum(axis=1),
+                              columns=['total_repo'])
+    with open(Path(DATA_DIR) / 'reit_liabilities.pkl', 'rb') as file:
+        reit_liabilities = pickle.load(file)
+    with open(Path(DATA_DIR) / 'brokers_dealers_repo_liabilities.pkl', 'rb') as file:
+        brokers_dealers_repo_liabilities = pickle.load(file)
+    with open(Path(DATA_DIR) / 'hedge_funds_liabilities.pkl', 'rb') as file:
+        hedge_funds_liabilities = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_assets.pkl', 'rb') as file:
+        mmf_assets = pickle.load(file)
+
+    merge_df = merge_dfs([brokers_dealers_repo_liabilities,
+                          reit_liabilities,
+                          mmf_assets,
+                          hedge_funds_liabilities,
+                          total_repo])
+
+    merge_df.columns = ['Broker/Dealer','REITs', 'MMFs', 'HFs','Total Repo']
+    merge_df['Total Repo'] = merge_df['Total Repo'].ffill()
+    merge_df = merge_df.dropna()
+
+    merge_df['bd_pct'] = merge_df['Broker/Dealer'] / merge_df['Total Repo']
+    merge_df['hf_pct'] = merge_df['HFs'] / merge_df['Total Repo']
+    merge_df['mmf_pct'] = merge_df['MMFs'] / merge_df['Total Repo']
+    merge_df['reit_pct'] = merge_df['REITs'] / merge_df['Total Repo']
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['Broker/Dealer'],
+                             mode='lines+markers',
+                             name='Broker/Dealer',
+                             line=dict(color="#0B2138", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['HFs'],
+                             mode='lines+markers',
+                             name='HFs',
+                             line=dict(color="#48DEE9", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['MMFs'],
+                             mode='lines+markers',
+                             name='MMFs',
+                             line=dict(color="#7EC0EE", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['REITs'],
+                             mode='lines+markers',
+                             name='REITs',
+                             line=dict(color="#aad8ef", width=3)))
+    fig.update_layout(
+        title="Shadow Banks Components",
+        yaxis_title="$",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['bd_pct'],
+                             mode='lines+markers',
+                             name='Broker/Dealer',
+                             line=dict(color="#0B2138", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['hf_pct'],
+                             mode='lines+markers',
+                             name='HFs',
+                             line=dict(color="#48DEE9", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['mmf_pct'],
+                             mode='lines+markers',
+                             name='MMFs',
+                             line=dict(color="#7EC0EE", width=3)))
+    fig.add_trace(go.Scatter(x=merge_df.index,
+                             y=merge_df['reit_pct'],
+                             mode='lines+markers',
+                             name='REITs',
+                             line=dict(color="#aad8ef", width=3)))
+    fig.update_layout(
+        title="Shadow Banks Components",
+        yaxis_title="% of Total Repo",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
 ### --------------------------------- MMF INVOLVEMENT IN TREASURY SECURITIES --------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
@@ -343,7 +440,7 @@ def plot_shadow_bank_assets(start, end, **kwargs):
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['mmf_pct'],
                              mode='lines+markers',
-                             name='REITs',
+                             name='MMFs',
                              line=dict(color="#7EC0EE", width=3)))
     fig.update_layout(
         title="Shadow Banks: Repo Assets",

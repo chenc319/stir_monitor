@@ -157,6 +157,8 @@ elif menu == 'Fed Operations':
 
 elif menu == 'Shadow Banks':
     st.title("Shadow Bank Components")
+    st.title('Summary')
+    app_shadow_banks.plot_shadow_bank_summary(start_date, end_date)
     st.title('Money Market Funds')
     app_shadow_banks.plot_shadow_bank_mmf_repo(start_date,end_date)
     app_shadow_banks.plot_shadow_bank_mmf_on_repo(start_date,end_date)
