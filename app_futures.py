@@ -317,13 +317,5 @@ def plot_how_did_levels_change(start, end, **kwargs):
         yaxis_title="Z-Score",
         hovermode='x unified',
         yaxis_range=[-5,5],
-        annotations=[
-            dict(
-                x=plot_static_data.index[-1], y=-4.7,
-                text='<b>ie</b>', showarrow=False,
-                font=dict(size=14, color='steelblue', family="Arial"),
-                xanchor='right', yanchor='bottom'
-            )
-        ]
     )
     st.plotly_chart(fig, use_container_width=True)
