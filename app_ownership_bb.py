@@ -179,4 +179,3 @@ def plot_treasury_ownership(start,end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
-
