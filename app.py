@@ -208,9 +208,7 @@ elif menu == 'Cross Rate':
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Cash':
-    st.markdown('<div class="tab-title">', unsafe_allow_html=True)
     st.title("Cash")
-    st.markdown('</div>', unsafe_allow_html=True)
     app_cash.plot_tga(start_date, end_date)
     app_cash.plot_rrp(start_date, end_date)
     app_cash.plot_reserves(start_date, end_date)
@@ -241,9 +239,7 @@ elif menu == 'Auctions':
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Futures':
-    st.markdown('<div class="tab-title">', unsafe_allow_html=True)
     st.title("Futures")
-    st.markdown('</div>', unsafe_allow_html=True)
     app_futures.plot_futures_leverage_money_short(start_date, end_date)
     app_futures.plot_end_of_quarter_spreads(start_date, end_date)
     app_futures.plot_end_of_month_spreads(start_date, end_date)
@@ -255,9 +251,7 @@ elif menu == 'Futures':
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Primary Dealers':
-    st.markdown('<div class="tab-title">', unsafe_allow_html=True)
     st.title("Primary Dealers")
-    st.markdown('</div>', unsafe_allow_html=True)
     app_primary_dealers.plot_sponsored_volumes_solution(start_date, end_date)
     app_primary_dealers.plot_sponsored_volumes(start_date, end_date)
     app_primary_dealers.plot_pct_dvp_sponsored(start_date, end_date)
@@ -267,7 +261,7 @@ elif menu == 'Primary Dealers':
 
 
 elif menu == 'Ownership/Buybacks':
-    st.markdown('<div class="tab-title">', unsafe_allow_html=True)
-    st.title("US Treasury Ownership/Buybacks")
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.title("US Treasury Ownership & Buybacks")
+    st.title("US Treasury Ownership")
     app_ownership_bb.plot_treasury_ownership(start_date,end_date)
+    st.title('US Treasury Buybacks')

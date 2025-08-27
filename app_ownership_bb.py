@@ -49,6 +49,10 @@ def plot_treasury_ownership(start,end, **kwargs):
         entity_df.columns = [entity]
         us_treasury_ownership_timeseries = merge_dfs([us_treasury_ownership_timeseries,entity_df])
     us_treasury_ownership_timeseries = us_treasury_ownership_timeseries.ffill()
+    us_treasury_ownership_sum = pd.DataFrame(us_treasury_ownership_timeseries.sum(axis=1))
+    us_treasury_ownership_sum.columns = ['sum']
+
+    ### PLOT ###
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=us_treasury_ownership_timeseries.index,
                              y=us_treasury_ownership_timeseries['U.S. Savings Bonds'],
@@ -101,6 +105,77 @@ def plot_treasury_ownership(start,end, **kwargs):
     fig.update_layout(
         title="US Treasury Ownership Estimates",
         yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_sum.index,
+                             y=us_treasury_ownership_sum['sum'],
+                             name='All US Treasuries',
+                             line=dict(color='#90B4E6', width=2)))
+    fig.update_layout(
+        title="All US Treasuries",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    us_treasury_ownership_pct = us_treasury_ownership_timeseries.div(us_treasury_ownership_sum['sum'], axis=0) * 100
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
+                             y=us_treasury_ownership_pct['U.S. Savings Bonds'],
+                             name='U.S. Savings Bonds',
+                             line=dict(color='#90B4E6', width=2)))
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
+                             y=us_treasury_ownership_pct['Total Public Debt'],
+                             name='Total Public Debt',
+                             line=dict(color='#B7D2C9', width=2)))
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
+                             y=us_treasury_ownership_pct['Total Privately Held'],
+                             name='Total Privately Held',
+                             line=dict(color='#F0CBC9', width=2)))
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
+                             y=us_treasury_ownership_pct['State And Local Governments'],
+                             name='State And Local Governments',
+                             line=dict(color='#F9ECA6', width=2)))
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
+                             y=us_treasury_ownership_pct['Pension Funds - State And Local Governments'],
+                             name='Pension Funds - State And Local Governments',
+                             line=dict(color='#C3C9E6', width=2)))
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
+                             y=us_treasury_ownership_pct['Pension Funds - Private'],
+                             name='Pension Funds - Private',
+                             line=dict(color='#E6C3CA', width=2)))
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
+                             y=us_treasury_ownership_pct['Other Investors'],
+                             name='Other Investors',
+                             line=dict(color='#A6EDD4', width=2)))
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
+                             y=us_treasury_ownership_pct['Mutual Funds'],
+                             name='Mutual Funds',
+                             line=dict(color='#E6D6C3', width=2)))
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
+                             y=us_treasury_ownership_pct['Insurance Companies'],
+                             name='Insurance Companies',
+                             line=dict(color='#A6CEF9', width=2)))
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
+                             y=us_treasury_ownership_pct['Foreign And International'],
+                             name='Foreign And International',
+                             line=dict(color='#E6E6E6', width=2)))
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
+                             y=us_treasury_ownership_pct['Federal Reserve And Government Accounts'],
+                             name='Federal Reserve And Government Accounts',
+                             line=dict(color='#C3E6E6', width=2)))
+    fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
+                             y=us_treasury_ownership_pct['Depository Institutions'],
+                             name='Depository Institutions',
+                             line=dict(color='#D6C3E6', width=2)))
+    fig.update_layout(
+        title="US Treasury Ownership Estimates",
+        yaxis_title="%",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
