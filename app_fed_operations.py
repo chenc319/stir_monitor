@@ -52,7 +52,7 @@ def plot_soma_holdings(start, end, **kwargs):
                              line=dict(color='#4da3d7', width=2)))
     fig.update_layout(
         title="Fed Balance Sheet: Notes/Bonds & MBS",
-        yaxis_title="Dollar (Trillions)",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -111,7 +111,7 @@ def plot_soma_holdings(start, end, **kwargs):
     fig.update_layout(
         title="Fed Balance Sheet: TIPS, FRN, Inflation Compensation,"
               "Bills, Agencies, CMBS",
-        yaxis_title="Dollar (Billions)",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -164,7 +164,7 @@ def plot_fed_repo_operations(start, end, **kwargs):
                              line=dict(color='#aad8ef', width=2)))
     fig.update_layout(
         title="SRF: Treasury",
-        yaxis_title="Dollar (Trillions)",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -212,7 +212,7 @@ def plot_fed_repo_operations(start, end, **kwargs):
                              line=dict(color='#17293c', width=2)))
     fig.update_layout(
         title="SRF: Agency",
-        yaxis_title="Dollar (Millions)",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -260,7 +260,7 @@ def plot_fed_rrp_operations(start, end, **kwargs):
                              line=dict(color='#aad8ef', width=2)))
     fig.update_layout(
         title="ONRRP Facility: Amount Accepted",
-        yaxis_title="Dollar (Trillions)",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)

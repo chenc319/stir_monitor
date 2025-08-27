@@ -155,7 +155,7 @@ def plot_volume_per_venue(start, end, **kwargs):
                                  mode='lines+markers', name=col, line=dict(color=color)))
     fig.update_layout(
         title="Volume per Venue",
-        yaxis_title="Dollars (Trillions)",
+        yaxis_title="Dollars",
         xaxis_title="Date",
         hovermode='x unified'
     )
@@ -179,9 +179,9 @@ def plot_mmf_by_asset(start, end, **kwargs):
                                            mmf_repo_non_repo_merge['mmf_repo'])
     mmf_repo_non_repo_merge = mmf_repo_non_repo_merge.loc[str(start):str(end)]
     mmf_repo_non_repo_merge['US_Repo_Allocation'] = (mmf_repo_non_repo_merge['mmf_repo'] /
-                                                     mmf_repo_non_repo_merge['mmf_total'])
-    mmf_repo_non_repo_merge['US_TS_Allocation'] = mmf_repo_non_repo_merge['mmf_us_treasury_sec'] / \
-                                                  mmf_repo_non_repo_merge['mmf_total']
+                                                     mmf_repo_non_repo_merge['mmf_total']) * 100
+    mmf_repo_non_repo_merge['US_TS_Allocation'] = (mmf_repo_non_repo_merge['mmf_us_treasury_sec'] / \
+                                                  mmf_repo_non_repo_merge['mmf_total']) * 100
     mmf_repo_non_repo_merge = mmf_repo_non_repo_merge.dropna()
 
     # ### PLOT ###
@@ -209,7 +209,7 @@ def plot_mmf_by_asset(start, end, **kwargs):
         mode='lines+markers', name='U.S. Treasury Repo', line=dict(color='#272f37', width=2)))
     fig.update_layout(
         title="Investment of MMF by Asset",
-        yaxis_title="% Allocation",
+        yaxis_title="%",
         xaxis_title="Date",
         hovermode='x unified'
     )
@@ -264,7 +264,7 @@ def plot_6m_volume_change(start, end, **kwargs):
                                  mode='lines+markers', name=col, line=dict(color=color)))
     fig.update_layout(
         title="Monthly Change in Volume per Venue",
-        yaxis_title="Dollars (Trillions)",
+        yaxis_title="Dollars",
         xaxis_title="Date",
         hovermode="x unified"
     )
@@ -295,7 +295,7 @@ def plot_volume_invested_in_mmf(start, end, **kwargs):
         mode='lines+markers', line=dict(color="#67cbe7", width=2)))
     fig.update_layout(
         title="Volume Invested in MMF",
-        yaxis_title="Trillions",
+        yaxis_title="Dollars",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -336,7 +336,7 @@ def plot_rrp_vs_foreign_rrp(start, end, **kwargs):
                              mode='lines+markers', name="Foreign RRP", line=dict(color="#F57235", width=2)))
     fig.update_layout(
         title="RRP vs. Foreign RRP",
-        yaxis_title="Trillions",
+        yaxis_title="Dollars",
         xaxis_title="Date",
         hovermode='x unified'
     )
@@ -424,7 +424,7 @@ def plot_triparty_adjusted_for_rrp(start, end, **kwargs):
                              mode='lines+markers', name="Residual Flow", line=dict(color="#2f90c5", width=2)))
     fig.update_layout(
         title="Tri-Party Adjusted for RRP",
-        yaxis_title="Trillions",
+        yaxis_title="Dollars",
         xaxis_title="Date",
         hovermode='x unified'
     )
@@ -473,7 +473,7 @@ def plot_mmf_allocation_by_counterparty(start, end, **kwargs):
                                  mode='lines+markers', name=col.replace("_", " ").title(), line=dict(color=color)))
     fig.update_layout(
         title="Allocation of MMF by Counterparties",
-        yaxis_title="Trillions",
+        yaxis_title="Dollars",
         xaxis_title="Date",
         hovermode='x unified'
     )

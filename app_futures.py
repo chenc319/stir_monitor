@@ -32,7 +32,7 @@ def plot_futures_leverage_money_short(start, end, **kwargs):
         ])
     ]
     bonds_future_leverage_money_short = bonds_cftc_subset[[
-        'commodity_name','contract_market_name','report_date_as_yyyy_mm_dd','lev_money_positions_short'
+        'commodity_name','contract_market_name','report_date_as_yyyy_mm_dd','lev_money_positions_short','contract_units'
     ]].copy()
     bonds_future_leverage_money_short['report_date_as_yyyy_mm_dd'] = pd.to_datetime(
         bonds_future_leverage_money_short['report_date_as_yyyy_mm_dd']
@@ -44,6 +44,10 @@ def plot_futures_leverage_money_short(start, end, **kwargs):
         aggfunc='sum'
     )
     pivot = pivot.loc[str(start):str(end)]
+    pivot['T-NOTES, 1-2 YEAR'] = pivot['T-NOTES, 1-2 YEAR'] * 200000
+    pivot['T-NOTES, 4-6 YEAR'] = pivot['T-NOTES, 4-6 YEAR'] * 100000
+    pivot['T-NOTES, 6.5-10 YEAR'] = pivot['T-NOTES, 6.5-10 YEAR'] * 100000
+
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 6))
@@ -62,7 +66,7 @@ def plot_futures_leverage_money_short(start, end, **kwargs):
         fig.add_trace(go.Scatter(x=pivot.index, y=pivot[col], name=col))
     fig.update_layout(
         title="Leverage Money Short Positions by Treasury Futures Bucket",
-        yaxis_title="Leverage Money Short Positions",
+        yaxis_title="Dollars",
         xaxis_title="Date",
         hovermode='x unified'
     )

@@ -53,7 +53,7 @@ def plot_tga(start, end, **kwargs):
                              name='TGA Volume', line=dict(color='#07AFE3', width=2)))
     fig.update_layout(
         title="TGA",
-        yaxis_title="Trillions",
+        yaxis_title="Dollars",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -63,7 +63,7 @@ def plot_tga(start, end, **kwargs):
                               name='TGA Weekly ROC', line=dict(color='#07AFE3', width=2)))
     fig2.update_layout(
         title="TGA Weekly Rate of Change",
-        yaxis_title="Trillions",
+        yaxis_title="Dollars",
         xaxis_title="Date"
     )
     st.plotly_chart(fig2, use_container_width=True)

@@ -144,7 +144,7 @@ def plot_triparty_term_spread(start, end, **kwargs):
     tri_term_merge = merge_dfs([tri_df, term1w_df]).dropna().resample('W').last()
     tri_term_merge.columns = ['tri','dvp_30d']
     tri_term_merge['diff'] = (tri_term_merge['tri'] - tri_term_merge['dvp_30d'])
-    tri_term_merge = tri_term_merge[str(start):str(end)]
+    tri_term_merge = tri_term_merge[str(start):str(end)] * 100
 
     # ### PLOT ###
     # plt.figure(figsize=(8, 6))
@@ -183,7 +183,7 @@ def plot_sofr_effr_chart(start, end, **kwargs):
     sofr_effr_merge = merge_dfs([sofr, fed_funds]).dropna()
     sofr_effr_merge['sofr-effr'] = sofr_effr_merge['SOFR'] - sofr_effr_merge['EFFR']
     sofr_effr_merge['sofr-effr_ma'] = sofr_effr_merge['sofr-effr'].rolling(21).mean()
-    sofr_effr_merge = sofr_effr_merge[str(start):str(end)]
+    sofr_effr_merge = sofr_effr_merge[str(start):str(end)] * 100
 
     # ### PLOT ###
     # plt.figure(figsize=(8, 6))
@@ -234,7 +234,7 @@ def plot_repo_rate_complex_cross(start, end, **kwargs):
     srf['SRF'] = rrp['RRPONTSYAWARD'] + 0.25
     repo_rate_complex_df = merge_dfs([rrp,srf,sofr,dvp_df,gcf_df,tri_df])['2025-04-01':str(end)]
     repo_rate_complex_df.columns = ['RRP','SRF','SOFR','DVP','GCF','TRIPARTY']
-    repo_rate_complex_df = repo_rate_complex_df.dropna()
+    repo_rate_complex_df = repo_rate_complex_df.dropna() * 100
     colors = {
         'SOFR':     '#0B2138',
         'DVP':      '#48DEE9',
@@ -271,7 +271,7 @@ def plot_repo_rate_complex_cross(start, end, **kwargs):
                                  name=col, line=dict(color=colors[col], width=2)))
     fig.update_layout(
         title="Visible Repo Rate Complex",
-        yaxis_title="bps",
+        yaxis_title="Basis Points",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -302,7 +302,7 @@ def plot_dollar_lending_complex(start, end, **kwargs):
     srf['SRF'] = rrp['RRPONTSYAWARD'] + 0.25
     repo_rate_complex_df = merge_dfs([rrp,srf,sofr,dvp_df,gcf_df,tri_df,fed_funds,iorb])['2025-04-01':str(end)]
     repo_rate_complex_df.columns = ['RRP','SRF','SOFR','DVP','GCF','TRIPARTY','EFFR','IORB']
-    repo_rate_complex_df = repo_rate_complex_df.dropna()
+    repo_rate_complex_df = repo_rate_complex_df.dropna() * 100
 
     colors = {
         'SOFR':     '#0B2138',
@@ -340,7 +340,7 @@ def plot_dollar_lending_complex(start, end, **kwargs):
                                  name=col, line=dict(color=colors.get(col, "#666"), width=2)))
     fig.update_layout(
         title="Visible Repo Rate",
-        yaxis_title="bps",
+        yaxis_title="Basis Points",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)

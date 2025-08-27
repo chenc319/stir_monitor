@@ -26,7 +26,7 @@ def merge_dfs(array_of_dfs):
     return(new_df)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------------------- SHADOW BANK ASSETS ------------------------------------------- ###
+### ------------------------------------------- SHADOW BANK SUMMARY ------------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_shadow_bank_summary(start, end, **kwargs):
@@ -90,7 +90,7 @@ def plot_shadow_bank_summary(start, end, **kwargs):
                              line=dict(color="#aad8ef", width=3)))
     fig.update_layout(
         title="Shadow Banks Components",
-        yaxis_title="$",
+        yaxis_title="DOLLARS",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -98,22 +98,22 @@ def plot_shadow_bank_summary(start, end, **kwargs):
     ### PLOT ###
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['bd_pct'],
+                             y=merge_df['bd_pct'] * 100,
                              mode='lines+markers',
                              name='Broker/Dealer',
                              line=dict(color="#0B2138", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['hf_pct'],
+                             y=merge_df['hf_pct'] * 100,
                              mode='lines+markers',
                              name='HFs',
                              line=dict(color="#48DEE9", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['mmf_pct'],
+                             y=merge_df['mmf_pct'] * 100,
                              mode='lines+markers',
                              name='MMFs',
                              line=dict(color="#7EC0EE", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['reit_pct'],
+                             y=merge_df['reit_pct'] * 100,
                              mode='lines+markers',
                              name='REITs',
                              line=dict(color="#aad8ef", width=3)))
@@ -166,7 +166,7 @@ def plot_shadow_bank_mmf_repo(start, end, **kwargs):
                              line=dict(color="#233852", width=3)))
     fig.update_layout(
         title="MMF's Investments in Repo Markets",
-        yaxis_title="$ (Trillions)",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -197,7 +197,7 @@ def plot_shadow_bank_mmf_on_repo(start, end, **kwargs):
                              line=dict(color="#46b5ca", width=3)))
     fig.update_layout(
         title="MMF's Investments in Overnight/Open Repo",
-        yaxis_title="$ (Trillions)",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -251,7 +251,7 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
                              line=dict(color="#46b5ca", width=3)))
     fig.update_layout(
         title="Private Investments Long Positions - Fed Funds",
-        yaxis_title="$",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -270,7 +270,7 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
                              line=dict(color="#46b5ca", width=3)))
     fig.update_layout(
         title="Private Investments Short Positions - Fed Funds",
-        yaxis_title="$",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -286,7 +286,7 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
                              line=dict(color="#46b5ca", width=3)))
     fig.update_layout(
         title="Private Investments Net Positions - Fed Funds",
-        yaxis_title="$",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -305,7 +305,7 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
                              line=dict(color="#233852", width=3)))
     fig.update_layout(
         title="Private Investments Long Positions - SOFR",
-        yaxis_title="$",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -324,7 +324,7 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
                              line=dict(color="#233852", width=3)))
     fig.update_layout(
         title="Private Investments Short Positions - SOFR",
-        yaxis_title="$",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -343,7 +343,7 @@ def plot_shadow_bank_private_investments(start, end, **kwargs):
                              line=dict(color="#233852", width=3)))
     fig.update_layout(
         title="Private Investments Net Positions - SOFR",
-        yaxis_title="$",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -423,7 +423,7 @@ def plot_shadow_bank_assets(start, end, **kwargs):
                              line=dict(color="#7EC0EE", width=3)))
     fig.update_layout(
         title="Shadow Banks: Repo Assets",
-        yaxis_title="$",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -431,17 +431,17 @@ def plot_shadow_bank_assets(start, end, **kwargs):
     ### PLOT ###
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['bd_pct'],
+                             y=merge_df['bd_pct'] * 100,
                              mode='lines+markers',
                              name='Broker/Dealer',
                              line=dict(color="#0B2138", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['hf_pct'],
+                             y=merge_df['hf_pct'] * 100,
                              mode='lines+markers',
                              name='HFs',
                              line=dict(color="#48DEE9", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['mmf_pct'],
+                             y=merge_df['mmf_pct'] * 100,
                              mode='lines+markers',
                              name='MMFs',
                              line=dict(color="#7EC0EE", width=3)))
@@ -524,7 +524,7 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
                              line=dict(color="#7EC0EE", width=3)))
     fig.update_layout(
         title="Shadow Banks: Repo Liabilities",
-        yaxis_title="$",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -532,17 +532,17 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
     ### PLOT ###
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['bd_pct'],
+                             y=merge_df['bd_pct'] * 100,
                              mode='lines+markers',
                              name='Broker/Dealer',
                              line=dict(color="#0B2138", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['hf_pct'],
+                             y=merge_df['hf_pct'] * 100,
                              mode='lines+markers',
                              name='HFs',
                              line=dict(color="#48DEE9", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
-                             y=merge_df['reit_pct'],
+                             y=merge_df['reit_pct'] * 100,
                              mode='lines+markers',
                              name='REITs',
                              line=dict(color="#7EC0EE", width=3)))

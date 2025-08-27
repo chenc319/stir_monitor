@@ -348,7 +348,7 @@ def refresh_all_data():
     all_pd_bills_bonds_positions = pd.DataFrame()
     for idx in range(len(urls)):
         pos = pd.DataFrame(requests.get(urls[idx]).json()['pd']['timeseries']).drop('keyid', axis=1)
-        pos['value'] = pd.to_numeric(pos['value'], errors='coerce') / 1e3
+        pos['value'] = pd.to_numeric(pos['value'], errors='coerce')
         pos.dropna(subset=['value'], inplace=True)
         pos['asofdate'] = pd.to_datetime(pos['asofdate'])
         pos.set_index('asofdate', inplace=True)
@@ -364,6 +364,7 @@ def refresh_all_data():
             all_pd_bills_bonds_positions['g6l7'] +
             all_pd_bills_bonds_positions['g7l11']
     )
+    all_pd_bills_bonds_positions = all_pd_bills_bonds_positions * 1e6
     with open(Path(DATA_DIR) / 'all_pd_bills_bonds_positions.pkl', 'wb') as file:
         pickle.dump(all_pd_bills_bonds_positions, file)
 
@@ -392,6 +393,7 @@ def refresh_all_data():
         all_pd_bills_bonds_net_changes = merge_dfs([all_pd_bills_bonds_net_changes, pos])
     all_pd_bills_bonds_net_changes = all_pd_bills_bonds_net_changes.sort_index().loc[
                                      str(start):str(end)].dropna()
+    all_pd_bills_bonds_net_changes = all_pd_bills_bonds_net_changes * 1e6
     with open(Path(DATA_DIR) / 'all_pd_bills_bonds_net_changes.pkl', 'wb') as file:
         pickle.dump(all_pd_bills_bonds_net_changes, file)
 

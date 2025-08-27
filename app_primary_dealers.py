@@ -54,7 +54,7 @@ def plot_sponsored_volumes_solution(start, end, path_to_csv="data/SponsoredVolum
                              line=dict(color='#233852', width=2)))
     fig.update_layout(
         title="Sponsored Volumes - The Solutions?",
-        yaxis_title="Trillions",
+        yaxis_title="Dollars",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -92,7 +92,7 @@ def plot_sponsored_volumes(start, end, **kwargs):
                              line=dict(color='#233852', width=2)))
     fig.update_layout(
         title="Sponsored Volumes",
-        yaxis_title="Trillions",
+        yaxis_title="Dollars",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -134,7 +134,7 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
                              name="% of DVP that is Sponsored", line=dict(color='#4CD0E9', width=2)))
     fig.update_layout(
         title="% of DVP that is Sponsored",
-        yaxis_title="Percent",
+        yaxis_title="%",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -171,7 +171,7 @@ def plot_net_positions_bills_vs_bonds(start, end, **kwargs):
                              line=dict(color='#262e39', width=2)))
     fig.update_layout(
         title="Primary Dealers Net Positions Bills VS Bonds",
-        yaxis_title="Billions",
+        yaxis_title="Dollars",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -216,7 +216,7 @@ def plot_net_positions_by_bond_tenor(start, end, **kwargs):
                                  y=all_pd_bills_bonds_positions[k], name=name, line=dict(color=color, width=2)))
     fig.update_layout(
         title="Primary Dealers Net Positions By Bond Tenor",
-        yaxis_title="Billions",
+        yaxis_title="Dollars",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -261,7 +261,7 @@ def plot_net_change_by_bond_tenor(start, end, **kwargs):
                                  y=all_pd_bills_bonds_net_changes[k], name=name, line=dict(color=color, width=2)))
     fig.update_layout(
         title="Primary Dealers Net Position Change By Bond Tenor",
-        yaxis_title="Billions",
+        yaxis_title="Dollars",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)

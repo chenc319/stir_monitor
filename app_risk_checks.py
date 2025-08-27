@@ -135,7 +135,7 @@ def plot_repo_rate_complex(start, end, **kwargs):
     repo_df.columns = ['RRP', 'SRF', 'SOFR', 'DVP', 'GCF', 'TRIPARTY']
     colors = {'SOFR': '#0B2138', 'DVP': '#48DEE9', 'TRIPARTY': '#7EC0EE',
               'GCF': '#F9D15B', 'SRF': '#F9C846', 'RRP': '#F39C12'}
-    repo_df = repo_df['2025-04-01':]
+    repo_df = repo_df['2025-04-01':] * 100
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -188,7 +188,7 @@ def plot_sofr_distribution(start, end, **kwargs):
     df = merge_dfs([sofr, sofr1, sofr25, sofr75, sofr99]).dropna()
     colors = ['#9DDCF9', '#4CD0E9', '#233852', '#F5B820', '#E69B93']
     names = ['SOFR', 'SOFR1', 'SOFR25', 'SOFR75', 'SOFR99']
-    df = df['2025-04-01':]
+    df = df['2025-04-01':] * 100
 
     # ### PLOT ###
     # plt.figure(figsize=(10, 7))
@@ -258,7 +258,7 @@ def plot_fed_balance_sheet(start, end, **kwargs):
                              line=dict(color="#17354c", width=3)))
     fig.update_layout(
         title="FED Balance Sheet",
-        yaxis_title="Dollars (Trillions)",
+        yaxis_title="Dollars",
         xaxis_title="Date",
         hovermode='x unified'
     )
@@ -318,7 +318,7 @@ def plot_monitoring_reserves(start, end, **kwargs):
                                  line=dict(color=color)))
     fig.update_layout(
         title="Monitoring reserves",
-        yaxis_title="Dollars (Trillions)",
+        yaxis_title="Dollars",
         xaxis_title="Date",
         hovermode='x unified'
     )
@@ -362,7 +362,7 @@ def plot_fed_action_vs_reserve_response(start, end, **kwargs):
                              line=dict(color='#17293c', width=2)))
     fig.update_layout(
         title="FED Action Vs Reserve Response",
-        yaxis_title="30-Day Change (Trillions of $)",
+        yaxis_title="30-Day Change ($)",
         xaxis_title="Date",
         hovermode='x unified'
     )
@@ -410,7 +410,7 @@ def plot_fed_action_vs_reserve_response_v2(start, end, **kwargs):
                              line=dict(color='#17293c', width=2)))
     fig.update_layout(
         title="FED Action Vs Reserve Response",
-        yaxis_title="30-Day Change (Trillions of $)",
+        yaxis_title="30-Day Change ($)",
         xaxis_title="Date",
         hovermode='x unified'
     )

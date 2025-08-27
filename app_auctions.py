@@ -50,7 +50,7 @@ def plot_issuance_by_security(start, end, **kwargs):
                                  name=sec, line=dict(color=colors[sec], width=2)))
     fig.update_layout(
         title='Issuance in Auction By Security',
-        yaxis_title='Dollars (Trillions)',
+        yaxis_title='Dollars',
         xaxis_title='Date'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -98,7 +98,7 @@ def plot_bills_issuance(start, end, **kwargs):
                                  name=col, line=dict(color=bill_colors[col], width=2)))
     fig.update_layout(
         title="Bill Issuances",
-        yaxis_title="Dollars (Trillions)",
+        yaxis_title="Dollars",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -143,7 +143,7 @@ def plot_notes_issuance(start, end, **kwargs):
                                  name=col, line=dict(color=note_colors[col], width=2)))
     fig.update_layout(
         title="Notes Issuances",
-        yaxis_title="Dollars (Trillions)",
+        yaxis_title="Dollars",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -182,7 +182,7 @@ def plot_bonds_issuance(start, end, **kwargs):
                                  name=col, line=dict(color=bond_colors[col], width=2)))
     fig.update_layout(
         title="Bonds Issuances",
-        yaxis_title="Dollars (Trillions)",
+        yaxis_title="Dollars",
         xaxis_title="Date"
     )
     st.plotly_chart(fig, use_container_width=True)
