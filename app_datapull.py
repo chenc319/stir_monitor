@@ -299,7 +299,7 @@ def refresh_all_data():
 
     ### AUCTION DATA ###
     url = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/auctions_query?"
-           "filter=record_date:gte:2000-08-16,record_date:lte:2025-08-15"
+           "filter=record_date:gte:2000-08-16,record_date:lte:" + str(end.date()) +
            "&sort=-auction_date,-issue_date,maturity_date&page[size]=10000")
     resp = requests.get(url).json()
     auction_df = pd.DataFrame(resp['data'])
