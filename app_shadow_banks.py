@@ -65,6 +65,8 @@ def plot_shadow_bank_summary(start, end, **kwargs):
     merge_df['mmf_pct'] = merge_df['MMFs'] / merge_df['Total Repo']
     merge_df['reit_pct'] = merge_df['REITs'] / merge_df['Total Repo']
 
+    merge_df = merge_df[start:end]
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['Broker/Dealer'],
@@ -397,10 +399,11 @@ def plot_shadow_bank_assets(start, end, **kwargs):
     merge_df.columns = ['Broker/Dealer', 'HFs', 'MMFs', 'Total Repo']
     merge_df['Total Repo'] = merge_df['Total Repo'].ffill()
     merge_df = merge_df.dropna()
-
     merge_df['bd_pct'] = merge_df['Broker/Dealer'] / merge_df['Total Repo']
     merge_df['hf_pct'] = merge_df['HFs'] / merge_df['Total Repo']
     merge_df['mmf_pct'] = merge_df['MMFs'] / merge_df['Total Repo']
+
+    merge_df = merge_df[start:end]
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge_df.index,
@@ -482,10 +485,11 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
     merge_df.columns = ['Broker/Dealer','HFs','REITs','Total Repo']
     merge_df['Total Repo'] = merge_df['Total Repo'].ffill()
     merge_df = merge_df.dropna()
-
     merge_df['bd_pct'] = merge_df['Broker/Dealer'] / merge_df['Total Repo']
     merge_df['hf_pct'] = merge_df['HFs'] / merge_df['Total Repo']
     merge_df['reit_pct'] = merge_df['REITs'] / merge_df['Total Repo']
+
+    merge_df = merge_df[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))

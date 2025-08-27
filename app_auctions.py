@@ -26,7 +26,6 @@ def plot_issuance_by_security(start, end, **kwargs):
     auction_issuance_df = df[['record_date','security_type','total_accepted']].copy()
     auction_issuance_df['eom'] = auction_issuance_df['record_date'].dt.to_period('M').dt.to_timestamp('M')
     agg_monthly = auction_issuance_df.groupby(['eom', 'security_type'])['total_accepted'].sum().unstack(fill_value=0)
-    agg_monthly = agg_monthly / 1e12
     agg_monthly = agg_monthly.loc[str(start):str(end)]
     colors = {'Bill':'#8ed6f8','Bond':'#008fd5','Note':'#ffc650'}
 
@@ -67,8 +66,8 @@ def plot_bills_issuance(start, end, **kwargs):
     bill_terms = ['4-Week','8-Week','13-Week','26-Week','52-Week']
     bill_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(bill_terms)].copy()
     bill_issuance['eom'] = bill_issuance['record_date'].dt.to_period('M').dt.to_timestamp('M')
-    bill_issuance = bill_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0) / 1e12
-    bill_issuance = bill_issuance.loc['2020-01-01':str(end)]
+    bill_issuance = bill_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0)
+    bill_issuance = bill_issuance.loc[str(start):str(end)]
     bill_colors = {
         '4-Week':'#9bdaf6','8-Week':'#4dc6c6','13-Week':'#356c82',
         '26-Week':'#001f35','52-Week':'#fbc430'
@@ -115,8 +114,8 @@ def plot_notes_issuance(start, end, **kwargs):
     note_terms = ['2-Year','3-Year','5-Year','7-Year','10-Year']
     notes_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(note_terms)].copy()
     notes_issuance['eom'] = notes_issuance['record_date'].dt.to_period('M').dt.to_timestamp('M')
-    notes_issuance = notes_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0) / 1e12
-    notes_issuance = notes_issuance.loc['2020-01-01':str(end)]
+    notes_issuance = notes_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0)
+    notes_issuance = notes_issuance.loc[str(start):str(end)]
     note_colors = {'2-Year':'#9bdaf6','3-Year':'#4dc6c6','5-Year':'#356c82','7-Year':'#001f35','10-Year':'#fbc430'}
 
     # ### PLOT ###
@@ -160,8 +159,8 @@ def plot_bonds_issuance(start, end, **kwargs):
     bond_terms = ['20-Year','30-Year']
     bonds_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(bond_terms)].copy()
     bonds_issuance['eom'] = bonds_issuance['record_date'].dt.to_period('M').dt.to_timestamp('M')
-    bonds_issuance = bonds_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0) / 1e12
-    bonds_issuance = bonds_issuance.loc['2020-01-01':str(end)]
+    bonds_issuance = bonds_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0)
+    bonds_issuance = bonds_issuance.loc[str(start):str(end)]
     bond_colors = {'20-Year':'#9bdaf6','30-Year':'#fbc430'}
 
     # ### PLOT ###

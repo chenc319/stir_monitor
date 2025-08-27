@@ -28,6 +28,8 @@ def plot_tga(start, end, **kwargs):
     tga_volume.columns = ['tga_volume']
     tga_roc = tga_volume.resample('W').last().diff(1)
     tga_roc.columns = ['TGA ROC']
+    tga_volume = tga_volume[start:end]
+    tga_roc = tga_roc[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(7, 6))
@@ -76,6 +78,8 @@ def plot_rrp(start, end, **kwargs):
     rrp_volume.columns = ['rrp_volume']
     rrp_roc = rrp_volume.resample('W').last().diff(1)
     rrp_roc.columns = ['RRP ROC']
+    rrp_volume = rrp_volume[start:end]
+    rrp_roc = rrp_roc[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(7, 6))
@@ -125,6 +129,8 @@ def plot_reserves(start, end, **kwargs):
     reserves_volume.columns = ['reserves_volume']
     reserves_roc = reserves_volume.resample('W').last().diff(1)
     reserves_roc.columns = ['reserves_roc']
+    reserves_volume = reserves_volume[start:end]
+    reserves_roc = reserves_roc[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(7, 6))
@@ -177,7 +183,7 @@ def plot_mmf_repo_vs_non_repo(start, end, **kwargs):
     mmf_repo_non_repo_merge.columns = ['mmf_repo', 'mmf_total']
     mmf_repo_non_repo_merge['non_repo'] = (mmf_repo_non_repo_merge['mmf_total'] -
                                            mmf_repo_non_repo_merge['mmf_repo'])
-    mmf_repo_non_repo_merge = mmf_repo_non_repo_merge['2019-01-01':str(end)].dropna()
+    mmf_repo_non_repo_merge = mmf_repo_non_repo_merge[str(start):str(end)].dropna()
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -218,7 +224,7 @@ def plot_asset_allocation_mmf(start, end, **kwargs):
     mmf_fed_repo_non_repo_merge.columns = ['mmf_fed_repo', 'mmf_repo_total']
     mmf_fed_repo_non_repo_merge['mmf_non_fed_repo'] = (mmf_fed_repo_non_repo_merge['mmf_repo_total'] -
                                                        mmf_fed_repo_non_repo_merge['mmf_fed_repo'])
-    mmf_fed_repo_non_repo_merge = mmf_fed_repo_non_repo_merge['2019-01-01':str(end)].dropna()
+    mmf_fed_repo_non_repo_merge = mmf_fed_repo_non_repo_merge[str(start):str(end)].dropna()
 
     # Reuse MMF repo/non-repo from previous function for full merge
     with open(Path(DATA_DIR) / 'mmf_repo.pkl', 'rb') as file:
@@ -229,9 +235,7 @@ def plot_asset_allocation_mmf(start, end, **kwargs):
     mmf_repo_non_repo_merge.columns = ['mmf_repo', 'mmf_total']
     mmf_repo_non_repo_merge['non_repo'] = (mmf_repo_non_repo_merge['mmf_total'] -
                                            mmf_repo_non_repo_merge['mmf_repo'])
-    mmf_repo_non_repo_merge = mmf_repo_non_repo_merge['2019-01-01':str(end)].dropna()
-
-    mmf_fed_repo_non_repo_merge = merge_dfs([mmf_fed_repo_non_repo_merge, mmf_repo_non_repo_merge])
+    mmf_fed_repo_non_repo_merge = merge_dfs([mmf_fed_repo_non_repo_merge, mmf_repo_non_repo_merge])[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -291,14 +295,13 @@ def plot_reserves_non_fed_repo_rrp(start, end, **kwargs):
     mmf_fed_repo_non_repo_merge.columns = ['mmf_fed_repo', 'mmf_repo_total']
     mmf_fed_repo_non_repo_merge['mmf_non_fed_repo'] = (mmf_fed_repo_non_repo_merge['mmf_repo_total'] -
                                                        mmf_fed_repo_non_repo_merge['mmf_fed_repo'])
-    mmf_fed_repo_non_repo_merge = mmf_fed_repo_non_repo_merge['2019-01-01':str(end)].dropna()
 
     reserve_liabilities_merge = merge_dfs([
         tga_volume.resample('ME').last(),
         rrp_volume.resample('ME').last(),
         reserves_volume.resample('ME').last(),
         mmf_fed_repo_non_repo_merge.resample('ME').last()
-    ]).dropna()
+    ]).dropna()[start:end]
     reserve_liabilities_merge['reserves_non_repo_rrp'] = (
         reserve_liabilities_merge['rrp_volume'] +
         reserve_liabilities_merge['reserves_volume'] +
@@ -352,14 +355,14 @@ def plot_reserves_liabilities_system(start, end, **kwargs):
     mmf_fed_repo_non_repo_merge.columns = ['mmf_fed_repo', 'mmf_repo_total']
     mmf_fed_repo_non_repo_merge['mmf_non_fed_repo'] = (mmf_fed_repo_non_repo_merge['mmf_repo_total'] -
                                                        mmf_fed_repo_non_repo_merge['mmf_fed_repo'])
-    mmf_fed_repo_non_repo_merge = mmf_fed_repo_non_repo_merge['2019-01-01':str(end)].dropna()
+    mmf_fed_repo_non_repo_merge = mmf_fed_repo_non_repo_merge[str(start):str(end)].dropna()
 
     reserve_liabilities_merge = merge_dfs([
         tga_volume.resample('ME').last(),
         rrp_volume.resample('ME').last(),
         reserves_volume.resample('ME').last(),
         mmf_fed_repo_non_repo_merge.resample('ME').last()
-    ]).dropna()
+    ]).dropna()[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))

@@ -105,7 +105,7 @@ def plot_gcf_tri_spread(start, end, **kwargs):
         df.index = pd.to_datetime(df.index)
     merged = merge_dfs([sofr, iorb, dvp_df, gcf_df, tri_df]).dropna() * 100
     merged.columns = ['SOFR','IORB','DVP','GCF','TRI']
-    merged = merged['2022-01-01':str(end)]
+    merged = merged[str(start):str(end)]
     merged['GCF-TRI'] = merged['GCF'] - merged['TRI']
 
     # ### PLOT ###
@@ -144,7 +144,7 @@ def plot_triparty_term_spread(start, end, **kwargs):
     tri_term_merge = merge_dfs([tri_df, term1w_df]).dropna().resample('W').last()
     tri_term_merge.columns = ['tri','dvp_30d']
     tri_term_merge['diff'] = (tri_term_merge['tri'] - tri_term_merge['dvp_30d'])
-    tri_term_merge = tri_term_merge['2022-01-01':str(end)]
+    tri_term_merge = tri_term_merge[str(start):str(end)]
 
     # ### PLOT ###
     # plt.figure(figsize=(8, 6))
@@ -183,7 +183,7 @@ def plot_sofr_effr_chart(start, end, **kwargs):
     sofr_effr_merge = merge_dfs([sofr, fed_funds]).dropna()
     sofr_effr_merge['sofr-effr'] = sofr_effr_merge['SOFR'] - sofr_effr_merge['EFFR']
     sofr_effr_merge['sofr-effr_ma'] = sofr_effr_merge['sofr-effr'].rolling(21).mean()
-    sofr_effr_merge = sofr_effr_merge['2023-12-01':str(end)]
+    sofr_effr_merge = sofr_effr_merge[str(start):str(end)]
 
     # ### PLOT ###
     # plt.figure(figsize=(8, 6))

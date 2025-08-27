@@ -31,6 +31,7 @@ def plot_dash_for_cash_spread(start, end, **kwargs):
 
     dash_spread = iorb.join(fed_funds, how='inner', lsuffix='_IORB', rsuffix='_EFFR')
     dash_spread['Spread_bp'] = (dash_spread['EFFR'] - dash_spread['IORB']) * 100
+    dash_spread = dash_spread[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(10, 5))

@@ -14,8 +14,11 @@ import pickle
 DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 def merge_dfs(array_of_dfs):
-    return ft.reduce(lambda left, right: pd.merge(left, right, left_index=True, right_index=True, how='outer'),
-                     array_of_dfs)
+    return ft.reduce(lambda left, right: pd.merge(left,
+                                                  right,
+                                                  left_index=True,
+                                                  right_index=True,
+                                                  how='outer'),array_of_dfs)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------- PROXY OF PERCENT WITHOUT CENTRAL CLEARING -------------------------------- ###
@@ -38,7 +41,8 @@ def plot_proxy_percent_without_clearing(start, end, **kwargs):
     pd_nccbr_proxy_merge['pd_nccbr_total'] = (pd_nccbr_proxy_merge['pd_nccbr_on'] +
                                               pd_nccbr_proxy_merge['pd_nccbr_l30'] +
                                               pd_nccbr_proxy_merge['pd_nccbr_g30'])
-    pd_nccbr_proxy_merge['nccbr_pct'] = pd_nccbr_proxy_merge['pd_nccbr_total'] / pd_nccbr_proxy_merge['pd_total_repo']
+    pd_nccbr_proxy_merge['nccbr_pct'] = (pd_nccbr_proxy_merge['pd_nccbr_total'] /
+                                         pd_nccbr_proxy_merge['pd_total_repo'])
     pd_nccbr_proxy_merge = pd_nccbr_proxy_merge.dropna()
 
     ### OFR DATA PULLS ###
@@ -53,18 +57,24 @@ def plot_proxy_percent_without_clearing(start, end, **kwargs):
 
     rrp_volume.columns = ['rrp']
     repo_total_merge = merge_dfs(
-        [gcf_volume_df, dvp_volume_df, tri_volume_df, pd.DataFrame(pd_nccbr_proxy_merge['pd_nccbr_total'])]).dropna()
+        [gcf_volume_df,
+         dvp_volume_df,
+         tri_volume_df,
+         pd.DataFrame(pd_nccbr_proxy_merge['pd_nccbr_total'])]).dropna()
     total_repo_volume = pd.DataFrame(repo_total_merge.sum(axis=1))
     total_repo_volume.columns = ['Repo']
 
     black_proxy = merge_dfs([tri_volume_df, rrp_volume, dvp_volume_df, gcf_volume_df, total_repo_volume])
     black_proxy.columns = ['tri', 'rrp', 'dvp', 'gcf', 'all_repo']
     black_proxy = black_proxy.resample('W').last().dropna()
-    black_proxy['black'] = (black_proxy['tri'] - black_proxy['rrp']) / (black_proxy['all_repo'] - black_proxy['rrp'])
+    black_proxy['black'] = (black_proxy['tri'] -
+                            black_proxy['rrp']) / (black_proxy['all_repo'] - black_proxy['rrp'])
 
     nccbr_proxy_merge = merge_dfs([pd_nccbr_proxy_merge['nccbr_pct'], black_proxy['black']])
     nccbr_proxy_merge['black'] = nccbr_proxy_merge['black'].ffill()
     nccbr_proxy_merge = nccbr_proxy_merge.dropna()
+
+    nccbr_proxy_merge = nccbr_proxy_merge[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -82,11 +92,15 @@ def plot_proxy_percent_without_clearing(start, end, **kwargs):
     fig.add_trace(go.Scatter(
         x=nccbr_proxy_merge.index,
         y=nccbr_proxy_merge['nccbr_pct']*100,
-        mode='lines+markers', name='% of NCCBR of Primary Dealers', line=dict(color='#29B6D9', width=2)))
+        mode='lines+markers',
+        name='% of NCCBR of Primary Dealers',
+        line=dict(color='#29B6D9', width=2)))
     fig.add_trace(go.Scatter(
         x=nccbr_proxy_merge.index,
         y=nccbr_proxy_merge['black']*100,
-        mode='lines+markers', name='Tri Party-RRP / (Tri Party+DVP+GCF-RRP)', line=dict(color='#272f37', width=2)))
+        mode='lines+markers',
+        name='Tri Party-RRP / (Tri Party+DVP+GCF-RRP)',
+        line=dict(color='#272f37', width=2)))
     fig.update_layout(
         title="Proxy of % of Non Cleared Repos",
         yaxis_title="%",
@@ -112,7 +126,10 @@ def plot_volume_per_venue(start, end, **kwargs):
     triparty_rrp_merge = merge_dfs([tri_volume_df, rrp_volume]).dropna()
     triparty_rrp_diff = pd.DataFrame(triparty_rrp_merge.iloc[:, 0] - triparty_rrp_merge.iloc[:, 1])
     triparty_rrp_diff.columns = ['Triparty-RRP']
-    volume_venue_merge_df = merge_dfs([dvp_volume_df, rrp_volume, gcf_volume_df, triparty_rrp_diff]).loc[str(start):str(end)].dropna()
+    volume_venue_merge_df = merge_dfs([dvp_volume_df,
+                                       rrp_volume,
+                                       gcf_volume_df,
+                                       triparty_rrp_diff]).loc[str(start):str(end)].dropna()
     volume_venue_merge_df.columns = ['DVP', 'RRP', 'GCF', 'Triparty-RRP']
 
     # ### PLOT ###
@@ -158,10 +175,11 @@ def plot_mmf_by_asset(start, end, **kwargs):
 
     mmf_repo_non_repo_merge = merge_dfs([mmf_repo, mmf_total, mmf_us_ts])
     mmf_repo_non_repo_merge.columns = ['mmf_repo', 'mmf_total', 'mmf_us_treasury_sec']
-    mmf_repo_non_repo_merge['non_repo'] = mmf_repo_non_repo_merge['mmf_total'] - mmf_repo_non_repo_merge['mmf_repo']
+    mmf_repo_non_repo_merge['non_repo'] = (mmf_repo_non_repo_merge['mmf_total'] -
+                                           mmf_repo_non_repo_merge['mmf_repo'])
     mmf_repo_non_repo_merge = mmf_repo_non_repo_merge.loc[str(start):str(end)]
-    mmf_repo_non_repo_merge['US_Repo_Allocation'] = mmf_repo_non_repo_merge['mmf_repo'] / mmf_repo_non_repo_merge[
-        'mmf_total']
+    mmf_repo_non_repo_merge['US_Repo_Allocation'] = (mmf_repo_non_repo_merge['mmf_repo'] /
+                                                     mmf_repo_non_repo_merge['mmf_total'])
     mmf_repo_non_repo_merge['US_TS_Allocation'] = mmf_repo_non_repo_merge['mmf_us_treasury_sec'] / \
                                                   mmf_repo_non_repo_merge['mmf_total']
     mmf_repo_non_repo_merge = mmf_repo_non_repo_merge.dropna()
@@ -215,7 +233,10 @@ def plot_6m_volume_change(start, end, **kwargs):
     triparty_rrp_diff = pd.DataFrame(triparty_rrp_merge.iloc[:, 0] - triparty_rrp_merge.iloc[:, 1])
     triparty_rrp_diff.columns = ['Triparty-RRP']
 
-    volume_venue_merge_df = merge_dfs([dvp_volume_df, rrp_volume, gcf_volume_df, triparty_rrp_diff]).loc[str(start):str(end)].dropna()
+    volume_venue_merge_df = merge_dfs([dvp_volume_df,
+                                       rrp_volume,
+                                       gcf_volume_df,
+                                       triparty_rrp_diff]).loc[str(start):str(end)].dropna()
     volume_venue_merge_df.columns = ['DVP', 'RRP', 'GCF', 'Triparty-RRP']
 
     roc_6m_volume = volume_venue_merge_df.resample('ME').last().diff(1)

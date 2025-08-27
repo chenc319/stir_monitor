@@ -71,6 +71,7 @@ def plot_sponsored_volumes(start, end, **kwargs):
 
     merge = merge_dfs([ficc_sponsored_repo_volume, ficc_sponsored_rrp_volume])
     merge.columns = ['sponsored_repo', 'sponsored_rrp']
+    merge = merge[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(10, 7))
@@ -116,6 +117,7 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
     merge = merge_dfs([dvp_sponsored_vol, dvp_volume]).dropna()
     merge.columns = ['dvp_sponsored', 'total_dvp']
     merge['pct'] = merge['dvp_sponsored'] / merge['total_dvp']
+    merge = merge[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(10, 7))
@@ -144,6 +146,7 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
 def plot_net_positions_bills_vs_bonds(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'all_pd_bills_bonds_positions.pkl', 'rb') as file:
         all_pd_bills_bonds_positions = pickle.load(file)
+    all_pd_bills_bonds_positions = all_pd_bills_bonds_positions[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(13, 7))
@@ -180,6 +183,7 @@ def plot_net_positions_bills_vs_bonds(start, end, **kwargs):
 def plot_net_positions_by_bond_tenor(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'all_pd_bills_bonds_positions.pkl', 'rb') as file:
         all_pd_bills_bonds_positions = pickle.load(file)
+    all_pd_bills_bonds_positions = all_pd_bills_bonds_positions[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
@@ -224,6 +228,7 @@ def plot_net_positions_by_bond_tenor(start, end, **kwargs):
 def plot_net_change_by_bond_tenor(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'all_pd_bills_bonds_net_changes.pkl', 'rb') as file:
         all_pd_bills_bonds_net_changes = pickle.load(file)
+    all_pd_bills_bonds_net_changes = all_pd_bills_bonds_net_changes[start:end]
 
     # ### PLOT ###
     # plt.figure(figsize=(12, 7))
