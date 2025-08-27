@@ -41,6 +41,11 @@ def plot_treasury_ownership(start,end, **kwargs):
     for entity in all_types_of_owners:
         entity_df = pd.DataFrame(us_treasury_ownership[
             us_treasury_ownership['securities_owner'] == entity]['securities_bil_amt'])
+        entity_df = entity_df[entity_df['securities_bil_amt'] != 0]
+        entity_df['date'] = entity_df.index
+        entity_df = entity_df.groupby('date', as_index=False)['securities_bil_amt'].mean()
+        entity_df.index = entity_df['date'].values
+        entity_df.drop('date', axis=1, inplace=True)
         entity_df.columns = [entity]
         us_treasury_ownership_timeseries = merge_dfs([us_treasury_ownership_timeseries,entity_df])
 
