@@ -64,6 +64,7 @@ def plot_treasury_ownership(start,end, **kwargs):
     us_treasury_ownership_sum = pd.DataFrame(us_treasury_ownership_timeseries.sum(axis=1))
     us_treasury_ownership_sum.columns = ['sum']
     us_treasury_ownership_sum = us_treasury_ownership_sum[start:end]
+    us_treasury_ownership_timeseries = us_treasury_ownership_timeseries[start:end]
 
     ### PLOT ###
     fig = go.Figure()
@@ -137,6 +138,7 @@ def plot_treasury_ownership(start,end, **kwargs):
 
     ### PLOT ###
     us_treasury_ownership_pct = us_treasury_ownership_timeseries.div(us_treasury_ownership_sum['sum'], axis=0) * 100
+    us_treasury_ownership_pct = us_treasury_ownership_pct[start:end]
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=us_treasury_ownership_pct.index,
                              y=us_treasury_ownership_pct['U.S. Savings Bonds'],
