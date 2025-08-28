@@ -5,16 +5,12 @@
 ### PACKAGES ###
 import functools as ft
 import requests
-import streamlit as st
-import plotly.graph_objs as go
-from matplotlib import pyplot as plt
 from pandas_datareader import data as pdr
 from pathlib import Path
 import os
 import pickle
 from io import StringIO
-import ftplib
-import io
+import numpy as np
 import pandas as pd
 DATA_DIR = os.getenv('DATA_DIR', 'data')
 
@@ -405,13 +401,56 @@ def refresh_all_data():
            'record_date:lte:' + str(pd.to_datetime('today').date()) +
            '&sort=-record_date&page%5Bnumber%5D=1&page%5Bsize%5D=10000')
     us_treasury_ownership = pd.DataFrame(requests.get(url).json()['data'])
-    us_treasury_ownership.index = pd.to_datetime(us_treasury_ownership['record_date'].values)
+    us_treasury_ownership.index = pd.to_datetime(
+        us_treasury_ownership['record_date'].values)
     us_treasury_ownership.drop('record_date', axis=1, inplace=True)
-    us_treasury_ownership = us_treasury_ownership[us_treasury_ownership['securities_bil_amt'] != 'null']
-    us_treasury_ownership['securities_bil_amt'] = pd.to_numeric(us_treasury_ownership['securities_bil_amt']) * 1e9
-    us_treasury_ownership = pd.DataFrame(us_treasury_ownership[['securities_owner', 'securities_bil_amt']])[::-1]
+    us_treasury_ownership = us_treasury_ownership[
+        us_treasury_ownership['securities_bil_amt'] != 'null']
+    us_treasury_ownership['securities_bil_amt'] = pd.to_numeric(
+        us_treasury_ownership['securities_bil_amt']) * 1e9
+    us_treasury_ownership = pd.DataFrame(
+        us_treasury_ownership[['securities_owner', 'securities_bil_amt']])[::-1]
     with open(Path(DATA_DIR) / 'us_treasury_ownership.pkl', 'wb') as file:
         pickle.dump(us_treasury_ownership, file)
+
+    ### CIRCULATION CURRENCY AND OUTSTANDING ###
+    url = ('https://api.fiscaldata.treasury.gov/services/api/fiscal_service/'
+           'v1/accounting/tb/uscc1_amounts_outstanding_circulation?'
+           'filter=record_date:gte:2021-06-30,record_date:lte:'
+            + str(pd.to_datetime('today').date()) +
+           '&sort=-record_date&page%5Bnumber%5D=1&page%5Bsize%5D=10000')
+    outstanding_circulation = pd.DataFrame(requests.get(url).json()['data'])[::-1]
+    outstanding_circulation.index = pd.to_datetime(
+        outstanding_circulation['record_date'].values)
+    outstanding_circulation.drop('record_date', axis=1, inplace=True)
+    with open(Path(DATA_DIR) / 'outstanding_circulation.pkl', 'wb') as file:
+        pickle.dump(outstanding_circulation, file)
+
+    ### BUY BACKS SECURITY DETAILS ###
+    url = ('https://api.fiscaldata.treasury.gov/services/api/fiscal_service/'
+           'v1/accounting/od/buybacks_security_details?filter='
+           'operation_date:gte:2000-03-09,operation_date:lte:'
+           + str(pd.to_datetime('today').date()) +
+           '&sort=-operation_date&page%5Bnumber%5D=1&page%5Bsize%5D=10000')
+    buybacks_details_df = pd.DataFrame(requests.get(url).json()['data'])[::-1]
+    buybacks_details_df.index = pd.to_datetime(buybacks_details_df['operation_date'].values)
+    with open(Path(DATA_DIR) / 'buybacks_details_df.pkl', 'wb') as file:
+        pickle.dump(buybacks_details_df, file)
+
+    ### BUY BACKS OPERATIONS ###
+    url = ('https://api.fiscaldata.treasury.gov/services/api/fiscal_service/'
+           'v1/accounting/od/buybacks_operations?filter='
+           'operation_date:gte:2000-03-09,operation_date:lte:'
+           + str(pd.to_datetime('today').date()) +
+           '&sort=-operation_date&page%5Bnumber%5D=1&page%5Bsize%5D=10000')
+    buybacks_ops_df = pd.DataFrame(requests.get(url).json()['data'])[::-1]
+    buybacks_ops_df.index = pd.to_datetime(buybacks_ops_df['operation_date'].values)
+    buybacks_ops_total_df = pd.DataFrame(buybacks_ops_df['total_par_amt_offered'])
+    buybacks_ops_total_df.columns = ['buyback_total']
+    with open(Path(DATA_DIR) / 'buybacks_ops_total_df.pkl', 'wb') as file:
+        pickle.dump(buybacks_ops_total_df, file)
+
+
 
 
 

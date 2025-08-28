@@ -15,7 +15,7 @@ import app_auctions
 import app_futures
 import app_primary_dealers
 import app_fed_operations
-import app_ownership_bb
+import app_bulletin
 import app_datapull
 import time
 
@@ -123,7 +123,7 @@ menu = st.sidebar.radio(
      'Auctions',
      'Futures',
      'Primary Dealers',
-     'Ownership/Buybacks']
+     'US Treasury Bulletin']
 )
 
 
@@ -260,8 +260,9 @@ elif menu == 'Primary Dealers':
     app_primary_dealers.plot_net_change_by_bond_tenor(start_date, end_date)
 
 
-elif menu == 'Ownership/Buybacks':
-    st.title("US Treasury Ownership & Buybacks")
-    st.title("US Treasury Ownership")
-    app_ownership_bb.plot_treasury_ownership(start_date,end_date)
-    st.title('US Treasury Buybacks')
+elif menu == 'US Treasury Bulletin':
+    st.title("US Treasury Bulletin")
+    st.title("Ownership")
+    app_bulletin.plot_treasury_ownership(start_date,end_date)
+    st.title('Buybacks')
+    app_bulletin.plot_buyback_volume_by_maturity(start_date,end_date)

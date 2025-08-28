@@ -25,12 +25,23 @@ def merge_dfs(array_of_dfs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_buyback_volume_by_maturity(start,end, **kwargs):
-    with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
-        auction_df = pickle.load(file)
-        auction_df.columns
+    with open(Path(DATA_DIR) / 'buybacks_ops_total_df.pkl', 'rb') as file:
+        buybacks_ops_total_df = pickle.load(file)
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=buybacks_ops_total_df.index,
+                             y=buybacks_ops_total_df['buyback_total'], name="Bills",
+                             line=dict(color='#43c4e6', width=2)))
+    fig.update_layout(
+        title="US Treasury Total Buyback Volume",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------------------ TOTAL BUYBACK VOLUME ------------------------------------------ ###
+### ------------------------------------------ US TREASURY OWNERSHIP ----------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_treasury_ownership(start,end, **kwargs):
