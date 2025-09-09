@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt
 from pathlib import Path
 import os
 import pickle
+from plotly.subplots import make_subplots
 DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 def merge_dfs(array_of_dfs):
@@ -61,6 +62,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
     fed_liabilities_merge['reserves_total'] = (fed_liabilities_merge['reserves'] +
                                                fed_liabilities_merge['tga'] +
                                                fed_liabilities_merge['gse_dmfu'])
+    fed_liabilities_merge = fed_liabilities_merge[start:end]
 
     ### ASSETS ###
     with open(Path(DATA_DIR) / 'fed_assets_securities_outright.pkl', 'rb') as file:
