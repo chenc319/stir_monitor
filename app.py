@@ -116,7 +116,7 @@ else:
 menu = st.sidebar.radio(
     "Go to section:",
     ['Risk Checks',
-     'Fed Balance Sheet'
+     'Fed Balance Sheet',
      'Fed Operations',
      'Shadow Banks',
      'Repo',
