@@ -7,6 +7,7 @@ import streamlit as st
 import pandas as pd
 import functools as ft
 import app_risk_checks
+import app_fed_balance_sheet
 import app_shadow_banks
 import app_repo
 import app_cross_rate
@@ -115,6 +116,7 @@ else:
 menu = st.sidebar.radio(
     "Go to section:",
     ['Risk Checks',
+     'Fed Balance Sheet'
      'Fed Operations',
      'Shadow Banks',
      'Repo',
@@ -141,6 +143,7 @@ if menu == 'Risk Checks':
     app_risk_checks.plot_monitoring_reserves(start_date, end_date)
     app_risk_checks.plot_fed_action_vs_reserve_response(start_date, end_date)
     app_risk_checks.plot_fed_action_vs_reserve_response_v2(start_date, end_date)
+
 ### ---------------------------------------------------------------------------------------- ###
 ### -------------------------------------- RISK CHECKS ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
@@ -152,6 +155,14 @@ elif menu == 'Fed Operations':
     app_fed_operations.plot_fed_repo_operations(start_date, end_date)
     st.title("ONRRP Operations")
     app_fed_operations.plot_fed_rrp_operations(start_date, end_date)
+
+### ---------------------------------------------------------------------------------------- ###
+### -------------------------------------- RISK CHECKS ------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+
+elif menu == 'Fed Balance Sheet':
+    st.title("Fed Balance Sheet Liabilities")
+    app_fed_balance_sheet.plot_fed_balance_sheet_liabilities(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------ SHADOW BANK SYSTEM MAPPING ------------------------------ ###
