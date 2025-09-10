@@ -63,7 +63,83 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
                                                fed_liabilities_merge['tga'] +
                                                fed_liabilities_merge['gse_dmfu'])
     fed_liabilities_merge = fed_liabilities_merge[start:end]
+    fed_liabilities_merge_diff = fed_liabilities_merge.diff(1).dropna()
 
+    ### PLOT ###
+    fig = go.Figure()
+    cols = ['currency', 'rrp', 'foreign_repo', 'reserves', 'tga', 'gse_dmfu']
+    labels = [
+        'Currency',
+        'RRP Facility',
+        'Foreign RP Facility',
+        'Commercial Bank Reserves',
+        'TGA',
+        'GSE/DMFU'
+    ]
+    colors = ['#9bdaf6', '#4dc6c6', '#356c82', '#001f35', '#fbc430', '#fdad23']
+    for col, color, label in zip(cols,colors,labels):
+        fig.add_trace(go.Scatter(x=fed_liabilities_merge.index, y=fed_liabilities_merge[col],
+                                 mode='lines+markers',
+                                 name=labels,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="Fed Balance Sheet: Liabilities Summary",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = make_subplots(rows=2, cols=3, subplot_titles=labels)  
+    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
+        row = i // 3 + 1
+        col_position = i % 3 + 1
+        fig.add_trace(
+            go.Scatter(
+                x=fed_liabilities_merge.index,
+                y=fed_liabilities_merge[col],
+                mode='lines+markers',
+                name=label,
+                line=dict(color=color)
+            ),
+            row=row,
+            col=col_position
+        )
+    fig.update_layout(
+        title="Fed Balance Sheet: Liabilities Subplots",
+        showlegend=False,
+        height=600,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = make_subplots(rows=2, cols=3, subplot_titles=labels)
+    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
+        row = i // 3 + 1
+        col_position = i % 3 + 1
+        fig.add_trace(
+            go.Scatter(
+                x=fed_liabilities_merge_diff.index,
+                y=fed_liabilities_merge_diff[col],
+                mode='lines+markers',
+                name=label,
+                line=dict(color=color)
+            ),
+            row=row,
+            col=col_position
+        )
+    fig.update_layout(
+        title="Fed Balance Sheet: Liabilities Weekly Change Subplots",
+        showlegend=False,
+        height=600,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+
+
+def plot_fed_balance_sheet_assets(start, end, **kwargs):
     ### ASSETS ###
     with open(Path(DATA_DIR) / 'fed_assets_securities_outright.pkl', 'rb') as file:
         fed_assets_securities_outright = pickle.load(file)
@@ -81,54 +157,9 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
                                   fed_assets_mbs,
                                   fed_assets_total]).dropna()
     fed_assets_merge.index = pd.to_datetime(fed_assets_merge.index.values)
-    fed_assets_merge.columns = ['securities_outright','treasuries',
-                                'notes_bonds','mbs','total']
-    fed_assets_merge['lending_portfolio'] = (fed_assets_merge['total']- fed_assets_merge['securities_outright'])
-
-    ### PLOT LIABILITIES ###
-    fig = go.Figure()
-    for col, color in zip(['currency', 'rrp', 'foreign_repo', 'reserves', 'tga', 'gse_dmfu'],
-                          ['#9bdaf6', '#4dc6c6', '#356c82', '#001f35', '#fbc430', '#fdad23']):
-        fig.add_trace(go.Scatter(x=fed_liabilities_merge.index, y=fed_liabilities_merge[col],
-                                 mode='lines+markers',
-                                 name=col,
-                                 line=dict(color=color)))
-    fig.update_layout(
-        title="Fed Balance Sheet: Liabilities Summary",
-        yaxis_title="Dollars",
-        hovermode='x unified'
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-    # Example data
-    cols = ['currency', 'rrp', 'foreign_repo', 'reserves', 'tga', 'gse_dmfu']
-    colors = ['#9bdaf6', '#4dc6c6', '#356c82', '#001f35', '#fbc430', '#fdad23']
-
-    fig = make_subplots(rows=2, cols=3, subplot_titles=cols)
-
-    for i, (col, color) in enumerate(zip(cols, colors)):
-        row = i // 3 + 1
-        col_position = i % 3 + 1
-        fig.add_trace(
-            go.Scatter(
-                x=fed_liabilities_merge.index,
-                y=fed_liabilities_merge[col],
-                mode='lines+markers',
-                name=col,
-                line=dict(color=color)
-            ),
-            row=row,
-            col=col_position
-        )
-
-    fig.update_layout(
-        title="Fed Balance Sheet: Liabilities Summary (2x3 Grid)",
-        showlegend=False,  # legend is often disabled for grid subplots
-        height=600
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
+    fed_assets_merge.columns = ['securities_outright', 'treasuries',
+                                'notes_bonds', 'mbs', 'total']
+    fed_assets_merge['lending_portfolio'] = (fed_assets_merge['total'] - fed_assets_merge['securities_outright'])
 
 
 
