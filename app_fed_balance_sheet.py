@@ -185,6 +185,8 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
     fed_assets_merge.columns = ['securities_outright', 'treasuries',
                                 'notes_bonds', 'mbs', 'total']
     fed_assets_merge['lending_portfolio'] = (fed_assets_merge['total'] - fed_assets_merge['securities_outright'])
+    fed_assets_merge = fed_assets_merge[start:end]
+    fed_assets_merge_diff = fed_assets_merge.diff(1).dropna()
 
     ### PLOT ###
     fig = go.Figure()
@@ -201,6 +203,46 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
                                  line=dict(color=color)))
     fig.update_layout(
         title="Assets: Summary",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = ['securities_outright', 'lending_portfolio']
+    labels = [
+        'Treasury',
+        'MBS',
+    ]
+    colors = ['#fbc430', '#fdad23']
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=fed_assets_merge.index, y=fed_assets_merge[col],
+                                 mode='lines+markers',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="QE Securities: Components",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = ['securities_outright', 'lending_portfolio']
+    labels = [
+        'Treasury',
+        'MBS',
+    ]
+    colors = ['#fbc430', '#fdad23']
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=fed_assets_merge_diff.index, y=fed_assets_merge_diff[col],
+                                 mode='lines+markers',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="QE Securities: Weekly Change",
         yaxis_title="Dollars",
         hovermode='x unified'
     )
