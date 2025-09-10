@@ -115,10 +115,10 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
     ### PLOT ###
-    fig = make_subplots(rows=2, cols=3, subplot_titles=labels)
+    fig = make_subplots(rows=3, cols=2, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 3 + 1
-        col_position = i % 3 + 1
+        row = i // 2 + 1
+        col_position = i % 2 + 1
         fig.add_trace(
             go.Scatter(
                 x=fed_liabilities_merge.index,
