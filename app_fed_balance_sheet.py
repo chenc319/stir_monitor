@@ -155,7 +155,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
             col=col_position
         )
     fig.update_layout(
-        title="Liabilities: Weekly Change Subplots",
+        title="Liabilities: Weekly Change",
         showlegend=False,
         height=600,
         hovermode='x unified'
@@ -185,6 +185,26 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
     fed_assets_merge.columns = ['securities_outright', 'treasuries',
                                 'notes_bonds', 'mbs', 'total']
     fed_assets_merge['lending_portfolio'] = (fed_assets_merge['total'] - fed_assets_merge['securities_outright'])
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = ['securities_outright', 'lending_portfolio']
+    labels = [
+        'QE Securities',
+        'Lending Portfolio',
+    ]
+    colors = ['#9bdaf6', '#4dc6c6']
+    for col, color, label in zip(cols,colors,labels):
+        fig.add_trace(go.Scatter(x=fed_assets_merge.index, y=fed_assets_merge[col],
+                                 mode='lines+markers',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="Assets: Summary",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
 
 

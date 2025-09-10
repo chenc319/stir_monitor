@@ -121,7 +121,6 @@ menu = st.sidebar.radio(
      'Shadow Banks',
      'Repo',
      'Cross Rate',
-     'Cash',
      'Auctions',
      'Futures',
      'Primary Dealers',
@@ -161,8 +160,11 @@ elif menu == 'Fed Operations':
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Fed Balance Sheet':
+    st.title("Fed Balance Sheet Assets")
+    app_fed_balance_sheet.plot_fed_balance_sheet_assets(start_date, end_date)
     st.title("Fed Balance Sheet Liabilities")
     app_fed_balance_sheet.plot_fed_balance_sheet_liabilities(start_date, end_date)
+
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------ SHADOW BANK SYSTEM MAPPING ------------------------------ ###
@@ -198,6 +200,8 @@ elif menu == 'Repo':
     app_repo.plot_mmf_repo_vs_non_repo(start_date, end_date)
     app_repo.plot_triparty_adjusted_for_rrp(start_date, end_date)
     app_repo.plot_mmf_allocation_by_counterparty(start_date, end_date)
+    app_repo.plot_asset_allocation_mmf(start_date, end_date)
+    app_repo.plot_reserves_non_fed_repo_rrp(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### --------------------------------------- CROSS RATE ------------------------------------- ###
@@ -213,20 +217,6 @@ elif menu == 'Cross Rate':
     app_cross_rate.plot_dollar_lending_complex(start_date, end_date)
     app_cross_rate.plot_sofr_floor_ceiling(start_date, end_date)
     app_cross_rate.plot_unsecured_lending_floor_ceiling(start_date, end_date)
-
-### ---------------------------------------------------------------------------------------- ###
-### ----------------------------------------- CASH ----------------------------------------- ###
-### ---------------------------------------------------------------------------------------- ###
-
-elif menu == 'Cash':
-    st.title("Cash")
-    app_cash.plot_tga(start_date, end_date)
-    app_cash.plot_rrp(start_date, end_date)
-    app_cash.plot_reserves(start_date, end_date)
-    app_cash.plot_mmf_repo_vs_non_repo(start_date, end_date)
-    app_cash.plot_asset_allocation_mmf(start_date, end_date)
-    app_cash.plot_reserves_non_fed_repo_rrp(start_date, end_date)
-    app_cash.plot_reserves_liabilities_system(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### --------------------------------------- AUCTIONS --------------------------------------- ###

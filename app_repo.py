@@ -471,3 +471,121 @@ def plot_mmf_allocation_by_counterparty(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------ ASSET ALLOCATION MMF ------------------------------------------ ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_asset_allocation_mmf(start, end, **kwargs):
+    with open(Path(DATA_DIR) / 'mmf_repo.pkl', 'rb') as file:
+        mmf_repo_total = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_fed.pkl', 'rb') as file:
+        mmf_fed_repo = pickle.load(file)
+
+    mmf_fed_repo_non_repo_merge = merge_dfs([mmf_fed_repo, mmf_repo_total])
+    mmf_fed_repo_non_repo_merge.columns = ['mmf_fed_repo', 'mmf_repo_total']
+    mmf_fed_repo_non_repo_merge['mmf_non_fed_repo'] = (mmf_fed_repo_non_repo_merge['mmf_repo_total'] -
+                                                       mmf_fed_repo_non_repo_merge['mmf_fed_repo'])
+    mmf_fed_repo_non_repo_merge = mmf_fed_repo_non_repo_merge[str(start):str(end)].dropna()
+
+    # Reuse MMF repo/non-repo from previous function for full merge
+    with open(Path(DATA_DIR) / 'mmf_repo.pkl', 'rb') as file:
+        mmf_repo_allocation = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_total.pkl', 'rb') as file:
+        mmf_total_allocation = pickle.load(file)
+    mmf_repo_non_repo_merge = merge_dfs([mmf_repo_allocation, mmf_total_allocation])
+    mmf_repo_non_repo_merge.columns = ['mmf_repo', 'mmf_total']
+    mmf_repo_non_repo_merge['non_repo'] = (mmf_repo_non_repo_merge['mmf_total'] -
+                                           mmf_repo_non_repo_merge['mmf_repo'])
+    mmf_fed_repo_non_repo_merge = merge_dfs([mmf_fed_repo_non_repo_merge, mmf_repo_non_repo_merge])[start:end]
+
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(mmf_fed_repo_non_repo_merge.index, mmf_fed_repo_non_repo_merge['mmf_non_fed_repo'],
+    #          label="Non-Fed Repo", color="#9DDCF9", lw=2)
+    # plt.plot(mmf_fed_repo_non_repo_merge.index, mmf_fed_repo_non_repo_merge['non_repo'],
+    #          label="Non-Repo Allocation", color="#233852", lw=2)
+    # plt.plot(mmf_fed_repo_non_repo_merge.index, mmf_fed_repo_non_repo_merge['mmf_repo'],
+    #          label="Repo Allocation", color="#F5B820", lw=2)
+    # plt.title("MMF Repo vs Nono Repo", fontsize=22, fontweight="bold")
+    # plt.ylabel('Dollars')
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=mmf_fed_repo_non_repo_merge.index,
+                             y=mmf_fed_repo_non_repo_merge['mmf_non_fed_repo'],
+                             name="Non-Fed Repo", line=dict(color="#9DDCF9", width=2)))
+    fig.add_trace(go.Scatter(x=mmf_fed_repo_non_repo_merge.index,
+                             y=mmf_fed_repo_non_repo_merge['non_repo'],
+                             name="Non-Repo Allocation", line=dict(color="#233852", width=2)))
+    fig.add_trace(go.Scatter(x=mmf_fed_repo_non_repo_merge.index,
+                             y=mmf_fed_repo_non_repo_merge['mmf_repo'],
+                             name="Repo Allocation", line=dict(color="#F5B820", width=2)))
+    fig.update_layout(
+        title="Asset Allocation: MMF vs Repo/Non-Repo",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### --------------------------------- RESERVES NON FED REPO + RESERRVES + RRP -------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_reserves_non_fed_repo_rrp(start, end, **kwargs):
+    with open(Path(DATA_DIR) / 'tga.pkl', 'rb') as file:
+        tga_volume = pickle.load(file)
+    with open(Path(DATA_DIR) / 'reserves.pkl', 'rb') as file:
+        reserves_volume = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp_volume.pkl', 'rb') as file:
+        rrp_volume = pickle.load(file)
+    tga_volume.index = pd.to_datetime(tga_volume.index)
+    tga_volume.columns = ['tga_volume']
+    rrp_volume.index = pd.to_datetime(rrp_volume.index)
+    rrp_volume.columns = ['rrp_volume']
+    reserves_volume.index = pd.to_datetime(reserves_volume.index)
+    reserves_volume.columns = ['reserves_volume']
+
+    with open(Path(DATA_DIR) / 'mmf_repo.pkl', 'rb') as file:
+        mmf_repo_total = pickle.load(file)
+    with open(Path(DATA_DIR) / 'mmf_fed.pkl', 'rb') as file:
+        mmf_fed_repo = pickle.load(file)
+
+    mmf_fed_repo_non_repo_merge = merge_dfs([mmf_fed_repo, mmf_repo_total])
+    mmf_fed_repo_non_repo_merge.columns = ['mmf_fed_repo', 'mmf_repo_total']
+    mmf_fed_repo_non_repo_merge['mmf_non_fed_repo'] = (mmf_fed_repo_non_repo_merge['mmf_repo_total'] -
+                                                       mmf_fed_repo_non_repo_merge['mmf_fed_repo'])
+
+    reserve_liabilities_merge = merge_dfs([
+        tga_volume.resample('ME').last(),
+        rrp_volume.resample('ME').last(),
+        reserves_volume.resample('ME').last(),
+        mmf_fed_repo_non_repo_merge.resample('ME').last()
+    ]).dropna()[start:end]
+    reserve_liabilities_merge['reserves_non_repo_rrp'] = (
+        reserve_liabilities_merge['rrp_volume'] +
+        reserve_liabilities_merge['reserves_volume'] +
+        reserve_liabilities_merge['mmf_non_fed_repo']
+    )
+
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(reserve_liabilities_merge.index, reserve_liabilities_merge['reserves_non_repo_rrp'],
+    #          color="#9DDCF9", lw=2)
+    # plt.title("Non Fed Repo + Reserves + RRP", fontsize=22, fontweight="bold")
+    # plt.ylabel('Dollars')
+    # plt.tight_layout()
+    # plt.show()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=reserve_liabilities_merge.index,
+                             y=reserve_liabilities_merge['reserves_non_repo_rrp'],
+                             name="Non Fed Repo + Reserves + RRP", line=dict(color="#9DDCF9", width=2)))
+    fig.update_layout(
+        title="Non Fed Repo + Reserves + RRP",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
