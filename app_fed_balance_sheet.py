@@ -64,6 +64,31 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
                                                fed_liabilities_merge['gse_dmfu'])
     fed_liabilities_merge = fed_liabilities_merge[start:end]
     fed_liabilities_merge_diff = fed_liabilities_merge.diff(1).dropna()
+    fed_liabilities_merge['total_reserves'] = (fed_liabilities_merge['reserves'] +
+                                               fed_liabilities_merge['tga'] +
+                                               fed_liabilities_merge['gse_dmfu'])
+    fed_liabilities_merge['total_rrp'] = (fed_liabilities_merge['rrp'] + fed_liabilities_merge['foreign_repo'])
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = ['currency', 'total_reserves', 'total_rrp']
+    labels = [
+        'Currency',
+        'Total Reserves',
+        'Total RRP'
+    ]
+    colors = ['#9bdaf6', '#4dc6c6', '#fbc430']
+    for col, color, label in zip(cols,colors,labels):
+        fig.add_trace(go.Scatter(x=fed_liabilities_merge.index, y=fed_liabilities_merge[col],
+                                 mode='lines+markers',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="Liabilities: Summary",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
     ### PLOT ###
     fig = go.Figure()
@@ -83,7 +108,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
                                  name=label,
                                  line=dict(color=color)))
     fig.update_layout(
-        title="Fed Balance Sheet: Liabilities Summary",
+        title="Liabilities: Components",
         yaxis_title="Dollars",
         hovermode='x unified'
     )
@@ -106,7 +131,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
             col=col_position
         )
     fig.update_layout(
-        title="Fed Balance Sheet: Liabilities Subplots",
+        title="Liabilities: Weekly Averages",
         showlegend=False,
         height=600,
         hovermode='x unified'
@@ -130,7 +155,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
             col=col_position
         )
     fig.update_layout(
-        title="Fed Balance Sheet: Liabilities Weekly Change Subplots",
+        title="Liabilities: Weekly Change Subplots",
         showlegend=False,
         height=600,
         hovermode='x unified'
