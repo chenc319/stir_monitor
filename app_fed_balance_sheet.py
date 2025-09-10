@@ -80,7 +80,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
     for col, color, label in zip(cols,colors,labels):
         fig.add_trace(go.Scatter(x=fed_liabilities_merge.index, y=fed_liabilities_merge[col],
                                  mode='lines+markers',
-                                 name=labels,
+                                 name=label,
                                  line=dict(color=color)))
     fig.update_layout(
         title="Fed Balance Sheet: Liabilities Summary",
@@ -90,7 +90,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
     ### PLOT ###
-    fig = make_subplots(rows=2, cols=3, subplot_titles=labels)  
+    fig = make_subplots(rows=2, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 3 + 1
         col_position = i % 3 + 1
