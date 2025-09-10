@@ -449,64 +449,64 @@ def refresh_all_data():
         pickle.dump(buybacks_ops_total_df, file)
 
     ### FED BALANCE SHEET LIABILITIES ###
-    fed_liabilities_currency = pdr.DataReader('WCICL',
-                                              'fred', start, end) * 1e6
+    fed_liabilities_currency = pdr.DataReader('WCURCIR',
+                                              'fred', start, end) * 1e9
     with open(Path(DATA_DIR) / 'fed_liabilities_currency.pkl', 'wb') as file:
         pickle.dump(fed_liabilities_currency, file)
 
-    fed_liabilities_foreign_repo = pdr.DataReader('WLRRAFOIAL',
+    fed_liabilities_foreign_repo = pdr.DataReader('WREPOFOR',
                                               'fred', start, end) * 1e6
     with open(Path(DATA_DIR) / 'fed_liabilities_foreign_repo.pkl', 'wb') as file:
         pickle.dump(fed_liabilities_foreign_repo, file)
 
-    fed_liabilities_rrp = pdr.DataReader('WLRRAOL',
+    fed_liabilities_rrp = pdr.DataReader('WREPODEL',
                                                   'fred', start, end) * 1e6
     with open(Path(DATA_DIR) / 'fed_liabilities_rrp.pkl', 'wb') as file:
         pickle.dump(fed_liabilities_rrp, file)
 
-    fed_liabilities_reserves = pdr.DataReader('WRBWFRBL',
-                                              'fred', start, end) * 1e6
+    fed_liabilities_reserves = pdr.DataReader('WRESBAL',
+                                              'fred', start, end) * 1e9
     with open(Path(DATA_DIR) / 'fed_liabilities_reserves.pkl', 'wb') as file:
         pickle.dump(fed_liabilities_reserves, file)
 
-    fed_liabilities_tga = pdr.DataReader('WDTGAL',
-                                              'fred', start, end) * 1e6
+    fed_liabilities_tga = pdr.DataReader('WTREGEN',
+                                              'fred', start, end) * 1e9
     with open(Path(DATA_DIR) / 'fed_liabilities_tga.pkl', 'wb') as file:
         pickle.dump(fed_liabilities_tga, file)
 
-    fed_liabilities_gse_dmfu = pdr.DataReader('WLODL',
-                                              'fred', start, end) * 1e6
+    fed_liabilities_gse_dmfu = pdr.DataReader('WOTHLB',
+                                              'fred', start, end) * 1e9
     with open(Path(DATA_DIR) / 'fed_liabilities_gse_dmfu.pkl', 'wb') as file:
         pickle.dump(fed_liabilities_gse_dmfu, file)
 
-    fed_liabilities_total = pdr.DataReader('WTFSRFL',
+    fed_liabilities_total = pdr.DataReader('WTFSRFA',
                                            'fred', start, end) * 1e6
     with open(Path(DATA_DIR) / 'fed_liabilities_total.pkl', 'wb') as file:
         pickle.dump(fed_liabilities_total, file)
 
     ### FED BALANCE SHEET LIABILITIES ###
-    fed_assets_securities_outright = pdr.DataReader('WSHOSHO',
-                                              'fred', start, end) * 1e6
+    fed_assets_securities_outright = pdr.DataReader('WSECOUT',
+                                              'fred', start, end) * 1e9
     with open(Path(DATA_DIR) / 'fed_assets_securities_outright.pkl', 'wb') as file:
         pickle.dump(fed_assets_securities_outright, file)
 
-    fed_assets_treasury_securities = pdr.DataReader('WSHOTSL',
-                                              'fred', start, end) * 1e6
+    fed_assets_treasury_securities = pdr.DataReader('WSHOTSA',
+                                              'fred', start, end) * 1e9
     with open(Path(DATA_DIR) / 'fed_assets_treasury_securities.pkl', 'wb') as file:
         pickle.dump(fed_assets_treasury_securities, file)
 
-    fed_assets_notes_and_bonds = pdr.DataReader('WSHOMCB',
+    fed_assets_notes_and_bonds = pdr.DataReader('WSHONBNA',
                                               'fred', start, end) * 1e6
     with open(Path(DATA_DIR) / 'fed_assets_notes_and_bonds.pkl', 'wb') as file:
         pickle.dump(fed_assets_notes_and_bonds, file)
 
-    fed_assets_mbs = pdr.DataReader('WSHOSHO',
+    fed_assets_mbs = pdr.DataReader('WMBSEC',
                                               'fred', start, end) * 1e6
     with open(Path(DATA_DIR) / 'fed_assets_mbs.pkl', 'wb') as file:
         pickle.dump(fed_assets_mbs, file)
 
-    fed_assets_total = pdr.DataReader('WOFSRBRBC',
-                                    'fred', start, end) * 1e6
+    fed_assets_total = pdr.DataReader('WRESCRT',
+                                    'fred', start, end) * 1e9
     with open(Path(DATA_DIR) / 'fed_assets_total.pkl', 'wb') as file:
         pickle.dump(fed_assets_total, file)
 
