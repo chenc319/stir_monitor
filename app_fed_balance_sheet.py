@@ -202,8 +202,8 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         col_position = i % 2 + 1
         fig.add_trace(
             go.Scatter(
-                x=fed_assets_merge.index,
-                y=fed_assets_merge[col],
+                x=fed_assets_merge_diff.index,
+                y=fed_assets_merge_diff[col],
                 mode='lines+markers',
                 name=label,
                 line=dict(color=color)
@@ -220,6 +220,38 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
     ### PLOT ###
+    fig = go.Figure()
+    cols = ['treasuries', 'mbs']
+    labels = [
+        'Treasury',
+        'MBS',
+    ]
+    colors = ['#fbc430', '#fdad23']
+    fig = make_subplots(rows=3, cols=2, subplot_titles=labels)
+    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
+        row = i // 2 + 1
+        col_position = i % 2 + 1
+        fig.add_trace(
+            go.Scatter(
+                x=fed_assets_merge.index,
+                y=fed_assets_merge[col],
+                mode='lines+markers',
+                name=label,
+                line=dict(color=color)
+            ),
+            row=row,
+            col=col_position
+        )
+    fig.update_layout(
+        title="QE Securities: Components",
+        showlegend=False,
+        height=600,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = make_subplots(rows=3, cols=2, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 2 + 1
         col_position = i % 2 + 1
@@ -235,7 +267,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
             col=col_position
         )
     fig.update_layout(
-        title="QE Securities: Weekly Change",
+        title="QE Securities: Weekly Averages",
         showlegend=False,
         height=600,
         hovermode='x unified'
