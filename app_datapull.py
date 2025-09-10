@@ -491,7 +491,7 @@ def refresh_all_data():
         pickle.dump(fed_assets_securities_outright, file)
 
     fed_assets_treasury_securities = pdr.DataReader('WSHOTSA',
-                                              'fred', start, end) * 1e9
+                                              'fred', start, end) * 1e6
     with open(Path(DATA_DIR) / 'fed_assets_treasury_securities.pkl', 'wb') as file:
         pickle.dump(fed_assets_treasury_securities, file)
 
