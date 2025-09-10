@@ -234,7 +234,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
     fig.update_layout(
         title="QE Securities: Components",
         showlegend=False,
-        height=600,
+        height=200,
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -258,7 +258,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
     fig.update_layout(
         title="QE Securities: Weekly Changes",
         showlegend=False,
-        height=600,
+        height=200,
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
