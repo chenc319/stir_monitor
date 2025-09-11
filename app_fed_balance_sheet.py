@@ -62,12 +62,20 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
     fed_liabilities_merge['reserves_total'] = (fed_liabilities_merge['reserves'] +
                                                fed_liabilities_merge['tga'] +
                                                fed_liabilities_merge['gse_dmfu'])
-    fed_liabilities_merge = fed_liabilities_merge[start:end]
-    fed_liabilities_merge_diff = fed_liabilities_merge.diff(1).dropna()
     fed_liabilities_merge['total_reserves'] = (fed_liabilities_merge['reserves'] +
                                                fed_liabilities_merge['tga'] +
                                                fed_liabilities_merge['gse_dmfu'])
     fed_liabilities_merge['total_rrp'] = (fed_liabilities_merge['rrp'] + fed_liabilities_merge['foreign_repo'])
+    fed_liabilities_merge_diff = fed_liabilities_merge.diff(1).dropna()
+
+    fed_liabilities_merge_diff_mean = fed_liabilities_merge_diff.mean(axis=0)
+    fed_liabilities_merge_diff_std = fed_liabilities_merge_diff.std(axis=0)
+    fed_liabilities_merge_diff_z = (fed_liabilities_merge_diff -
+                                    fed_liabilities_merge_diff_mean) / fed_liabilities_merge_diff_std
+
+    fed_liabilities_merge = fed_liabilities_merge[start:end]
+    fed_liabilities_merge_diff = fed_liabilities_merge_diff[start:end]
+    fed_liabilities_merge_diff_z = fed_liabilities_merge_diff_z[start:end]
 
     ### PLOT ###
     fig = go.Figure()
@@ -162,6 +170,30 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
+    ### PLOT ###
+    fig = make_subplots(rows=3, cols=2, subplot_titles=labels)
+    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
+        row = i // 2 + 1
+        col_position = i % 2 + 1
+        fig.add_trace(
+            go.Scatter(
+                x=fed_liabilities_merge_diff_z.index,
+                y=fed_liabilities_merge_diff_z[col],
+                mode='lines+markers',
+                name=label,
+                line=dict(color=color)
+            ),
+            row=row,
+            col=col_position
+        )
+    fig.update_layout(
+        title="Liabilities: Weekly Change Z-Scored",
+        showlegend=False,
+        height=600,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
 
 
 def plot_fed_balance_sheet_assets(start, end, **kwargs):
@@ -185,8 +217,14 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
     fed_assets_merge.columns = ['securities_outright', 'treasuries',
                                 'notes_bonds', 'mbs', 'total']
     fed_assets_merge['lending_portfolio'] = (fed_assets_merge['total'] - fed_assets_merge['securities_outright'])
-    fed_assets_merge = fed_assets_merge[start:end]
     fed_assets_merge_diff = fed_assets_merge.diff(1).dropna()
+    fed_assets_merge_diff_mean = fed_assets_merge_diff.mean(axis=0)
+    fed_assets_merge_diff_std = fed_assets_merge_diff.std(axis=0)
+    fed_assets_merge_diff_z = (fed_assets_merge_diff - fed_assets_merge_diff_mean) / fed_assets_merge_diff_std
+
+    fed_assets_merge = fed_assets_merge[start:end]
+    fed_assets_merge_diff = fed_assets_merge_diff[start:end]
+    fed_assets_merge_diff_z = fed_assets_merge_diff_z[start:end]
 
     ### PLOT ###
     fig = go.Figure()
@@ -257,6 +295,30 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         )
     fig.update_layout(
         title="QE Securities: Weekly Changes",
+        showlegend=False,
+        height=300,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
+    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
+        row = i // 2 + 1
+        col_position = i % 2 + 1
+        fig.add_trace(
+            go.Scatter(
+                x=fed_assets_merge_diff_z.index,
+                y=fed_assets_merge_diff_z[col],
+                mode='lines+markers',
+                name=label,
+                line=dict(color=color)
+            ),
+            row=row,
+            col=col_position
+        )
+    fig.update_layout(
+        title="QE Securities: Weekly Changes Z-Scored",
         showlegend=False,
         height=300,
         hovermode='x unified'
