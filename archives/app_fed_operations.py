@@ -2,6 +2,14 @@
 ### --------------------------------------------- FED OPERATION ---------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+# elif menu == 'Fed Operations':
+#     st.title("Fed Balance Sheet")
+#     app_fed_operations.plot_soma_holdings(start_date, end_date)
+#     st.title("SRF Operations")
+#     app_fed_operations.plot_fed_repo_operations(start_date, end_date)
+#     st.title("ONRRP Operations")
+#     app_fed_operations.plot_fed_rrp_operations(start_date, end_date)
+
 import pandas as pd
 import functools as ft
 import streamlit as st
@@ -10,7 +18,7 @@ from matplotlib import pyplot as plt
 from pathlib import Path
 import os
 import pickle
-DATA_DIR = os.getenv('DATA_DIR', 'data')
+DATA_DIR = os.getenv('DATA_DIR', '../data')
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right,

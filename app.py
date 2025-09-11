@@ -14,7 +14,6 @@ import app_cross_rate
 import app_auctions
 import app_futures
 import app_primary_dealers
-import app_fed_operations
 import app_bulletin
 import app_datapull
 import time
@@ -116,7 +115,6 @@ menu = st.sidebar.radio(
     "Go to section:",
     ['Risk Checks',
      'Fed Balance Sheet',
-     'Fed Operations',
      'Shadow Banks',
      'Repo',
      'Cross Rate',
@@ -141,18 +139,6 @@ if menu == 'Risk Checks':
     app_risk_checks.plot_monitoring_reserves(start_date, end_date)
     app_risk_checks.plot_fed_action_vs_reserve_response(start_date, end_date)
     app_risk_checks.plot_fed_action_vs_reserve_response_v2(start_date, end_date)
-
-### ---------------------------------------------------------------------------------------- ###
-### -------------------------------------- RISK CHECKS ------------------------------------- ###
-### ---------------------------------------------------------------------------------------- ###
-
-elif menu == 'Fed Operations':
-    st.title("Fed Balance Sheet")
-    app_fed_operations.plot_soma_holdings(start_date, end_date)
-    st.title("SRF Operations")
-    app_fed_operations.plot_fed_repo_operations(start_date, end_date)
-    st.title("ONRRP Operations")
-    app_fed_operations.plot_fed_rrp_operations(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### -------------------------------------- RISK CHECKS ------------------------------------- ###
