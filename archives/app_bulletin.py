@@ -2,6 +2,13 @@
 ### ------------------------------------------------ BUYBACKS ------------------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+# elif menu == 'US Treasury Bulletin':
+#     st.title("US Treasury Bulletin")
+#     st.title("Ownership")
+#     app_bulletin.plot_treasury_ownership(start_date,end_date)
+#     st.title('Buybacks')
+#     app_bulletin.plot_buyback_volume_by_maturity(start_date,end_date)
+
 import pandas as pd
 import functools as ft
 import requests
@@ -11,7 +18,7 @@ from matplotlib import pyplot as plt
 from pathlib import Path
 import os
 import pickle
-DATA_DIR = os.getenv('DATA_DIR', 'data')
+DATA_DIR = os.getenv('DATA_DIR', '../data')
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left,

@@ -14,7 +14,6 @@ import app_cross_rate
 import app_auctions
 import app_futures
 import app_primary_dealers
-import app_bulletin
 import app_datapull
 import time
 
@@ -120,8 +119,7 @@ menu = st.sidebar.radio(
      'Cross Rate',
      'Auctions',
      'Futures',
-     'Primary Dealers',
-     'US Treasury Bulletin']
+     'Primary Dealers']
 )
 
 
@@ -244,11 +242,3 @@ elif menu == 'Primary Dealers':
     app_primary_dealers.plot_net_positions_bills_vs_bonds(start_date, end_date)
     app_primary_dealers.plot_net_positions_by_bond_tenor(start_date, end_date)
     app_primary_dealers.plot_net_change_by_bond_tenor(start_date, end_date)
-
-
-elif menu == 'US Treasury Bulletin':
-    st.title("US Treasury Bulletin")
-    st.title("Ownership")
-    app_bulletin.plot_treasury_ownership(start_date,end_date)
-    st.title('Buybacks')
-    app_bulletin.plot_buyback_volume_by_maturity(start_date,end_date)
