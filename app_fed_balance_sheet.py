@@ -232,7 +232,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
             col=col_position
         )
     fig.update_layout(
-        title="QE Securities: Components",
+        title="QE Securities: Weekly Averages",
         showlegend=False,
         height=300,
         hovermode='x unified'
