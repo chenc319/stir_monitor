@@ -22,28 +22,28 @@ def merge_dfs(array_of_dfs):
                                             how='outer'), array_of_dfs)
 
 asset_colors = {
-    'securities_outright': '#2B4EC2',   # Deep blue
-    'lending_portfolio':   '#033F63',   # Navy blue
-    'treasuries':          '#0060A9',   # US Treasury blue
-    'mbs':                 '#B88B4A',   # Brown-gold
-    'permanent_lending':   '#35570C',   # Olive green
-    'temporary_lending':   '#B7BB05',   # Yellow-green
-    'srf':                 '#90D7C2',   # Mint green
-    'discount_window':     '#1B8C5A',   # Forest green
-    'fx_swap_line':        '#564CB3',   # Indigo (foreign ops)
-    'ppp':                 '#F20808',   # Red (pandemic/emergency)
-    'ms':                  '#E08B5B',   # Orange (outreach)
+    'securities_outright': '#69B3E7',   # Light blue
+    'lending_portfolio':   '#7EE5A7',   # Soft mint green
+    'treasuries':          '#FFC857',   # Sunny yellow-orange
+    'mbs':                 '#FFABA2',   # Pastel coral/pink
+    'permanent_lending':   '#B5EAD7',   # Light teal
+    'temporary_lending':   '#FFF6A8',   # Lemon yellow
+    'srf':                 '#89CFF0',   # Lighter sky blue
+    'discount_window':     '#FFB7B2',   # Salmon
+    'fx_swap_line':        '#B28DFF',   # Lavender
+    'ppp':                 '#FFA07A',   # Peach
+    'ms':                  '#FFDAC1',   # Light apricot
 }
 
 liab_colors = {
-    'currency':         '#EABD69',   # Gold (cash in circulation)
-    'rrp':              '#00749B',   # Strong blue
-    'foreign_repo':     '#A3CFEC',   # Light blue (foreign)
-    'reserves':         '#158F95',   # Deep teal
-    'tga':              '#5E239D',   # Purple (treasury)
-    'gse_dmfu':         '#827100',   # Dark gold (agency)
-    'total_reserves':   '#158F95',   # Deep teal (same as reserves)
-    'total_rrp':        '#00749B',   # Strong blue (RRP total)
+    'currency':         '#FFFACD',   # Light pastel yellow
+    'rrp':              '#A0CED9',   # Turquoise blue
+    'foreign_repo':     '#D4F1F4',   # Pale aqua
+    'reserves':         '#77DD77',   # Pastel green
+    'tga':              '#E0BBE4',   # Light purple
+    'gse_dmfu':         '#FFD6E0',   # Pink blush
+    'total_reserves':   '#B4F8C8',   # Mint foam
+    'total_rrp':        '#A0CED9',   # Turquoise blue (match RRP)
 }
 
 ### ---------------------------------------------------------------------------------------------------------- ###
