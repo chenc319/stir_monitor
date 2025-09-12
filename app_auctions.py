@@ -24,6 +24,7 @@ def plot_issuance_by_security(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
     auction_issuance_df = df[['auction_date','security_type','total_accepted']].copy()
+    auction_issuance_df['auction_date'] = pd.to_datetime(auction_issuance_df['auction_date'])
     auction_issuance_df['eom'] = auction_issuance_df['auction_date'].dt.to_period('M').dt.to_timestamp('M')
     agg_monthly = auction_issuance_df.groupby(['eom', 'security_type'])['total_accepted'].sum().unstack(fill_value=0)
     agg_monthly = agg_monthly.loc[str(start):str(end)]
@@ -63,6 +64,7 @@ def plot_bills_issuance(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
     auction_issuance_df = df[['auction_date','security_term','total_accepted']].copy()
+    auction_issuance_df['auction_date'] = pd.to_datetime(auction_issuance_df['auction_date'])
     bill_terms = ['4-Week','8-Week','13-Week','26-Week','52-Week']
     bill_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(bill_terms)].copy()
     bill_issuance['eom'] = bill_issuance['auction_date'].dt.to_period('M').dt.to_timestamp('M')
@@ -111,6 +113,7 @@ def plot_notes_issuance(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
     auction_issuance_df = df[['auction_date','security_term','total_accepted']].copy()
+    auction_issuance_df['auction_date'] = pd.to_datetime(auction_issuance_df['auction_date'])
     note_terms = ['2-Year','3-Year','5-Year','7-Year','10-Year']
     notes_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(note_terms)].copy()
     notes_issuance['eom'] = notes_issuance['auction_date'].dt.to_period('M').dt.to_timestamp('M')
@@ -156,6 +159,7 @@ def plot_bonds_issuance(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
     auction_issuance_df = df[['auction_date','security_term','total_accepted']].copy()
+    auction_issuance_df['auction_date'] = pd.to_datetime(auction_issuance_df['auction_date'])
     bond_terms = ['20-Year','30-Year']
     bonds_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(bond_terms)].copy()
     bonds_issuance[bonds_issuance['security_term']=='20-Year']
@@ -203,6 +207,7 @@ def plot_bills_dealer_ratio(start, end, **kwargs):
         data['indirect_bidder_accepted'] + data['direct_bidder_accepted']
     )
     bills = data[data['security_type']=='Bill']
+    bills['auction_date'] = pd.to_datetime(bills['auction_date'])
     bill_terms = ['4-Week','8-Week','13-Week','26-Week','52-Week']
     out = []
     for term in bill_terms:
@@ -256,6 +261,7 @@ def plot_bonds_dealer_ratio(start, end, **kwargs):
         data['indirect_bidder_accepted'] + data['direct_bidder_accepted']
     )
     bonds = data[data['security_type']=='Bond']
+    bonds['auction_date'] = pd.to_datetime(bonds['auction_date'])
     bond_terms = ['20-Year','30-Year']
     out = []
     for term in bond_terms:
@@ -303,6 +309,7 @@ def plot_notes_dealer_ratio(start, end, **kwargs):
         data['indirect_bidder_accepted'] + data['direct_bidder_accepted']
     )
     notes = data[data['security_type']=='Note']
+    notes['auction_date'] = pd.to_datetime(notes['auction_date'])
     note_terms = ['2-Year','3-Year','5-Year','7-Year','10-Year']
     out = []
     for term in note_terms:
@@ -352,6 +359,7 @@ def plot_bills_bid_to_cover(start, end, **kwargs):
     for col in ['bid_to_cover_ratio']:
         data[col] = pd.to_numeric(data[col], errors='coerce')
     bills = data[data['security_type']=='Bill']
+    bills['auction_date'] = pd.to_datetime(bills['auction_date'])
     bill_terms = ['4-Week','8-Week','13-Week','26-Week','52-Week']
     out = []
     for term in bill_terms:
@@ -401,6 +409,7 @@ def plot_bonds_bid_to_cover(start, end, **kwargs):
     for col in ['bid_to_cover_ratio']:
         data[col] = pd.to_numeric(data[col], errors='coerce')
     bonds = data[data['security_type']=='Bond']
+    bonds['auction_date'] = pd.to_datetime(bonds['auction_date'])
     bond_terms = ['20-Year','30-Year']
     out = []
     for term in bond_terms:
@@ -444,6 +453,7 @@ def plot_notes_bid_to_cover(start, end, **kwargs):
     for col in ['bid_to_cover_ratio']:
         data[col] = pd.to_numeric(data[col], errors='coerce')
     notes = data[data['security_type']=='Note']
+    notes['auction_date'] = pd.to_datetime(notes['auction_date'])
     note_terms = ['2-Year','3-Year','5-Year','7-Year','10-Year']
     out = []
     for term in note_terms:
