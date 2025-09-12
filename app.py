@@ -15,6 +15,7 @@ import app_auctions
 import app_futures
 import app_primary_dealers
 import app_datapull
+import app_mmf
 import time
 
 ### FUNCTIONS ###
@@ -114,10 +115,12 @@ menu = st.sidebar.radio(
     "Go to section:",
     ['Risk Checks',
      'Fed Balance Sheet',
-     'Shadow Banks',
      'Repo',
+     'MMF',
+     'Private Investment Vehicles'
+     'Shadow Banks',
      'Cross Rate',
-     'Auctions',
+     'Treasury Auctions',
      'Futures',
      'Primary Dealers']
 )
@@ -157,9 +160,6 @@ elif menu == 'Shadow Banks':
     st.title("Shadow Bank Components")
     st.title('Summary')
     app_shadow_banks.plot_shadow_bank_summary(start_date, end_date)
-    st.title('Money Market Funds')
-    app_shadow_banks.plot_shadow_bank_mmf_repo(start_date,end_date)
-    app_shadow_banks.plot_shadow_bank_mmf_on_repo(start_date,end_date)
     st.title('Private Investment Funds')
     app_shadow_banks.plot_shadow_bank_private_investments(start_date,end_date)
     st.title('Shadow Bank Assets Mapping')
@@ -174,17 +174,26 @@ elif menu == 'Shadow Banks':
 
 elif menu == 'Repo':
     st.title("Repo")
-    app_repo.plot_proxy_percent_without_clearing(start_date, end_date)
     app_repo.plot_volume_per_venue(start_date, end_date)
-    app_repo.plot_mmf_by_asset(start_date, end_date)
+    app_repo.plot_proxy_percent_without_clearing(start_date, end_date)
     app_repo.plot_6m_volume_change(start_date, end_date)
-    app_repo.plot_volume_invested_in_mmf(start_date, end_date)
     app_repo.plot_rrp_vs_foreign_rrp(start_date, end_date)
-    app_repo.plot_mmf_repo_vs_non_repo(start_date, end_date)
     app_repo.plot_triparty_adjusted_for_rrp(start_date, end_date)
-    app_repo.plot_mmf_allocation_by_counterparty(start_date, end_date)
-    app_repo.plot_asset_allocation_mmf(start_date, end_date)
     app_repo.plot_reserves_non_fed_repo_rrp(start_date, end_date)
+
+### ---------------------------------------------------------------------------------------- ###
+### ------------------------------------------ REPO ---------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+
+elif menu == 'MMF':
+    st.title("MMF")
+    app_mmf.plot_volume_invested_in_mmf(start_date, end_date)
+    app_mmf.plot_shadow_bank_mmf_repo(start_date, end_date)
+    app_mmf.plot_shadow_bank_mmf_on_repo(start_date, end_date)
+    app_mmf.plot_mmf_by_asset(start_date, end_date)
+    app_mmf.plot_mmf_repo_vs_non_repo(start_date, end_date)
+    app_mmf.plot_mmf_allocation_by_counterparty(start_date, end_date)
+    app_mmf.plot_asset_allocation_mmf(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### --------------------------------------- CROSS RATE ------------------------------------- ###
@@ -205,7 +214,7 @@ elif menu == 'Cross Rate':
 ### --------------------------------------- AUCTIONS --------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Auctions':
+elif menu == 'Treasury Auctions':
     st.title("Issuance")
     app_auctions.plot_issuance_by_security(start_date, end_date)
     app_auctions.plot_bills_issuance(start_date, end_date)
