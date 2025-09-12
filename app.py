@@ -206,17 +206,19 @@ elif menu == 'Cross Rate':
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Auctions':
-    st.title("Auctions")
+    st.title("Issuance")
     app_auctions.plot_issuance_by_security(start_date, end_date)
     app_auctions.plot_bills_issuance(start_date, end_date)
     app_auctions.plot_notes_issuance(start_date, end_date)
     app_auctions.plot_bonds_issuance(start_date, end_date)
+    st.title("Dealer to Non Dealer Ratio")
     app_auctions.plot_bills_dealer_ratio(start_date, end_date)
-    app_auctions.plot_bonds_dealer_ratio(start_date, end_date)
     app_auctions.plot_notes_dealer_ratio(start_date, end_date)
+    app_auctions.plot_bonds_dealer_ratio(start_date, end_date)
+    st.title("Bid to Cover")
     app_auctions.plot_bills_bid_to_cover(start_date, end_date)
-    app_auctions.plot_bonds_bid_to_cover(start_date, end_date)
     app_auctions.plot_notes_bid_to_cover(start_date, end_date)
+    app_auctions.plot_bonds_bid_to_cover(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ---------------------------------------- FUTURES --------------------------------------- ###
