@@ -117,7 +117,7 @@ menu = st.sidebar.radio(
      'Fed Balance Sheet',
      'Repo',
      'MMF',
-     'Private Investment Vehicles'
+     'Private Investment Vehicles',
      'Shadow Banks',
      'Cross Rate',
      'Treasury Auctions',
