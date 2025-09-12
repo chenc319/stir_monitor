@@ -131,7 +131,6 @@ def refresh_all_data():
     with open(Path(DATA_DIR) / 'mmf_us_ts.pkl', 'wb') as file:
         pickle.dump(mmf_us_ts, file)
 
-
     ### SOMA HOLDINGS ###
     url = 'https://markets.newyorkfed.org/api/soma/summary.json'
     response = requests.get(url)
@@ -484,7 +483,7 @@ def refresh_all_data():
     with open(Path(DATA_DIR) / 'fed_liabilities_total.pkl', 'wb') as file:
         pickle.dump(fed_liabilities_total, file)
 
-    ### FED BALANCE SHEET LIABILITIES ###
+    ### FED BALANCE SHEET ASSETS ###
     fed_assets_securities_outright = pdr.DataReader('WSECOUT',
                                               'fred', start, end) * 1e9
     with open(Path(DATA_DIR) / 'fed_assets_securities_outright.pkl', 'wb') as file:
@@ -505,25 +504,45 @@ def refresh_all_data():
     with open(Path(DATA_DIR) / 'fed_assets_mbs.pkl', 'wb') as file:
         pickle.dump(fed_assets_mbs, file)
 
+    fed_assets_srf = pdr.DataReader('WREPO',
+                                    'fred', start, end) * 1e9
+    with open(Path(DATA_DIR) / 'fed_assets_srf.pkl', 'wb') as file:
+        pickle.dump(fed_assets_srf, file)
+
+    fed_assets_dw_primary = pdr.DataReader('WPC',
+                                    'fred', start, end) * 1e6
+    with open(Path(DATA_DIR) / 'fed_assets_dw_primary.pkl', 'wb') as file:
+        pickle.dump(fed_assets_dw_primary, file)
+
+    fed_assets_dw_secondary = pdr.DataReader('WSC',
+                                    'fred', start, end) * 1e6
+    with open(Path(DATA_DIR) / 'fed_assets_dw_secondary.pkl', 'wb') as file:
+        pickle.dump(fed_assets_dw_secondary, file)
+
+    fed_assets_dw_seasonal = pdr.DataReader('WSB',
+                                    'fred', start, end) * 1e9
+    with open(Path(DATA_DIR) / 'fed_assets_dw_seasonal.pkl', 'wb') as file:
+        pickle.dump(fed_assets_dw_seasonal, file)
+
+    fed_assets_fx_swap_line = pdr.DataReader('WCBLSA',
+                                    'fred', start, end) * 1e6
+    with open(Path(DATA_DIR) / 'fed_assets_fx_swap_line.pkl', 'wb') as file:
+        pickle.dump(fed_assets_fx_swap_line, file)
+
+    fed_assets_main_street = pdr.DataReader('H41RESPPAAEXAWNWW',
+                                    'fred', start, end) * 1e6
+    with open(Path(DATA_DIR) / 'fed_assets_main_street.pkl', 'wb') as file:
+        pickle.dump(fed_assets_main_street, file)
+
+    fed_assets_ppp_facility = pdr.DataReader('H41RESPPALDJXAWNWW',
+                                    'fred', start, end) * 1e6
+    with open(Path(DATA_DIR) / 'fed_assets_ppp_facility.pkl', 'wb') as file:
+        pickle.dump(fed_assets_ppp_facility, file)
+
     fed_assets_total = pdr.DataReader('WRESCRT',
                                     'fred', start, end) * 1e9
     with open(Path(DATA_DIR) / 'fed_assets_total.pkl', 'wb') as file:
         pickle.dump(fed_assets_total, file)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
