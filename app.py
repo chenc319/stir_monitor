@@ -16,6 +16,7 @@ import app_futures
 import app_primary_dealers
 import app_datapull
 import app_mmf
+import app_piv
 import time
 
 ### FUNCTIONS ###
@@ -142,7 +143,7 @@ if menu == 'Risk Checks':
     app_risk_checks.plot_fed_action_vs_reserve_response_v2(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
-### -------------------------------------- RISK CHECKS ------------------------------------- ###
+### ----------------------------------- FED BALANCE SHEET ---------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Fed Balance Sheet':
@@ -150,23 +151,6 @@ elif menu == 'Fed Balance Sheet':
     app_fed_balance_sheet.plot_fed_balance_sheet_assets(start_date, end_date)
     st.title("Liabilities")
     app_fed_balance_sheet.plot_fed_balance_sheet_liabilities(start_date, end_date)
-
-
-### ---------------------------------------------------------------------------------------- ###
-### ------------------------------ SHADOW BANK SYSTEM MAPPING ------------------------------ ###
-### ---------------------------------------------------------------------------------------- ###
-
-elif menu == 'Shadow Banks':
-    st.title("Shadow Bank Components")
-    st.title('Summary')
-    app_shadow_banks.plot_shadow_bank_summary(start_date, end_date)
-    st.title('Private Investment Funds')
-    app_shadow_banks.plot_shadow_bank_private_investments(start_date,end_date)
-    st.title('Shadow Bank Assets Mapping')
-    app_shadow_banks.plot_shadow_bank_assets(start_date, end_date)
-    st.title('Shadow Bank Liabilities Mapping')
-    app_shadow_banks.plot_shadow_bank_liabilities(start_date,end_date)
-
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------------------ REPO ---------------------------------------- ###
@@ -182,7 +166,7 @@ elif menu == 'Repo':
     app_repo.plot_reserves_non_fed_repo_rrp(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
-### ------------------------------------------ REPO ---------------------------------------- ###
+### ------------------------------------------ MMF ----------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'MMF':
@@ -194,6 +178,29 @@ elif menu == 'MMF':
     app_mmf.plot_mmf_repo_vs_non_repo(start_date, end_date)
     app_mmf.plot_mmf_allocation_by_counterparty(start_date, end_date)
     app_mmf.plot_asset_allocation_mmf(start_date, end_date)
+
+### ---------------------------------------------------------------------------------------- ###
+### ------------------------------------------ PIV ----------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+
+elif menu == 'Private Investment Vehicles':
+    st.title("Private Investment Vehicles")
+    app_piv.plot_shadow_bank_private_investments(start_date, end_date)
+
+### ---------------------------------------------------------------------------------------- ###
+### ------------------------------------- SHADOW BANKS ------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+
+elif menu == 'Shadow Banks':
+    st.title("Shadow Bank Components")
+    st.title('Summary')
+    app_shadow_banks.plot_shadow_bank_summary(start_date, end_date)
+    st.title('Private Investment Funds')
+    app_shadow_banks.plot_shadow_bank_private_investments(start_date,end_date)
+    st.title('Shadow Bank Assets Mapping')
+    app_shadow_banks.plot_shadow_bank_assets(start_date, end_date)
+    st.title('Shadow Bank Liabilities Mapping')
+    app_shadow_banks.plot_shadow_bank_liabilities(start_date,end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### --------------------------------------- CROSS RATE ------------------------------------- ###
