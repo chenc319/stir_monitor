@@ -130,8 +130,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         'QE Securities',
         'Lending Portfolio',
     ]
-    colors = [asset_colors['QE Securities'],
-              asset_colors['Lending']]
+    colors = [asset_colors['securities_outright'], asset_colors['lending_portfolio']]
     for col, color, label in zip(cols, colors, labels):
         fig.add_trace(go.Scatter(x=fed_assets_merge.index, y=fed_assets_merge[col],
                                  mode='lines+markers',
