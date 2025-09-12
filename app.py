@@ -117,13 +117,14 @@ menu = st.sidebar.radio(
     ['Risk Checks',
      'Fed Balance Sheet',
      'Repo',
-     'MMF',
-     'Private Investment Vehicles',
+     'Money Markets',
+     'PIVs',
      'Shadow Banks',
-     'Cross Rate',
+     'Cross Rates',
      'Treasury Auctions',
      'Futures',
-     'Primary Dealers']
+     'Primary Dealers',
+     'Positioning']
 )
 
 
@@ -169,8 +170,8 @@ elif menu == 'Repo':
 ### ------------------------------------------ MMF ----------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'MMF':
-    st.title("MMF")
+elif menu == 'Money Markets':
+    st.title("Money Market Funds")
     app_mmf.plot_volume_invested_in_mmf(start_date, end_date)
     app_mmf.plot_shadow_bank_mmf_repo(start_date, end_date)
     app_mmf.plot_shadow_bank_mmf_on_repo(start_date, end_date)
@@ -183,7 +184,7 @@ elif menu == 'MMF':
 ### ------------------------------------------ PIV ----------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Private Investment Vehicles':
+elif menu == 'PIVs':
     st.title("Private Investment Vehicles")
     app_piv.plot_shadow_bank_private_investments(start_date, end_date)
 
@@ -206,7 +207,7 @@ elif menu == 'Shadow Banks':
 ### --------------------------------------- CROSS RATE ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Cross Rate':
+elif menu == 'Cross Rates':
     st.title("Cross Rate")
     app_cross_rate.plot_iorb_spreads(start_date, end_date)
     app_cross_rate.plot_gcf_tri_spread(start_date, end_date)
