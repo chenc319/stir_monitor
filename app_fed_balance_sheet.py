@@ -204,7 +204,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         'Permanent Lending Portfolio',
         'Temporary Lending Portfolio',
     ]
-    colors = ['#fbc430', '#fdad23']
+    colors = ['#9bdaf6', '#4dc6c6']
     fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 2 + 1
@@ -236,7 +236,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         'Discount Window',
         'FX Swap Line',
     ]
-    colors = ['#fbc430', '#fdad23']
+    colors = ['#9bdaf6', '#4dc6c6','#356c82']
     fig = make_subplots(rows=1, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 3 + 1
@@ -267,7 +267,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         'PPP Liquidity Facility (Direct Lending)',
         'Main Street Lending Facility (Indirect Lending)',
     ]
-    colors = ['#fbc430', '#fdad23']
+    colors = ['#9bdaf6', '#4dc6c6']
     fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 2 + 1
