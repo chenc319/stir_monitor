@@ -24,7 +24,7 @@ def plot_issuance_by_security(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
     auction_issuance_df = df[['auction_date','security_type','total_accepted']].copy()
-    auction_issuance_df['eom'] = auction_issuance_df['record_date'].dt.to_period('M').dt.to_timestamp('M')
+    auction_issuance_df['eom'] = auction_issuance_df['auction_date'].dt.to_period('M').dt.to_timestamp('M')
     agg_monthly = auction_issuance_df.groupby(['eom', 'security_type'])['total_accepted'].sum().unstack(fill_value=0)
     agg_monthly = agg_monthly.loc[str(start):str(end)]
     colors = {'Bill':'#8ed6f8','Bond':'#008fd5','Note':'#ffc650'}
@@ -65,7 +65,7 @@ def plot_bills_issuance(start, end, **kwargs):
     auction_issuance_df = df[['auction_date','security_term','total_accepted']].copy()
     bill_terms = ['4-Week','8-Week','13-Week','26-Week','52-Week']
     bill_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(bill_terms)].copy()
-    bill_issuance['eom'] = bill_issuance['record_date'].dt.to_period('M').dt.to_timestamp('M')
+    bill_issuance['eom'] = bill_issuance['auction_date'].dt.to_period('M').dt.to_timestamp('M')
     bill_issuance = bill_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0)
     bill_issuance = bill_issuance.loc[str(start):str(end)]
     bill_colors = {
@@ -113,7 +113,7 @@ def plot_notes_issuance(start, end, **kwargs):
     auction_issuance_df = df[['auction_date','security_term','total_accepted']].copy()
     note_terms = ['2-Year','3-Year','5-Year','7-Year','10-Year']
     notes_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(note_terms)].copy()
-    notes_issuance['eom'] = notes_issuance['record_date'].dt.to_period('M').dt.to_timestamp('M')
+    notes_issuance['eom'] = notes_issuance['auction_date'].dt.to_period('M').dt.to_timestamp('M')
     notes_issuance = notes_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0)
     notes_issuance = notes_issuance.loc[str(start):str(end)]
     note_colors = {'2-Year':'#9bdaf6','3-Year':'#4dc6c6','5-Year':'#356c82','7-Year':'#001f35','10-Year':'#fbc430'}
@@ -159,7 +159,7 @@ def plot_bonds_issuance(start, end, **kwargs):
     bond_terms = ['20-Year','30-Year']
     bonds_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(bond_terms)].copy()
     bonds_issuance[bonds_issuance['security_term']=='20-Year']
-    bonds_issuance['eom'] = bonds_issuance['record_date'].dt.to_period('M').dt.to_timestamp('M')
+    bonds_issuance['eom'] = bonds_issuance['auction_date'].dt.to_period('M').dt.to_timestamp('M')
     bonds_issuance = bonds_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0)
     bonds_issuance = bonds_issuance.loc[str(start):str(end)]
     bond_colors = {'20-Year':'#9bdaf6','30-Year':'#fbc430'}
@@ -206,7 +206,7 @@ def plot_bills_dealer_ratio(start, end, **kwargs):
     bill_terms = ['4-Week','8-Week','13-Week','26-Week','52-Week']
     out = []
     for term in bill_terms:
-        ratio_series = bills[bills['security_term']==term].set_index('record_date')['dealer_to_non_dealer_ratio']
+        ratio_series = bills[bills['security_term']==term].set_index('auction_date')['dealer_to_non_dealer_ratio']
         df_term = pd.DataFrame(ratio_series).resample('ME').last().rename(columns={'dealer_to_non_dealer_ratio':term})
         out.append(df_term)
     bills_merge = merge_dfs(out).ffill().dropna().loc[str(start):str(end)]
@@ -259,7 +259,7 @@ def plot_bonds_dealer_ratio(start, end, **kwargs):
     bond_terms = ['20-Year','30-Year']
     out = []
     for term in bond_terms:
-        ratio_series = bonds[bonds['security_term']==term].set_index('record_date')['dealer_to_non_dealer_ratio']
+        ratio_series = bonds[bonds['security_term']==term].set_index('auction_date')['dealer_to_non_dealer_ratio']
         df_term = pd.DataFrame(ratio_series).resample('ME').last().rename(columns={'dealer_to_non_dealer_ratio':term})
         out.append(df_term)
     bonds_merge = merge_dfs(out).dropna().loc[str(start):str(end)]
@@ -306,7 +306,7 @@ def plot_notes_dealer_ratio(start, end, **kwargs):
     note_terms = ['2-Year','3-Year','5-Year','7-Year','10-Year']
     out = []
     for term in note_terms:
-        ratio_series = notes[notes['security_term']==term].set_index('record_date')['dealer_to_non_dealer_ratio']
+        ratio_series = notes[notes['security_term']==term].set_index('auction_date')['dealer_to_non_dealer_ratio']
         df_term = pd.DataFrame(ratio_series).resample('ME').last().rename(columns={'dealer_to_non_dealer_ratio':term})
         out.append(df_term)
     notes_merge = merge_dfs(out).ffill().dropna().loc[str(start):str(end)]
@@ -355,7 +355,7 @@ def plot_bills_bid_to_cover(start, end, **kwargs):
     bill_terms = ['4-Week','8-Week','13-Week','26-Week','52-Week']
     out = []
     for term in bill_terms:
-        series = bills[bills['security_term']==term].set_index('record_date')['bid_to_cover_ratio']
+        series = bills[bills['security_term']==term].set_index('auction_date')['bid_to_cover_ratio']
         df_term = pd.DataFrame(series).resample('W').last().rename(columns={'bid_to_cover_ratio':term})
         out.append(df_term)
     bills_merge = merge_dfs(out).ffill().dropna().loc[str(start):str(end)]
@@ -404,7 +404,7 @@ def plot_bonds_bid_to_cover(start, end, **kwargs):
     bond_terms = ['20-Year','30-Year']
     out = []
     for term in bond_terms:
-        series = bonds[bonds['security_term']==term].set_index('record_date')['bid_to_cover_ratio']
+        series = bonds[bonds['security_term']==term].set_index('auction_date')['bid_to_cover_ratio']
         df_term = pd.DataFrame(series).resample('ME').last().rename(columns={'bid_to_cover_ratio':term})
         out.append(df_term)
     bonds_merge = merge_dfs(out).dropna().loc[str(start):str(end)]
@@ -447,7 +447,7 @@ def plot_notes_bid_to_cover(start, end, **kwargs):
     note_terms = ['2-Year','3-Year','5-Year','7-Year','10-Year']
     out = []
     for term in note_terms:
-        series = notes[notes['security_term']==term].set_index('record_date')['bid_to_cover_ratio']
+        series = notes[notes['security_term']==term].set_index('auction_date')['bid_to_cover_ratio']
         df_term = pd.DataFrame(series).resample('ME').last().rename(columns={'bid_to_cover_ratio':term})
         out.append(df_term)
     notes_merge = merge_dfs(out).ffill().dropna().loc[str(start):str(end)]
