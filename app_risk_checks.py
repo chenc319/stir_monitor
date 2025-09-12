@@ -55,8 +55,8 @@ def plot_dash_for_cash_spread(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
     st.markdown(
         "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
-        "Note: Spread = EFFR minus IORB (basis points). Negative value indicates Fed Funds below IORB.<br>"
-        "Data: Federal Reserve, Calculated"
+        "Notes: Spread = EFFR minus IORB (basis points). Negative value indicates Fed Funds below IORB.<br>"
+        "Data: FRED (IORB,EFFR)"
         "</div>", unsafe_allow_html=True
     )
 
@@ -116,6 +116,12 @@ def plot_new_sofr_system(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+    st.markdown(
+        "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
+        "Notes: RRP and SRF create floor and ceiling for SOFR and EFFR. <br>"
+        "Data: FRED (SOFR,SOFR30DAYAVG,SOFR90DAYAVG,RRPONTSYAWARD,EFFR,SRF=RRP+25bps)"
+        "</div>", unsafe_allow_html=True
+    )
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### --------------------------------------- VISIBLE REPO RATE COMPLEX ---------------------------------------- ###
@@ -172,6 +178,12 @@ def plot_repo_rate_complex(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+    st.markdown(
+        "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
+        "Notes: RRP and SRF create floor and ceiling for repo rates as well. <br>"
+        "Data: FRED (SOFR,RRPONTSYAWARD,EFFR,SRF=RRP+25bps) OFR (REPO-DVP_AR_OO-P,REPO-GCF_AR_AG-P,REPO-TRI_AR_OO-P)"
+        "</div>", unsafe_allow_html=True
+    )
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------------- SOFR DISTRIBUTION -------------------------------------------- ###
@@ -223,6 +235,12 @@ def plot_sofr_distribution(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+    st.markdown(
+        "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
+        "Notes: SOFR Distributions by Percentiles. <br>"
+        "Data: FRED (SOFR,SOFR1,SOFR25,SOFR75,SOFR99)"
+        "</div>", unsafe_allow_html=True
+    )
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------------- FED BALANCE SHEET -------------------------------------------- ###
@@ -264,6 +282,12 @@ def plot_fed_balance_sheet(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+    st.markdown(
+        "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
+        "Notes: Fed Securities Outright Owned <br>"
+        "Data: FRED (TREAST,WSHOMCB)"
+        "</div>", unsafe_allow_html=True
+    )
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------------ MONITORING RESERVES ------------------------------------------- ###
@@ -323,6 +347,12 @@ def plot_monitoring_reserves(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+    st.markdown(
+        "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
+        "Notes: Various Reserves and Liabilities <br>"
+        "Data: FRED (WRESBAL,WTREGEN,WLRRAL,RRPONTSYD) OFR (REPO-TRI_TV_TOT-P)"
+        "</div>", unsafe_allow_html=True
+    )
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------ FED ACTION VS RESERVE RESPONSE -------------------------------------- ###
