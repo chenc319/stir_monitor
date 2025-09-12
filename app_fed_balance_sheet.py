@@ -144,6 +144,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
     ### PLOT ###
+    st.title("'QE Securities'")
     fig = go.Figure()
     cols = ['treasuries', 'mbs']
     labels = [
@@ -224,6 +225,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
     ### PLOT ###
+    st.title("'Lending Portfolio'")
     fig = go.Figure()
     cols = ['permanent_lending', 'temporary_lending']
     labels = [

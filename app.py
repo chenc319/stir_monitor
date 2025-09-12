@@ -143,9 +143,9 @@ if menu == 'Risk Checks':
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Fed Balance Sheet':
-    st.title("Fed Balance Sheet Assets")
+    st.title("Assets")
     app_fed_balance_sheet.plot_fed_balance_sheet_assets(start_date, end_date)
-    st.title("Fed Balance Sheet Liabilities")
+    st.title("Liabilities")
     app_fed_balance_sheet.plot_fed_balance_sheet_liabilities(start_date, end_date)
 
 
