@@ -21,6 +21,31 @@ def merge_dfs(array_of_dfs):
                                             right_index=True,
                                             how='outer'), array_of_dfs)
 
+asset_colors = {
+    'securities_outright': '#2B4EC2',   # Deep blue
+    'lending_portfolio':   '#033F63',   # Navy blue
+    'treasuries':          '#0060A9',   # US Treasury blue
+    'mbs':                 '#B88B4A',   # Brown-gold
+    'permanent_lending':   '#35570C',   # Olive green
+    'temporary_lending':   '#B7BB05',   # Yellow-green
+    'srf':                 '#90D7C2',   # Mint green
+    'discount_window':     '#1B8C5A',   # Forest green
+    'fx_swap_line':        '#564CB3',   # Indigo (foreign ops)
+    'ppp':                 '#F20808',   # Red (pandemic/emergency)
+    'ms':                  '#E08B5B',   # Orange (outreach)
+}
+
+liab_colors = {
+    'currency':         '#EABD69',   # Gold (cash in circulation)
+    'rrp':              '#00749B',   # Strong blue
+    'foreign_repo':     '#A3CFEC',   # Light blue (foreign)
+    'reserves':         '#158F95',   # Deep teal
+    'tga':              '#5E239D',   # Purple (treasury)
+    'gse_dmfu':         '#827100',   # Dark gold (agency)
+    'total_reserves':   '#158F95',   # Deep teal (same as reserves)
+    'total_rrp':        '#00749B',   # Strong blue (RRP total)
+}
+
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------------------- ASSETS ------------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
@@ -105,7 +130,8 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         'QE Securities',
         'Lending Portfolio',
     ]
-    colors = ['#9bdaf6', '#4dc6c6']
+    colors = [asset_colors['QE Securities'],
+              asset_colors['Lending']]
     for col, color, label in zip(cols, colors, labels):
         fig.add_trace(go.Scatter(x=fed_assets_merge.index, y=fed_assets_merge[col],
                                  mode='lines+markers',
@@ -125,7 +151,8 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         'Treasury',
         'MBS',
     ]
-    colors = ['#fbc430', '#fdad23']
+    colors = [asset_colors['treasuries'],
+              asset_colors['mbs']]
     fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 2 + 1
@@ -204,7 +231,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         'Permanent Lending Portfolio',
         'Temporary Lending Portfolio',
     ]
-    colors = ['#9bdaf6', '#4dc6c6']
+    colors = [asset_colors['permanent_lending'], asset_colors['temporary_lending']]
     fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 2 + 1
@@ -236,7 +263,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         'Discount Window',
         'FX Swap Line',
     ]
-    colors = ['#9bdaf6', '#4dc6c6','#356c82']
+    colors = [asset_colors['srf'], asset_colors['discount_window'], asset_colors['fx_swap_line']]
     fig = make_subplots(rows=1, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 3 + 1
@@ -267,7 +294,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         'PPP Liquidity Facility (Direct Lending)',
         'Main Street Lending Facility (Indirect Lending)',
     ]
-    colors = ['#9bdaf6', '#4dc6c6']
+    colors = [asset_colors['ppp'], asset_colors['ms']]
     fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 2 + 1
@@ -355,7 +382,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
         'Total Reserves',
         'Total RRP'
     ]
-    colors = ['#9bdaf6', '#4dc6c6', '#fbc430']
+    colors = [liab_colors['currency'], liab_colors['total_reserves'],liab_colors['total_rrp']]
     for col, color, label in zip(cols,colors,labels):
         fig.add_trace(go.Scatter(x=fed_liabilities_merge.index, y=fed_liabilities_merge[col],
                                  mode='lines+markers',
@@ -375,11 +402,16 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
         'Currency',
         'RRP Facility',
         'Foreign RP Facility',
-        'Commercial Bank Reserves',
+        'DI Reserves',
         'TGA',
         'GSE/DMFU'
     ]
-    colors = ['#9bdaf6', '#4dc6c6', '#356c82', '#001f35', '#fbc430', '#fdad23']
+    colors = [liab_colors['currency'],
+              liab_colors['rrp'],
+              liab_colors['foreign_repo'],
+              liab_colors['reserves'],
+              liab_colors['tga'],
+              liab_colors['gse_dmfu']]
     for col, color, label in zip(cols,colors,labels):
         fig.add_trace(go.Scatter(x=fed_liabilities_merge.index, y=fed_liabilities_merge[col],
                                  mode='lines+markers',
