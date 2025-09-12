@@ -23,7 +23,7 @@ def merge_dfs(array_of_dfs):
 def plot_issuance_by_security(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
-    auction_issuance_df = df[['record_date','security_type','total_accepted']].copy()
+    auction_issuance_df = df[['auction_date','security_type','total_accepted']].copy()
     auction_issuance_df['eom'] = auction_issuance_df['record_date'].dt.to_period('M').dt.to_timestamp('M')
     agg_monthly = auction_issuance_df.groupby(['eom', 'security_type'])['total_accepted'].sum().unstack(fill_value=0)
     agg_monthly = agg_monthly.loc[str(start):str(end)]
@@ -62,7 +62,7 @@ def plot_issuance_by_security(start, end, **kwargs):
 def plot_bills_issuance(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
-    auction_issuance_df = df[['record_date','security_term','total_accepted']].copy()
+    auction_issuance_df = df[['auction_date','security_term','total_accepted']].copy()
     bill_terms = ['4-Week','8-Week','13-Week','26-Week','52-Week']
     bill_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(bill_terms)].copy()
     bill_issuance['eom'] = bill_issuance['record_date'].dt.to_period('M').dt.to_timestamp('M')
@@ -110,7 +110,7 @@ def plot_bills_issuance(start, end, **kwargs):
 def plot_notes_issuance(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
-    auction_issuance_df = df[['record_date','security_term','total_accepted']].copy()
+    auction_issuance_df = df[['auction_date','security_term','total_accepted']].copy()
     note_terms = ['2-Year','3-Year','5-Year','7-Year','10-Year']
     notes_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(note_terms)].copy()
     notes_issuance['eom'] = notes_issuance['record_date'].dt.to_period('M').dt.to_timestamp('M')
@@ -155,9 +155,10 @@ def plot_notes_issuance(start, end, **kwargs):
 def plot_bonds_issuance(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
-    auction_issuance_df = df[['record_date','security_term','total_accepted']].copy()
+    auction_issuance_df = df[['auction_date','security_term','total_accepted']].copy()
     bond_terms = ['20-Year','30-Year']
     bonds_issuance = auction_issuance_df[auction_issuance_df['security_term'].isin(bond_terms)].copy()
+    bonds_issuance[bonds_issuance['security_term']=='20-Year']
     bonds_issuance['eom'] = bonds_issuance['record_date'].dt.to_period('M').dt.to_timestamp('M')
     bonds_issuance = bonds_issuance.groupby(['eom', 'security_term'])['total_accepted'].sum().unstack(fill_value=0)
     bonds_issuance = bonds_issuance.loc[str(start):str(end)]
@@ -194,7 +195,7 @@ def plot_bonds_issuance(start, end, **kwargs):
 def plot_bills_dealer_ratio(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
-    data = df[['record_date','security_type','security_term',
+    data = df[['auction_date','security_type','security_term',
                'primary_dealer_accepted','indirect_bidder_accepted','direct_bidder_accepted']].copy()
     for col in ['primary_dealer_accepted','indirect_bidder_accepted','direct_bidder_accepted']:
         data[col] = pd.to_numeric(data[col], errors='coerce')
@@ -247,7 +248,7 @@ def plot_bills_dealer_ratio(start, end, **kwargs):
 def plot_bonds_dealer_ratio(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
-    data = df[['record_date','security_type','security_term',
+    data = df[['auction_date','security_type','security_term',
                'primary_dealer_accepted','indirect_bidder_accepted','direct_bidder_accepted']].copy()
     for col in ['primary_dealer_accepted','indirect_bidder_accepted','direct_bidder_accepted']:
         data[col] = pd.to_numeric(data[col], errors='coerce')
@@ -294,7 +295,7 @@ def plot_bonds_dealer_ratio(start, end, **kwargs):
 def plot_notes_dealer_ratio(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
-    data = df[['record_date','security_type','security_term',
+    data = df[['auction_date','security_type','security_term',
                'primary_dealer_accepted','indirect_bidder_accepted','direct_bidder_accepted']].copy()
     for col in ['primary_dealer_accepted','indirect_bidder_accepted','direct_bidder_accepted']:
         data[col] = pd.to_numeric(data[col], errors='coerce')
@@ -347,7 +348,7 @@ def plot_notes_dealer_ratio(start, end, **kwargs):
 def plot_bills_bid_to_cover(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
-    data = df[['record_date','security_type','security_term','bid_to_cover_ratio']].copy()
+    data = df[['auction_date','security_type','security_term','bid_to_cover_ratio']].copy()
     for col in ['bid_to_cover_ratio']:
         data[col] = pd.to_numeric(data[col], errors='coerce')
     bills = data[data['security_type']=='Bill']
@@ -396,7 +397,7 @@ def plot_bills_bid_to_cover(start, end, **kwargs):
 def plot_bonds_bid_to_cover(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
-    data = df[['record_date','security_type','security_term','bid_to_cover_ratio']].copy()
+    data = df[['auction_date','security_type','security_term','bid_to_cover_ratio']].copy()
     for col in ['bid_to_cover_ratio']:
         data[col] = pd.to_numeric(data[col], errors='coerce')
     bonds = data[data['security_type']=='Bond']
@@ -439,7 +440,7 @@ def plot_bonds_bid_to_cover(start, end, **kwargs):
 def plot_notes_bid_to_cover(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'auction_df.pkl', 'rb') as file:
         df = pickle.load(file)
-    data = df[['record_date','security_type','security_term','bid_to_cover_ratio']].copy()
+    data = df[['auction_date','security_type','security_term','bid_to_cover_ratio']].copy()
     for col in ['bid_to_cover_ratio']:
         data[col] = pd.to_numeric(data[col], errors='coerce')
     notes = data[data['security_type']=='Note']
