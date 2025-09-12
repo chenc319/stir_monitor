@@ -22,28 +22,28 @@ def merge_dfs(array_of_dfs):
                                             how='outer'), array_of_dfs)
 
 asset_colors = {
-    'securities_outright': '#69B3E7',   # Light blue
-    'lending_portfolio':   '#7EE5A7',   # Soft mint green
-    'treasuries':          '#FFC857',   # Sunny yellow-orange
-    'mbs':                 '#FFABA2',   # Pastel coral/pink
-    'permanent_lending':   '#B5EAD7',   # Light teal
-    'temporary_lending':   '#FFF6A8',   # Lemon yellow
-    'srf':                 '#89CFF0',   # Lighter sky blue
-    'discount_window':     '#FFB7B2',   # Salmon
-    'fx_swap_line':        '#B28DFF',   # Lavender
-    'ppp':                 '#FFA07A',   # Peach
-    'ms':                  '#FFDAC1',   # Light apricot
+    'securities_outright': '#5FB3FF',   # Vivid sky blue (QE, stable)
+    'lending_portfolio':   '#2DCDB2',   # Bright teal/mint (portfolio)
+    'treasuries':          '#FFC145',   # Sun gold (Treasury)
+    'mbs':                 '#FF6969',   # Approachable coral (MBS)
+    'permanent_lending':   '#54C6EB',   # Aqua blue (permanent lending)
+    'temporary_lending':   '#FFD166',   # Citrus yellow-orange (temp lending)
+    'srf':                 '#6FE7DD',   # Lively turquoise (repo facility)
+    'discount_window':     '#8D8DFF',   # Periwinkle (DW lending)
+    'fx_swap_line':        '#A685E2',   # Pleasant purple (FX swaps)
+    'ppp':                 '#FF8FAB',   # Bright pink (PPP)
+    'ms':                  '#FFA952',   # Peach (Main Street)
 }
 
 liab_colors = {
-    'currency':         '#FFFACD',   # Light pastel yellow
-    'rrp':              '#A0CED9',   # Turquoise blue
-    'foreign_repo':     '#D4F1F4',   # Pale aqua
-    'reserves':         '#77DD77',   # Pastel green
-    'tga':              '#E0BBE4',   # Light purple
-    'gse_dmfu':         '#FFD6E0',   # Pink blush
-    'total_reserves':   '#B4F8C8',   # Mint foam
-    'total_rrp':        '#A0CED9',   # Turquoise blue (match RRP)
+    'currency':         '#F9DB6D',   # Warm gold (currency)
+    'rrp':              '#3CB1CD',   # Vivid blue (RRP)
+    'foreign_repo':     '#85F4FA',   # Electric cyan (foreign repo)
+    'reserves':         '#21A179',   # Strong green (reserves)
+    'tga':              '#B084CC',   # Violet (TGA)
+    'gse_dmfu':         '#FFB685',   # Soft orange (GSE/DMFU)
+    'total_reserves':   '#21A179',   # Match reserves
+    'total_rrp':        '#3CB1CD',   # Match RRP
 }
 
 ### ---------------------------------------------------------------------------------------------------------- ###
