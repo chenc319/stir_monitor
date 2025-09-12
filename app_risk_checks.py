@@ -53,6 +53,12 @@ def plot_dash_for_cash_spread(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+    st.markdown(
+        "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
+        "Note: Spread = EFFR minus IORB (basis points). Negative value indicates Fed Funds below IORB.<br>"
+        "Data: Federal Reserve, Calculated"
+        "</div>", unsafe_allow_html=True
+    )
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### -------------------------------------------- NEW SOFR SYSTEM --------------------------------------------- ###
