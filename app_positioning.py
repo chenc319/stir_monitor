@@ -98,6 +98,10 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
               '#FF7B7B',
               '#4FC3F7',
               '#FFA952',
+              '#FFC145',
+              '#FF7B7B',
+              '#4FC3F7',
+              '#FFA952',
               '#FFC145'
               ]
     fig = make_subplots(rows=4, cols=4, subplot_titles=labels)
