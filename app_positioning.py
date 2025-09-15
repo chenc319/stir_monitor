@@ -121,7 +121,7 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
     fig.update_layout(
         title="Fed Funds Positioning",
         showlegend=False,
-        height=1200,
+        height=800,
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
