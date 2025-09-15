@@ -268,4 +268,8 @@ elif menu == 'Primary Dealers':
 elif menu == 'Positioning':
     st.title("Fed Funds")
     app_positioning.plot_fedfunds_futures_positions(start_date, end_date)
+    st.title("SOFR 1M")
+    app_positioning.plot_sofr1m_futures_positions(start_date, end_date)
+    st.title("SOFR 3M")
+    app_positioning.plot_sofr3m_futures_positions(start_date, end_date)
 
