@@ -96,7 +96,7 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
               '#4FC3F7',
               '#FFC145'
               ]
-    fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
+    fig = make_subplots(rows=3, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 3 + 1
         col_position = i % 3 + 1
@@ -119,10 +119,10 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    fig = make_subplots(rows=4, cols=4, subplot_titles=labels)
+    fig = make_subplots(rows=3, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 4 + 1
-        col_position = i % 4 + 1
+        row = i // 3 + 1
+        col_position = i % 3 + 1
         fig.add_trace(
             go.Scatter(
                 x=cot_positions_diff.index,
