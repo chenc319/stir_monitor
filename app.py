@@ -196,8 +196,6 @@ elif menu == 'Shadow Banks':
     st.title("Shadow Bank Components")
     st.title('Summary')
     app_shadow_banks.plot_shadow_bank_summary(start_date, end_date)
-    st.title('Private Investment Funds')
-    app_shadow_banks.plot_shadow_bank_private_investments(start_date,end_date)
     st.title('Shadow Bank Assets Mapping')
     app_shadow_banks.plot_shadow_bank_assets(start_date, end_date)
     st.title('Shadow Bank Liabilities Mapping')
