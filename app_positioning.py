@@ -67,7 +67,7 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
         'dealer_long', 'asset_mgr_long','lev_long',
         'dealer_short', 'asset_mgr_short', 'lev_short',
         'dealer_net', 'asset_mgr_net', 'lev_net',
-        'dealer_gross', 'asset_mgr_gross', 'lev_gross',
+        'dealer_gross', 'asset_mgr_gross', 'lev_gross'
     ]
     labels = [
         'Dealer Long',
@@ -96,7 +96,7 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
               '#4FC3F7',
               '#FFC145'
               ]
-    fig = make_subplots(rows=3, cols=3, subplot_titles=labels)
+    fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 3 + 1
         col_position = i % 3 + 1
@@ -119,7 +119,7 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    fig = make_subplots(rows=3, cols=3, subplot_titles=labels)
+    fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 3 + 1
         col_position = i % 3 + 1
