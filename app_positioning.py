@@ -57,10 +57,11 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
     cot_positions['asset_mgr_net'] = cot_positions['asset_mgr_long'] - cot_positions['asset_mgr_short']
     cot_positions['lev_net'] = cot_positions['lev_long'] - cot_positions['lev_short']
     cot_positions['total_net'] = cot_positions['total_long'] - cot_positions['total_short']
+    cot_positions = cot_positions[start:end]
     cot_positions_diff = cot_positions.diff(1).dropna()
+    cot_positions_diff = cot_positions_diff[start:end]
 
     ### PLOT ###
-    st.title("Fed Funds Positioning")
     fig = go.Figure()
     cols = [
         'dealer_long', 'asset_mgr_long','lev_long','total_long',
@@ -119,7 +120,6 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
             col=col_position
         )
     fig.update_layout(
-        title="Fed Funds Positioning",
         showlegend=False,
         height=800,
         hovermode='x unified'

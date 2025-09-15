@@ -266,6 +266,6 @@ elif menu == 'Primary Dealers':
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Positioning':
-    st.title("Fed Funds Positioning")
+    st.title("Fed Funds")
     app_positioning.plot_fedfunds_futures_positions(start_date, end_date)
 
