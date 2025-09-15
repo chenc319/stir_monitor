@@ -26,7 +26,7 @@ def merge_dfs(array_of_dfs):
     return(new_df)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ---------------------------------------- PRIVATE INVESTMENT FUNDS ---------------------------------------- ###
+### ------------------------------------------------ FED FUNDS ----------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fedfunds_futures_positions(start,end,**kwargs):
@@ -64,50 +64,42 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
     ### PLOT ###
     fig = go.Figure()
     cols = [
-        'dealer_long', 'asset_mgr_long','lev_long','total_long',
-        'dealer_short', 'asset_mgr_short', 'lev_short', 'total_short',
-        'dealer_net', 'asset_mgr_net', 'lev_net', 'total_net',
-        'dealer_gross', 'asset_mgr_gross', 'lev_gross', 'total_gross',
+        'dealer_long', 'asset_mgr_long','lev_long',
+        'dealer_short', 'asset_mgr_short', 'lev_short',
+        'dealer_net', 'asset_mgr_net', 'lev_net',
+        'dealer_gross', 'asset_mgr_gross', 'lev_gross',
     ]
     labels = [
         'Dealer Long',
         'Asset Managers Long',
-        'Leveraged Funds Long',
-        'Total Reportables Long',
+        'Leveraged Funds Long'
         'Dealer Short',
         'Asset Managers Short',
-        'Leveraged Funds Short',
-        'Total Reportables Short',
+        'Leveraged Funds Short'
         'Dealer Net',
         'Asset Managers Net',
-        'Leveraged Funds Net',
-        'Total Reportables Net',
+        'Leveraged Funds Net'
         'Dealer Gross',
         'Asset Managers Gross',
-        'Leveraged Funds Gross',
-        'Total Reportables Gross',
+        'Leveraged Funds Gross'
     ]
     colors = ['#FF7B7B',
-              '#4FC3F7',
-              '#FFA952',
+              '#4FC3F7'
               '#FFC145',
               '#FF7B7B',
-              '#4FC3F7',
-              '#FFA952',
+              '#4FC3F7'
               '#FFC145',
               '#FF7B7B',
-              '#4FC3F7',
-              '#FFA952',
+              '#4FC3F7'
               '#FFC145',
               '#FF7B7B',
-              '#4FC3F7',
-              '#FFA952',
+              '#4FC3F7'
               '#FFC145'
               ]
-    fig = make_subplots(rows=4, cols=4, subplot_titles=labels)
+    fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 4 + 1
-        col_position = i % 4 + 1
+        row = i // 3 + 1
+        col_position = i % 3 + 1
         fig.add_trace(
             go.Scatter(
                 x=cot_positions.index,
