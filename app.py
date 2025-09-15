@@ -272,4 +272,6 @@ elif menu == 'Positioning':
     app_positioning.plot_sofr1m_futures_positions(start_date, end_date)
     st.title("SOFR 3M")
     app_positioning.plot_sofr3m_futures_positions(start_date, end_date)
+    st.title("DTCC Repo US Treasury <30YR")
+    app_positioning.plot_dtcc_futures_positions(start_date, end_date)
 
