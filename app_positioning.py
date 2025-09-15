@@ -43,7 +43,7 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
         'lev_money_positions_short',
         'tot_rept_positions_long_all',
         'tot_rept_positions_short',
-    ]]
+    ]].sort_index()
     cot_positions.columns = ['dealer_long','dealer_short',
                              'asset_mgr_long','asset_mgr_short',
                              'lev_long','lev_short',
