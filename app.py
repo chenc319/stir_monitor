@@ -17,6 +17,7 @@ import app_primary_dealers
 import app_datapull
 import app_mmf
 import app_piv
+import app_positioning
 import time
 
 ### FUNCTIONS ###
@@ -259,3 +260,12 @@ elif menu == 'Primary Dealers':
     app_primary_dealers.plot_net_positions_bills_vs_bonds(start_date, end_date)
     app_primary_dealers.plot_net_positions_by_bond_tenor(start_date, end_date)
     app_primary_dealers.plot_net_change_by_bond_tenor(start_date, end_date)
+
+### ---------------------------------------------------------------------------------------- ###
+### -------------------------------------- POSITIONING ------------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+
+elif menu == 'Positioning':
+    st.title("Fed Funds Positioning")
+    app_primary_dealers.plot_fedfunds_futures_positions(start_date, end_date)
+
