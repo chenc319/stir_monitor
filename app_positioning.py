@@ -84,16 +84,16 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
         'Leveraged Funds Gross'
     ]
     colors = ['#FF7B7B',
-              '#4FC3F7'
+              '#4FC3F7',
               '#FFC145',
               '#FF7B7B',
-              '#4FC3F7'
+              '#4FC3F7',
               '#FFC145',
               '#FF7B7B',
-              '#4FC3F7'
+              '#4FC3F7',
               '#FFC145',
               '#FF7B7B',
-              '#4FC3F7'
+              '#4FC3F7',
               '#FFC145'
               ]
     fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
