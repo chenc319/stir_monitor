@@ -72,13 +72,13 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
     labels = [
         'Dealer Long',
         'Asset Managers Long',
-        'Leveraged Funds Long'
+        'Leveraged Funds Long',
         'Dealer Short',
         'Asset Managers Short',
-        'Leveraged Funds Short'
+        'Leveraged Funds Short',
         'Dealer Net',
         'Asset Managers Net',
-        'Leveraged Funds Net'
+        'Leveraged Funds Net',
         'Dealer Gross',
         'Asset Managers Gross',
         'Leveraged Funds Gross'
