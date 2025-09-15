@@ -380,10 +380,11 @@ def plot_sofr3m_futures_positions(start,end,**kwargs):
 ### -------------------------------------------------- DTCC -------------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def plot_dtcc_futures_positions(start,end,**kwargs):
+def plot_eris_sofr_swap_futures_positions(start,end,**kwargs):
     with open(Path(DATA_DIR) / 'cftc_all_futures.pkl', 'rb') as file:
         cftc_all_futures = pickle.load(file)
-    future_contract_df = cftc_all_futures[cftc_all_futures['contract_market_name'] == 'DTCC Repo-US Treasury <30 YR']
+    future_contract_df = cftc_all_futures[cftc_all_futures['contract_market_name'] == '2 YEAR ERIS SOFR SWAP']
+    cftc_all_futures['contract_market_name'].unique()
     contract_size = 5000000
     cot_positions = future_contract_df[[
         'dealer_positions_long_all',
