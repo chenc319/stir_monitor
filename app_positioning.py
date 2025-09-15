@@ -120,6 +120,30 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
             col=col_position
         )
     fig.update_layout(
+        title="Weekly Positions",
+        showlegend=False,
+        height=800,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    fig = make_subplots(rows=4, cols=4, subplot_titles=labels)
+    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
+        row = i // 4 + 1
+        col_position = i % 4 + 1
+        fig.add_trace(
+            go.Scatter(
+                x=cot_positions_diff.index,
+                y=cot_positions_diff[col],
+                mode='lines+markers',
+                name=label,
+                line=dict(color=color)
+            ),
+            row=row,
+            col=col_position
+        )
+    fig.update_layout(
+        title="Weekly Change",
         showlegend=False,
         height=800,
         hovermode='x unified'
