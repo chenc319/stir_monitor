@@ -13,7 +13,7 @@ from pandas_datareader import data as pdr
 from pathlib import Path
 import os
 import pickle
-DATA_DIR = os.getenv('DATA_DIR', 'data')
+DATA_DIR = os.getenv('DATA_DIR', '../data')
 
 ### FUNCTIONS ###
 def merge_dfs(array_of_dfs):

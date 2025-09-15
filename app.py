@@ -16,7 +16,6 @@ import app_futures
 import app_primary_dealers
 import app_datapull
 import app_mmf
-import app_piv
 import app_positioning
 import time
 
@@ -119,7 +118,6 @@ menu = st.sidebar.radio(
      'Fed Balance Sheet',
      'Repo',
      'Money Markets',
-     'PIVs',
      'Shadow Banks',
      'Cross Rates',
      'Treasury Auctions',
@@ -180,14 +178,6 @@ elif menu == 'Money Markets':
     app_mmf.plot_mmf_repo_vs_non_repo(start_date, end_date)
     app_mmf.plot_mmf_allocation_by_counterparty(start_date, end_date)
     app_mmf.plot_asset_allocation_mmf(start_date, end_date)
-
-### ---------------------------------------------------------------------------------------- ###
-### ------------------------------------------ PIV ----------------------------------------- ###
-### ---------------------------------------------------------------------------------------- ###
-
-elif menu == 'PIVs':
-    st.title("Private Investment Vehicles")
-    app_piv.plot_shadow_bank_private_investments(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------------- SHADOW BANKS ------------------------------------- ###
@@ -272,6 +262,4 @@ elif menu == 'Positioning':
     app_positioning.plot_sofr1m_futures_positions(start_date, end_date)
     st.title("SOFR 3M")
     app_positioning.plot_sofr3m_futures_positions(start_date, end_date)
-    st.title("2YR ERIS SOFR SWAPS")
-    app_positioning.plot_eris_sofr_swap_futures_positions(start_date, end_date)
 
