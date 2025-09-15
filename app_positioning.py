@@ -9,7 +9,6 @@ import functools as ft
 import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt
-from pandas_datareader import data as pdr
 from pathlib import Path
 import os
 import pickle
@@ -106,8 +105,8 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
               ]
     fig = make_subplots(rows=4, cols=4, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 2 + 1
-        col_position = i % 2 + 1
+        row = i // 4 + 1
+        col_position = i % 4 + 1
         fig.add_trace(
             go.Scatter(
                 x=cot_positions.index,
