@@ -101,8 +101,7 @@ def plot_on_the_run_nominal_coupons(start, end, **kwargs):
                                  line=dict(color=color)))
     fig.update_layout(
         title="On-the-run Nominal Coupons ATS InterDealer Volume",
-        showlegend=False,
-        height=300,
+        showlegend=True,
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
