@@ -61,7 +61,7 @@ def plot_2y_bond_pos(start, end, **kwargs):
     fig = go.Figure()
     for col, color, label in zip(cols, colors, labels):
         fig.add_trace(go.Scatter(x=cot_positions.index, y=cot_positions[col],
-                                 mode='lines+markers',
+                                 mode='lines',
                                  name=label,
                                  line=dict(color=color)))
     fig.update_layout(
