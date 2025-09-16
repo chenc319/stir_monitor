@@ -17,6 +17,7 @@ import app_primary_dealers
 import app_datapull
 import app_mmf
 import app_stir_positioning
+import app_trace
 import time
 
 ### FUNCTIONS ###
@@ -123,7 +124,8 @@ menu = st.sidebar.radio(
      'Rate Spreads',
      'Treasury Auctions',
      'UST Positioning',
-     'STIR Positioning']
+     'STIR Positioning',
+     'TRACE Model']
 )
 
 
@@ -266,4 +268,13 @@ elif menu == 'STIR Positioning':
     app_stir_positioning.plot_sofr3m_futures_positions(start_date, end_date)
     ### TITLE INCLUDED IN FUNCTION ###
     app_stir_positioning.correlation_with_sofr(start_date, end_date)
+
+### ---------------------------------------------------------------------------------------- ###
+### ------------------------------------ TRACE MODELING ------------------------------------ ###
+### ---------------------------------------------------------------------------------------- ###
+
+elif menu == 'TRACE Model':
+    st.title('On-the-Run Nominal Coupons')
+    app_trace.plot_on_the_run_nominal_coupons(start_date,end_date)
+    app_trace.plot_off_the_run_nominal_coupons(start_date,end_date)
 
