@@ -94,21 +94,11 @@ def plot_on_the_run_nominal_coupons(start, end, **kwargs):
     fig = go.Figure()
     cols = on_the_run_bonds_df.columns
     labels = on_the_run_bonds_df.columns
-    fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
-    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 2 + 1
-        col_position = i % 2 + 1
-        fig.add_trace(
-            go.Scatter(
-                x=on_the_run_bonds_df.index,
-                y=on_the_run_bonds_df[col],
-                mode='lines',
-                name=label,
-                line=dict(color=color)
-            ),
-            row=row,
-            col=col_position
-        )
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=on_the_run_bonds_df.index, y=on_the_run_bonds_df[col],
+                                 mode='lines',
+                                 name=label,
+                                 line=dict(color=color)))
     fig.update_layout(
         title="On-the-run Nominal Coupons ATS InterDealer Volume",
         showlegend=False,
