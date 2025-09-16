@@ -53,6 +53,8 @@ def plot_2y_bond_pos(start, end, **kwargs):
     cot_positions['lev_net'] = cot_positions['lev_long'] - cot_positions['lev_short']
     cot_positions['total_net'] = cot_positions['total_long'] - cot_positions['total_short']
     cot_positions_diff = cot_positions.diff(1).dropna()
+    cot_positions = cot_positions[start:end]
+    cot_positions_diff = cot_positions_diff[start:end]
 
     colors = ['#2567c4', '#83c3f7', '#e5433a']
     labels = ['Dealer', 'Asset Manager', 'Leveraged Funds']
@@ -151,6 +153,8 @@ def plot_5y_bond_pos(start, end, **kwargs):
     cot_positions['lev_net'] = cot_positions['lev_long'] - cot_positions['lev_short']
     cot_positions['total_net'] = cot_positions['total_long'] - cot_positions['total_short']
     cot_positions_diff = cot_positions.diff(1).dropna()
+    cot_positions = cot_positions[start:end]
+    cot_positions_diff = cot_positions_diff[start:end]
 
     colors = ['#2567c4', '#83c3f7', '#e5433a']
     labels = ['Dealer', 'Asset Manager', 'Leveraged Funds']
@@ -249,6 +253,8 @@ def plot_10y_bond_pos(start, end, **kwargs):
     cot_positions['lev_net'] = cot_positions['lev_long'] - cot_positions['lev_short']
     cot_positions['total_net'] = cot_positions['total_long'] - cot_positions['total_short']
     cot_positions_diff = cot_positions.diff(1).dropna()
+    cot_positions = cot_positions[start:end]
+    cot_positions_diff = cot_positions_diff[start:end]
 
     colors = ['#2567c4', '#83c3f7', '#e5433a']
     labels = ['Dealer', 'Asset Manager', 'Leveraged Funds']
