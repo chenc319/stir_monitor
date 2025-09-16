@@ -122,8 +122,8 @@ menu = st.sidebar.radio(
      'Cross Rates',
      'Treasury Auctions',
      'Primary Dealers',
-     'Bond Positioning',
-     'STIR Positioning']
+     'Bond COT Positions',
+     'STIR COT Positions']
 )
 
 
@@ -244,7 +244,7 @@ elif menu == 'Primary Dealers':
 ### ------------------------------------ BOND POSITIONING ---------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Bond Positioning':
+elif menu == 'Bond COT Positions':
     st.title("2yr Treasury Futures")
     app_bond_positioning.plot_2y_bond_pos(start_date, end_date)
     st.title("5yr Treasury Futures")
@@ -257,7 +257,7 @@ elif menu == 'Bond Positioning':
 ### ----------------------------------- STIR POSITIONING ----------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'STIR Positioning':
+elif menu == 'STIR COT Positions':
     st.title("Fed Funds")
     app_stir_positioning.plot_fedfunds_futures_positions(start_date, end_date)
     st.title("SOFR 1M")
