@@ -105,6 +105,7 @@ def plot_on_the_run_nominal_coupons(start, end, **kwargs):
                                  line=dict(color=color)))
     fig.update_layout(
         title="ATS InterDealer Volume",
+        xaxis_title="Dollars",
         showlegend=True,
         hovermode='x unified'
     )
@@ -121,6 +122,7 @@ def plot_on_the_run_nominal_coupons(start, end, **kwargs):
                                  line=dict(color=color)))
     fig.update_layout(
         title="Dealer Customer Volume",
+        xaxis_title="Dollars",
         showlegend=True,
         hovermode='x unified'
     )
@@ -164,6 +166,7 @@ def plot_off_the_run_nominal_coupons(start, end, **kwargs):
                                  line=dict(color=color)))
     fig.update_layout(
         title="ATS InterDealer Volume",
+        xaxis_title="Dollars",
         showlegend=True,
         hovermode='x unified'
     )
@@ -180,6 +183,7 @@ def plot_off_the_run_nominal_coupons(start, end, **kwargs):
                                  line=dict(color=color)))
     fig.update_layout(
         title="Dealer Customer Volume",
+        xaxis_title="Dollars",
         showlegend=True,
         hovermode='x unified'
     )
