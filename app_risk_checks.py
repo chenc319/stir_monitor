@@ -48,7 +48,7 @@ def plot_dash_for_cash_spread(start, end, **kwargs):
     fig.add_trace(go.Scatter(x=dash_spread.index, y=dash_spread['Spread_bp'],
                              mode='lines+markers', name="EFFR - IORB"))
     fig.update_layout(
-        title="Monitoring the Dash For Cash<br>Fed Funds - IORB",
+        title="Dash For Cash<br>Fed Funds - IORB",
         yaxis_title="Basis Points",
         hovermode='x unified'
     )
@@ -110,7 +110,7 @@ def plot_new_sofr_system(start, end, **kwargs):
                                  name=col,
                                  line=dict(color=color)))
     fig.update_layout(
-        title="The New SOFR System",
+        title="SOFR System: Floor and Ceiling",
         yaxis_title="Basis Points",
         hovermode='x unified'
     )
@@ -171,7 +171,7 @@ def plot_repo_rate_complex(start, end, **kwargs):
                                  mode='lines+markers',
                                  name=col, line=dict(color=colors.get(col))))
     fig.update_layout(
-        title="Visible Repo Rate Complex",
+        title="Repo Complex: Floor and Ceiling",
         yaxis_title="Basis Points",
         hovermode='x unified'
     )

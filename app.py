@@ -114,16 +114,16 @@ else:
 
 menu = st.sidebar.radio(
     "Go to section:",
-    ['Risk Checks',
+    ['Overview',
      'Fed Balance Sheet',
-     'Repo',
+     'Repo Activity',
      'Money Markets',
      'Shadow Banks',
      'Cross Rates',
      'Treasury Auctions',
-     'Futures',
      'Primary Dealers',
-     'Positioning']
+     'Bond Positioning',
+     'STIR Positioning']
 )
 
 
@@ -131,7 +131,7 @@ menu = st.sidebar.radio(
 ### -------------------------------------- RISK CHECKS ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-if menu == 'Risk Checks':
+if menu == 'Overview':
     st.title("Risk Checks")
     app_risk_checks.plot_dash_for_cash_spread(start_date, end_date)
     app_risk_checks.plot_new_sofr_system(start_date, end_date)
@@ -156,8 +156,8 @@ elif menu == 'Fed Balance Sheet':
 ### ------------------------------------------ REPO ---------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Repo':
-    st.title("Repo")
+elif menu == 'Repo Activity':
+    st.title("Repo Activity")
     app_repo.plot_volume_per_venue(start_date, end_date)
     app_repo.plot_proxy_percent_without_clearing(start_date, end_date)
     app_repo.plot_6m_volume_change(start_date, end_date)
@@ -227,18 +227,6 @@ elif menu == 'Treasury Auctions':
     app_auctions.plot_bonds_bid_to_cover(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
-### ---------------------------------------- FUTURES --------------------------------------- ###
-### ---------------------------------------------------------------------------------------- ###
-
-elif menu == 'Futures':
-    st.title("Futures")
-    app_futures.plot_futures_leverage_money_short(start_date, end_date)
-    app_futures.plot_end_of_quarter_spreads(start_date, end_date)
-    app_futures.plot_end_of_month_spreads(start_date, end_date)
-    app_futures.plot_stability_lower_roc(start_date, end_date)
-    app_futures.plot_how_did_levels_change(start_date, end_date)
-
-### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------------ PRIMARY DEALERS ----------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
@@ -252,10 +240,22 @@ elif menu == 'Primary Dealers':
     app_primary_dealers.plot_net_change_by_bond_tenor(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
-### -------------------------------------- POSITIONING ------------------------------------- ###
+### ------------------------------------ BOND POSITIONING ---------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Positioning':
+elif menu == 'Bond Positioning':
+    st.title("Futures")
+    app_futures.plot_futures_leverage_money_short(start_date, end_date)
+    app_futures.plot_end_of_quarter_spreads(start_date, end_date)
+    app_futures.plot_end_of_month_spreads(start_date, end_date)
+    app_futures.plot_stability_lower_roc(start_date, end_date)
+    app_futures.plot_how_did_levels_change(start_date, end_date)
+
+### ---------------------------------------------------------------------------------------- ###
+### ----------------------------------- STIR POSITIONING ----------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+
+elif menu == 'STIR Positioning':
     st.title("Fed Funds")
     app_positioning.plot_fedfunds_futures_positions(start_date, end_date)
     st.title("SOFR 1M")
