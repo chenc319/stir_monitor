@@ -458,11 +458,11 @@ def correlation_with_sofr(start,end,**kwargs):
     gcf_corr_dict = {}
     sofr_corr_dict = {}
     for col in tri_merge_df.columns:
-        tri_corr_dict[col] = rolling_corr(tri_merge_df[col],tri_merge_df['value'],12)
-        dvp_corr_dict[col] = rolling_corr(dvp_merge_df[col],dvp_merge_df['value'],12)
-        gcf_corr_dict[col] = rolling_corr(gcf_merge_df[col],gcf_merge_df['value'],12)
+        tri_corr_dict[col] = rolling_corr(tri_merge_df[col],tri_merge_df['value'],26)
+        dvp_corr_dict[col] = rolling_corr(dvp_merge_df[col],dvp_merge_df['value'],26)
+        gcf_corr_dict[col] = rolling_corr(gcf_merge_df[col],gcf_merge_df['value'],26)
     for col in sofr_merge_df.columns:
-        sofr_corr_dict[col] = rolling_corr(sofr_merge_df[col],sofr_merge_df['SOFR'],12)
+        sofr_corr_dict[col] = rolling_corr(sofr_merge_df[col],sofr_merge_df['SOFR'],26)
 
     tri_corr_df = pd.DataFrame(tri_corr_dict)
     tri_corr_df = tri_corr_df.drop('value',axis=1)
