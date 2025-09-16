@@ -75,32 +75,52 @@ def plot_on_the_run_nominal_coupons(start, end, **kwargs):
     on_the_run_bonds = treasury_daily_aggregates_full[
         (treasury_daily_aggregates_full['productCategory'] == 'Nominal Coupons') &
         (treasury_daily_aggregates_full['benchmark'] == 'On-the-run')]
-    off_the_run_bonds = treasury_daily_aggregates_full[
-        (treasury_daily_aggregates_full['productCategory'] == 'Nominal Coupons') &
-        (treasury_daily_aggregates_full['benchmark'] == 'Off-the-run')]
 
-    on_the_run_bonds_df = on_the_run_bonds.pivot_table(
+    ats_interdealer_volume = on_the_run_bonds.pivot_table(
         index="tradeDate",
         columns="yearsToMaturity",
         values="atsInterdealerVolume",
         aggfunc="sum"
     )
+    ats_interdealer_volume.index = pd.to_datetime(ats_interdealer_volume.index.values)
+    ats_interdealer_volume.columns = ['<2','10<>20','2<>3','>20','3<>5','5<>7','7<>10']
 
-    on_the_run_bonds_df.columns
-    # Reset the index if you want tradeDate as a column instead of index
-    on_the_run_bonds_df.index = pd.to_datetime(on_the_run_bonds_df.index.values)
-    on_the_run_bonds_df.columns = ['<2','10<>20','2<>3','>20','3<>5','5<>7','7<>10']
+    dealer_customer_volume = on_the_run_bonds.pivot_table(
+        index="tradeDate",
+        columns="yearsToMaturity",
+        values="dealerCustomerVolume",
+        aggfunc="sum"
+    )
+    dealer_customer_volume.index = pd.to_datetime(dealer_customer_volume.index.values)
+    dealer_customer_volume.columns = ['<2', '10<>20', '2<>3', '>20', '3<>5', '5<>7', '7<>10']
 
+    ### PLOT ###
     fig = go.Figure()
-    cols = on_the_run_bonds_df.columns
-    labels = on_the_run_bonds_df.columns
+    cols = ats_interdealer_volume.columns
+    labels = ats_interdealer_volume.columns
     for col, color, label in zip(cols, colors, labels):
-        fig.add_trace(go.Scatter(x=on_the_run_bonds_df.index, y=on_the_run_bonds_df[col],
+        fig.add_trace(go.Scatter(x=ats_interdealer_volume.index, y=ats_interdealer_volume[col],
                                  mode='lines',
                                  name=label,
                                  line=dict(color=color)))
     fig.update_layout(
-        title="On-the-run Nominal Coupons ATS InterDealer Volume",
+        title="ATS InterDealer Volume",
+        showlegend=True,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = dealer_customer_volume.columns
+    labels = dealer_customer_volume.columns
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=dealer_customer_volume.index, y=dealer_customer_volume[col],
+                                 mode='lines',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="Dealer Customer Volume",
         showlegend=True,
         hovermode='x unified'
     )
@@ -111,12 +131,59 @@ def plot_off_the_run_nominal_coupons(start, end, **kwargs):
         treasury_daily_aggregates_full = pickle.load(file)
     treasury_daily_aggregates_full['atsInterdealerVolume'] = treasury_daily_aggregates_full['atsInterdealerVolume'] * 1e9
     treasury_daily_aggregates_full['dealerCustomerVolume'] = treasury_daily_aggregates_full['dealerCustomerVolume'] * 1e9
-    on_the_run_bonds = treasury_daily_aggregates_full[
-        (treasury_daily_aggregates_full['productCategory'] == 'Nominal Coupons') &
-        (treasury_daily_aggregates_full['benchmark'] == 'On-the-run')]
     off_the_run_bonds = treasury_daily_aggregates_full[
         (treasury_daily_aggregates_full['productCategory'] == 'Nominal Coupons') &
         (treasury_daily_aggregates_full['benchmark'] == 'Off-the-run')]
+
+    ats_interdealer_volume = off_the_run_bonds.pivot_table(
+        index="tradeDate",
+        columns="yearsToMaturity",
+        values="atsInterdealerVolume",
+        aggfunc="sum"
+    )
+    ats_interdealer_volume.index = pd.to_datetime(ats_interdealer_volume.index.values)
+    ats_interdealer_volume.columns = ['<2','10<>20','2<>3','>20','3<>5','5<>7','7<>10']
+
+    dealer_customer_volume = off_the_run_bonds.pivot_table(
+        index="tradeDate",
+        columns="yearsToMaturity",
+        values="dealerCustomerVolume",
+        aggfunc="sum"
+    )
+    dealer_customer_volume.index = pd.to_datetime(dealer_customer_volume.index.values)
+    dealer_customer_volume.columns = ['<2', '10<>20', '2<>3', '>20', '3<>5', '5<>7', '7<>10']
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = ats_interdealer_volume.columns
+    labels = ats_interdealer_volume.columns
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=ats_interdealer_volume.index, y=ats_interdealer_volume[col],
+                                 mode='lines',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="ATS InterDealer Volume",
+        showlegend=True,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = dealer_customer_volume.columns
+    labels = dealer_customer_volume.columns
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=dealer_customer_volume.index, y=dealer_customer_volume[col],
+                                 mode='lines',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="Dealer Customer Volume",
+        showlegend=True,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
 
 
