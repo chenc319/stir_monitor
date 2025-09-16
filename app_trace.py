@@ -75,6 +75,8 @@ def plot_on_the_run_nominal_coupons(start, end, **kwargs):
     on_the_run_bonds = treasury_daily_aggregates_full[
         (treasury_daily_aggregates_full['productCategory'] == 'Nominal Coupons') &
         (treasury_daily_aggregates_full['benchmark'] == 'On-the-run')]
+    treasury_daily_aggregates_full['yearsToMaturity'].unique()
+    on_the_run_bonds = on_the_run_bonds[start:end]
 
     ats_interdealer_volume = on_the_run_bonds.pivot_table(
         index="tradeDate",
@@ -136,6 +138,7 @@ def plot_off_the_run_nominal_coupons(start, end, **kwargs):
     off_the_run_bonds = treasury_daily_aggregates_full[
         (treasury_daily_aggregates_full['productCategory'] == 'Nominal Coupons') &
         (treasury_daily_aggregates_full['benchmark'] == 'Off-the-run')]
+    off_the_run_bonds = off_the_run_bonds[start:end]
 
     ats_interdealer_volume = off_the_run_bonds.pivot_table(
         index="tradeDate",
