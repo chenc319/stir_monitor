@@ -118,10 +118,10 @@ menu = st.sidebar.radio(
      'Fed Balance Sheet',
      'Repo Activity',
      'Money Markets',
-     'Shadow Banks',
-     'Cross Rates',
-     'Treasury Auctions',
      'Primary Dealers',
+     'Shadow Banks',
+     'Rate Spreads',
+     'Treasury Auctions',
      'Bond COT Positions',
      'STIR COT Positions']
 )
@@ -196,8 +196,8 @@ elif menu == 'Shadow Banks':
 ### --------------------------------------- CROSS RATE ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Cross Rates':
-    st.title("Cross Rate")
+elif menu == 'Rate Spreads':
+    st.title("Rate Spreads")
     app_cross_rate.plot_iorb_spreads(start_date, end_date)
     app_cross_rate.plot_gcf_tri_spread(start_date, end_date)
     app_cross_rate.plot_triparty_term_spread(start_date, end_date)
