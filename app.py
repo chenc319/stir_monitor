@@ -246,7 +246,7 @@ elif menu == 'Primary Dealers':
 
 elif menu == 'Bond Positioning':
     st.title("Futures")
-    app_bond_positioning.plot_futures_leverage_money_short(start_date, end_date)
+    app_bond_positioning.plot_2y_bond_pos(start_date, end_date)
 
 
 ### ---------------------------------------------------------------------------------------- ###
