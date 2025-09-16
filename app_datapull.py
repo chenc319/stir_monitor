@@ -11,6 +11,10 @@ import os
 import pickle
 from io import StringIO
 import pandas as pd
+import requests
+import base64
+import pandas as pd
+from io import StringIO
 DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 ### FUNCTIONS ###
@@ -218,7 +222,8 @@ def refresh_all_data():
 
     ### SPONSORED VOLUME ###
     pd_total_repo_url = 'https://markets.newyorkfed.org/api/pd/get/PDSORA-UTSETTOT.json'
-    pd_total_repo = pd.DataFrame(requests.get(pd_total_repo_url).json()['pd']['timeseries']).drop('keyid', axis=1)
+    pd_total_repo = pd.DataFrame(
+        requests.get(pd_total_repo_url).json()['pd']['timeseries']).drop('keyid', axis=1)
     pd_total_repo['value'] = pd.to_numeric(pd_total_repo['value'], errors='coerce')
     pd_total_repo.dropna(subset=['value'], inplace=True)
     pd_total_repo['asofdate'] = pd.to_datetime(pd_total_repo['asofdate'])
@@ -339,7 +344,8 @@ def refresh_all_data():
     names = ['bills', 'l2', 'g2l3', 'g3l6', 'g6l7', 'g7l11', 'g11l21', 'g21']
     all_pd_bills_bonds_positions = pd.DataFrame()
     for idx in range(len(urls)):
-        pos = pd.DataFrame(requests.get(urls[idx]).json()['pd']['timeseries']).drop('keyid', axis=1)
+        pos = pd.DataFrame(
+            requests.get(urls[idx]).json()['pd']['timeseries']).drop('keyid', axis=1)
         pos['value'] = pd.to_numeric(pos['value'], errors='coerce')
         pos.dropna(subset=['value'], inplace=True)
         pos['asofdate'] = pd.to_datetime(pos['asofdate'])
@@ -374,7 +380,8 @@ def refresh_all_data():
     names = ['bills', 'l2', 'g2l3', 'g3l6', 'g6l7', 'g7l11', 'g11l21', 'g21']
     all_pd_bills_bonds_net_changes = pd.DataFrame()
     for idx in range(len(urls)):
-        pos = pd.DataFrame(requests.get(urls[idx]).json()['pd']['timeseries']).drop('keyid', axis=1)
+        pos = pd.DataFrame(
+            requests.get(urls[idx]).json()['pd']['timeseries']).drop('keyid', axis=1)
         pos['value'] = pd.to_numeric(pos['value'], errors='coerce')
         pos.dropna(subset=['value'], inplace=True)
         pos['asofdate'] = pd.to_datetime(pos['asofdate'])
@@ -542,6 +549,55 @@ def refresh_all_data():
                                     'fred', start, end) * 1e9
     with open(Path(DATA_DIR) / 'fed_assets_total.pkl', 'wb') as file:
         pickle.dump(fed_assets_total, file)
+
+    ### ---------------------------------------------------------------------------------------------- ###
+    client_id = '114c7cfb58ea47bfb358'
+    client_secret = 'Porchlight319!'  # Replace with your real secret after a RESET
+
+    # Get your bearer token (access_token)
+    credentials = f"{client_id}:{client_secret}"
+    b64_credentials = base64.b64encode(credentials.encode()).decode()
+    url = "https://ews.fip.finra.org/fip/rest/ews/oauth2/access_token?grant_type=client_credentials"
+    headers = {
+        "Authorization": f"Basic {b64_credentials}"
+    }
+    response = requests.post(url, headers=headers)
+    access_token = response.json()['access_token']
+
+    # Now paginate through all available history
+    url = "https://api.finra.org/data/group/fixedIncomeMarket/name/treasuryDailyAggregates"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    limit = 5000
+    offset = 0
+    all_batches = []
+
+    while True:
+        params = {"limit": limit, "offset": offset}
+        resp = requests.get(url, headers=headers, params=params)
+        # Handle JSON or plain-text CSV results
+        if resp.headers.get("Content-Type", "").startswith("application/json"):
+            page = resp.json().get("data", [])
+            if not page:
+                break
+            batch_df = pd.DataFrame(page)
+        else:
+            # Handle fallback to plain CSV/text
+            batch_df = pd.read_csv(StringIO(resp.text))
+            if batch_df.empty:
+                break
+
+        all_batches.append(batch_df)
+        print(f"Pulled {len(batch_df)} rows at offset {offset}.")
+        if len(batch_df) < limit:
+            break
+        offset += limit
+
+    # Combine all pages into one DataFrame
+    treasury_daily_aggregates_full = pd.concat(all_batches, ignore_index=True)
+    print("Total rows pulled:", len(treasury_daily_aggregates_full))
+    with open(Path(DATA_DIR) / 'treasury_daily_aggregates_full.pkl', 'wb') as file:
+        pickle.dump(treasury_daily_aggregates_full, file)
+    ### ---------------------------------------------------------------------------------------------- ###
 
 
 
