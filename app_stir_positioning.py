@@ -98,18 +98,18 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
         'Asset Managers Gross',
         'Leveraged Funds Gross'
     ]
-    colors = ['#FF7B7B',
-              '#4FC3F7',
-              '#FFC145',
-              '#FF7B7B',
-              '#4FC3F7',
-              '#FFC145',
-              '#FF7B7B',
-              '#4FC3F7',
-              '#FFC145',
-              '#FF7B7B',
-              '#4FC3F7',
-              '#FFC145'
+    colors = ['#2567c4',
+              '#83c3f7',
+              '#e5433a',
+              '#2567c4',
+              '#83c3f7',
+              '#e5433a',
+              '#2567c4',
+              '#83c3f7',
+              '#e5433a',
+              '#2567c4',
+              '#83c3f7',
+              '#e5433a'
               ]
     fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
@@ -215,18 +215,18 @@ def plot_sofr1m_futures_positions(start,end,**kwargs):
         'Asset Managers Gross',
         'Leveraged Funds Gross'
     ]
-    colors = ['#FF7B7B',
-              '#4FC3F7',
-              '#FFC145',
-              '#FF7B7B',
-              '#4FC3F7',
-              '#FFC145',
-              '#FF7B7B',
-              '#4FC3F7',
-              '#FFC145',
-              '#FF7B7B',
-              '#4FC3F7',
-              '#FFC145'
+    colors = ['#2567c4',
+              '#83c3f7',
+              '#e5433a',
+              '#2567c4',
+              '#83c3f7',
+              '#e5433a',
+              '#2567c4',
+              '#83c3f7',
+              '#e5433a',
+              '#2567c4',
+              '#83c3f7',
+              '#e5433a'
               ]
     fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
@@ -337,18 +337,18 @@ def plot_sofr3m_futures_positions(start,end,**kwargs):
         'Asset Managers Gross',
         'Leveraged Funds Gross'
     ]
-    colors = ['#FF7B7B',
-              '#4FC3F7',
-              '#FFC145',
-              '#FF7B7B',
-              '#4FC3F7',
-              '#FFC145',
-              '#FF7B7B',
-              '#4FC3F7',
-              '#FFC145',
-              '#FF7B7B',
-              '#4FC3F7',
-              '#FFC145'
+    colors = ['#2567c4',
+              '#83c3f7',
+              '#e5433a',
+              '#2567c4',
+              '#83c3f7',
+              '#e5433a',
+              '#2567c4',
+              '#83c3f7',
+              '#e5433a',
+              '#2567c4',
+              '#83c3f7',
+              '#e5433a'
               ]
     fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
@@ -497,18 +497,18 @@ def correlation_with_sofr(start,end,**kwargs):
         'Asset Managers Gross',
         'Leveraged Funds Gross'
     ]
-    colors = ['#FF7B7B',
-              '#4FC3F7',
-              '#FFC145',
-              '#FF7B7B',
-              '#4FC3F7',
-              '#FFC145',
-              '#FF7B7B',
-              '#4FC3F7',
-              '#FFC145',
-              '#FF7B7B',
-              '#4FC3F7',
-              '#FFC145'
+    colors = ['#2567c4',
+              '#83c3f7',
+              '#e5433a',
+              '#2567c4',
+              '#83c3f7',
+              '#e5433a',
+              '#2567c4',
+              '#83c3f7',
+              '#e5433a',
+              '#2567c4',
+              '#83c3f7',
+              '#e5433a'
               ]
 
     ### PLOT ###
