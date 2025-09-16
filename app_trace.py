@@ -21,7 +21,7 @@ def merge_dfs(array_of_dfs):
                                             right_index=True,
                                             how='outer'), array_of_dfs)
 
-asset_colors = {
+colors = {
     '<2': '#5FB3FF',   # Vivid sky blue (QE, stable)
     '10<>20': '#2DCDB2',   # Bright teal/mint (portfolio)
     '2<>3': '#FFC145',   # Sun gold (Treasury)
@@ -94,8 +94,6 @@ def plot_on_the_run_nominal_coupons(start, end, **kwargs):
     fig = go.Figure()
     cols = on_the_run_bonds_df.columns
     labels = on_the_run_bonds_df.columns
-    colors = [asset_colors['treasuries'],
-              asset_colors['mbs']]
     fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 2 + 1
@@ -112,7 +110,7 @@ def plot_on_the_run_nominal_coupons(start, end, **kwargs):
             col=col_position
         )
     fig.update_layout(
-        title="QE Securities: Weekly Averages",
+        title="On-the-run Nominal Coupons ATS InterDealer Volume",
         showlegend=False,
         height=300,
         hovermode='x unified'
