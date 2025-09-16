@@ -92,13 +92,13 @@ def plot_proxy_percent_without_clearing(start, end, **kwargs):
     fig.add_trace(go.Scatter(
         x=nccbr_proxy_merge.index,
         y=nccbr_proxy_merge['nccbr_pct']*100,
-        mode='lines+markers',
+        mode='lines',
         name='% of NCCBR of Primary Dealers',
         line=dict(color='#29B6D9', width=2)))
     fig.add_trace(go.Scatter(
         x=nccbr_proxy_merge.index,
         y=nccbr_proxy_merge['black']*100,
-        mode='lines+markers',
+        mode='lines',
         name='Tri Party-RRP / (Tri Party+DVP+GCF-RRP)',
         line=dict(color='#272f37', width=2)))
     fig.update_layout(
@@ -152,7 +152,7 @@ def plot_volume_per_venue(start, end, **kwargs):
     for col, color in zip(volume_venue_merge_df.columns,
                           ['#f8b62d', '#f8772d', '#2f90c5', '#67cbe7']):
         fig.add_trace(go.Scatter(x=volume_venue_merge_df.index, y=volume_venue_merge_df[col],
-                                 mode='lines+markers', name=col, line=dict(color=color)))
+                                 mode='lines', name=col, line=dict(color=color)))
     fig.update_layout(
         title="Volume per Venue",
         yaxis_title="Dollars",
@@ -206,7 +206,7 @@ def plot_6m_volume_change(start, end, **kwargs):
     fig = go.Figure()
     for col, color in zip(roc_6m_volume.columns, ['#f8b62d', '#f8772d', '#2f90c5', '#67cbe7']):
         fig.add_trace(go.Scatter(x=roc_6m_volume.index, y=roc_6m_volume[col],
-                                 mode='lines+markers', name=col, line=dict(color=color)))
+                                 mode='lines', name=col, line=dict(color=color)))
     fig.update_layout(
         title="Monthly Change in Volume per Venue",
         yaxis_title="Dollars",
@@ -244,9 +244,9 @@ def plot_rrp_vs_foreign_rrp(start, end, **kwargs):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge.index, y=merge['RRP'],
-                             mode='lines+markers', name="RRP", line=dict(color="#07AFE3", width=2)))
+                             mode='lines', name="RRP", line=dict(color="#07AFE3", width=2)))
     fig.add_trace(go.Scatter(x=merge.index, y=merge['Foreign_RRP'],
-                             mode='lines+markers', name="Foreign RRP", line=dict(color="#F57235", width=2)))
+                             mode='lines', name="Foreign RRP", line=dict(color="#F57235", width=2)))
     fig.update_layout(
         title="RRP vs. Foreign RRP",
         yaxis_title="Dollars",
@@ -290,11 +290,11 @@ def plot_triparty_adjusted_for_rrp(start, end, **kwargs):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=triparty_merge.index, y=triparty_merge['triparty-rrp'],
-                             mode='lines+markers', name="Triparty-RRP", line=dict(color="#f8b62d", width=2)))
+                             mode='lines', name="Triparty-RRP", line=dict(color="#f8b62d", width=2)))
     fig.add_trace(go.Scatter(x=triparty_merge.index, y=triparty_merge['dvp'],
-                             mode='lines+markers', name="DVP", line=dict(color="#f8772d", width=2)))
+                             mode='lines', name="DVP", line=dict(color="#f8772d", width=2)))
     fig.add_trace(go.Scatter(x=triparty_merge.index, y=triparty_merge['residual_flows'],
-                             mode='lines+markers', name="Residual Flow", line=dict(color="#2f90c5", width=2)))
+                             mode='lines', name="Residual Flow", line=dict(color="#2f90c5", width=2)))
     fig.update_layout(
         title="Tri-Party Adjusted for RRP",
         yaxis_title="Dollars",

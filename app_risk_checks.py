@@ -46,7 +46,7 @@ def plot_dash_for_cash_spread(start, end, **kwargs):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=dash_spread.index, y=dash_spread['Spread_bp'],
-                             mode='lines+markers', name="EFFR - IORB"))
+                             mode='lines', name="EFFR - IORB"))
     fig.update_layout(
         title="Dash For Cash<br>Fed Funds - IORB",
         yaxis_title="Basis Points",
@@ -106,7 +106,7 @@ def plot_new_sofr_system(start, end, **kwargs):
     for col, color in zip(['EFFR', 'SOFR 3M', 'SOFR 1M', 'SOFR', 'SRF', 'RRP'],
                           ['#9bdaf6', '#4dc6c6', '#356c82', '#001f35', '#fbc430', '#fdad23']):
         fig.add_trace(go.Scatter(x=df_bp.index, y=df_bp[col],
-                                 mode='lines+markers',
+                                 mode='lines',
                                  name=col,
                                  line=dict(color=color)))
     fig.update_layout(
@@ -168,7 +168,7 @@ def plot_repo_rate_complex(start, end, **kwargs):
     fig = go.Figure()
     for col in repo_df.columns:
         fig.add_trace(go.Scatter(x=repo_df.index, y=repo_df[col],
-                                 mode='lines+markers',
+                                 mode='lines',
                                  name=col, line=dict(color=colors.get(col))))
     fig.update_layout(
         title="Repo Complex: Floor and Ceiling",
@@ -223,7 +223,7 @@ def plot_sofr_distribution(start, end, **kwargs):
     fig = go.Figure()
     for col, color in zip(names, colors):
         fig.add_trace(go.Scatter(x=df.index, y=df[col],
-                                 mode='lines+markers',
+                                 mode='lines',
                                  name=col,
                                  line=dict(color=color)))
     fig.update_layout(
@@ -265,11 +265,11 @@ def plot_fed_balance_sheet(start, end, **kwargs):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=df.index, y=df['SOMA Treasury'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='SOMA Treasury',
                              line=dict(color="#46b5ca", width=3)))
     fig.add_trace(go.Scatter(x=df.index, y=df['SOMA MBS'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='SOMA MBS',
                              line=dict(color="#17354c", width=3)))
     fig.update_layout(
@@ -333,7 +333,7 @@ def plot_monitoring_reserves(start, end, **kwargs):
     fig = go.Figure()
     for col, color in series:
         fig.add_trace(go.Scatter(x=df.index, y=df[col],
-                                 mode='lines+markers',
+                                 mode='lines',
                                  name=col,
                                  line=dict(color=color)))
     fig.update_layout(
@@ -377,11 +377,11 @@ def plot_fed_action_vs_reserve_response(start, end, **kwargs):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=df.index, y=df['Fed Action'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='Fed Action',
                              line=dict(color='#30b0c1', width=2)))
     fig.add_trace(go.Scatter(x=df.index, y=df['Reserve Response'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='Reserve Response',
                              line=dict(color='#17293c', width=2)))
     fig.update_layout(
@@ -424,11 +424,11 @@ def plot_fed_action_vs_reserve_response_v2(start, end, **kwargs):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=df.index, y=df['Fed Action'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='Fed Action',
                              line=dict(color='#30b0c1', width=2)))
     fig.add_trace(go.Scatter(x=df.index, y=df['RRP + TGA'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='RRP + TGA',
                              line=dict(color='#17293c', width=2)))
     fig.update_layout(

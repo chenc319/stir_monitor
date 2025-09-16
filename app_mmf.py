@@ -41,7 +41,7 @@ def plot_volume_invested_in_mmf(start, end, **kwargs):
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=mmf.index, y=mmf['MMF_TOTAL'],
-        mode='lines+markers', line=dict(color="#67cbe7", width=2)))
+        mode='lines', line=dict(color="#67cbe7", width=2)))
     fig.update_layout(
         title="Volume Invested in MMF",
         yaxis_title="Dollars",
@@ -76,17 +76,17 @@ def plot_shadow_bank_mmf_repo(start, end, **kwargs):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=mmf_repo_allocations.index,
                              y=mmf_repo_allocations['Other Repo'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='Other Repo',
                              line=dict(color="#46b5ca", width=3)))
     fig.add_trace(go.Scatter(x=mmf_repo_allocations.index,
                              y=mmf_repo_allocations['Agency Repo'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='Agency Repo',
                              line=dict(color="#4CD0E9", width=3)))
     fig.add_trace(go.Scatter(x=mmf_repo_allocations.index,
                              y=mmf_repo_allocations['Treasury Repo'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='Treasury Repo',
                              line=dict(color="#233852", width=3)))
     fig.update_layout(
@@ -118,7 +118,7 @@ def plot_shadow_bank_mmf_on_repo(start, end, **kwargs):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=mmf_involvement_on_repo.index,
                              y=mmf_involvement_on_repo['Values'],
-                             mode='lines+markers',
+                             mode='lines',
                              line=dict(color="#46b5ca", width=3)))
     fig.update_layout(
         title="MMF's Investments in Overnight/Open Repo",
@@ -168,11 +168,11 @@ def plot_mmf_by_asset(start, end, **kwargs):
     fig.add_trace(go.Scatter(
         x=mmf_repo_non_repo_merge.index,
         y=mmf_repo_non_repo_merge['US_TS_Allocation'],
-        mode='lines+markers', name='U.S. Treasury Sec.', line=dict(color='#29B6D9', width=2)))
+        mode='lines', name='U.S. Treasury Sec.', line=dict(color='#29B6D9', width=2)))
     fig.add_trace(go.Scatter(
         x=mmf_repo_non_repo_merge.index,
         y=mmf_repo_non_repo_merge['US_Repo_Allocation'],
-        mode='lines+markers', name='U.S. Treasury Repo', line=dict(color='#272f37', width=2)))
+        mode='lines', name='U.S. Treasury Repo', line=dict(color='#272f37', width=2)))
     fig.update_layout(
         title="Investment of MMF by Asset",
         yaxis_title="%",
@@ -210,9 +210,9 @@ def plot_mmf_repo_vs_non_repo(start, end, **kwargs):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=mmf_repo_non_repo_merge.index, y=mmf_repo_non_repo_merge['non_repo'],
-                             mode='lines+markers', name="Non-Repo Allocation", line=dict(color="#f8b62d", width=2)))
+                             mode='lines', name="Non-Repo Allocation", line=dict(color="#f8b62d", width=2)))
     fig.add_trace(go.Scatter(x=mmf_repo_non_repo_merge.index, y=mmf_repo_non_repo_merge['mmf_repo'],
-                             mode='lines+markers', name="Repo Allocation", line=dict(color="#f8772d", width=2)))
+                             mode='lines', name="Repo Allocation", line=dict(color="#f8772d", width=2)))
     fig.update_layout(
         title="MMF Repo vs Non Repo",
         yaxis_title="Dollars",
@@ -260,7 +260,7 @@ def plot_mmf_allocation_by_counterparty(start, end, **kwargs):
     for col, color in zip(mmf_allocations_merge.columns,
                           ['#f8b62d', '#f8772d', '#2f90c5', '#67cbe7']):
         fig.add_trace(go.Scatter(x=mmf_allocations_merge.index, y=mmf_allocations_merge[col],
-                                 mode='lines+markers', name=col.replace("_", " ").title(), line=dict(color=color)))
+                                 mode='lines', name=col.replace("_", " ").title(), line=dict(color=color)))
     fig.update_layout(
         title="Allocation of MMF by Counterparties",
         yaxis_title="Dollars",
