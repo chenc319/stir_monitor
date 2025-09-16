@@ -438,19 +438,19 @@ def correlation_with_sofr(start,end,**kwargs):
     cot_positions['asset_mgr_net'] = cot_positions['asset_mgr_long'] - cot_positions['asset_mgr_short']
     cot_positions['lev_net'] = cot_positions['lev_long'] - cot_positions['lev_short']
     cot_positions['total_net'] = cot_positions['total_long'] - cot_positions['total_short']
-    cot_positions_diff = cot_positions.diff(1).dropna()
+    cot_positions_diff = cot_positions.diff(4).dropna()
 
     tri_merge_df = merge_dfs([
-        rolling_zscore(cot_positions_diff,26),tri_df]).dropna()
+        rolling_zscore(cot_positions_diff,52),tri_df]).dropna()
     tri_merge_df['value'] = tri_merge_df['value'].diff(1).shift(-1)
     gcf_merge_df = merge_dfs([
-        rolling_zscore(cot_positions_diff, 26), gcf_df]).dropna()
+        rolling_zscore(cot_positions_diff, 52), gcf_df]).dropna()
     gcf_merge_df['value'] = gcf_merge_df['value'].diff(1).shift(-1)
     dvp_merge_df = merge_dfs([
-        rolling_zscore(cot_positions_diff, 26), dvp_df]).dropna()
+        rolling_zscore(cot_positions_diff, 52), dvp_df]).dropna()
     dvp_merge_df['value'] = dvp_merge_df['value'].diff(1).shift(-1)
     sofr_merge_df = merge_dfs([
-        rolling_zscore(cot_positions_diff, 26), sofr]).dropna()
+        rolling_zscore(cot_positions_diff, 52), sofr]).dropna()
     sofr_merge_df['SOFR'] = sofr_merge_df['SOFR'].diff(1).shift(-1)
 
     tri_corr_dict = {}
