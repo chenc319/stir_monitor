@@ -119,7 +119,7 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
             go.Scatter(
                 x=cot_positions.index,
                 y=cot_positions[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -142,7 +142,7 @@ def plot_fedfunds_futures_positions(start,end,**kwargs):
             go.Scatter(
                 x=cot_positions_diff.index,
                 y=cot_positions_diff[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -236,7 +236,7 @@ def plot_sofr1m_futures_positions(start,end,**kwargs):
             go.Scatter(
                 x=cot_positions.index,
                 y=cot_positions[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -259,7 +259,7 @@ def plot_sofr1m_futures_positions(start,end,**kwargs):
             go.Scatter(
                 x=cot_positions_diff.index,
                 y=cot_positions_diff[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -358,7 +358,7 @@ def plot_sofr3m_futures_positions(start,end,**kwargs):
             go.Scatter(
                 x=cot_positions.index,
                 y=cot_positions[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -381,7 +381,7 @@ def plot_sofr3m_futures_positions(start,end,**kwargs):
             go.Scatter(
                 x=cot_positions_diff.index,
                 y=cot_positions_diff[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -521,7 +521,7 @@ def correlation_with_sofr(start,end,**kwargs):
             go.Scatter(
                 x=sofr_corr_df.index,
                 y=sofr_corr_df[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -546,7 +546,7 @@ def correlation_with_sofr(start,end,**kwargs):
             go.Scatter(
                 x=tri_corr_df.index,
                 y=tri_corr_df[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -571,7 +571,7 @@ def correlation_with_sofr(start,end,**kwargs):
             go.Scatter(
                 x=dvp_corr_df.index,
                 y=dvp_corr_df[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -596,7 +596,7 @@ def correlation_with_sofr(start,end,**kwargs):
             go.Scatter(
                 x=tri_corr_df.index,
                 y=tri_corr_df[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
