@@ -23,7 +23,6 @@ def merge_dfs(array_of_dfs):
                                             how='outer'),
                      array_of_dfs)
 
-
 def refresh_all_data():
     ### NEW DATES ###
     start = '1990-01-01'
