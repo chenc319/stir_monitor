@@ -70,22 +70,22 @@ def plot_shadow_bank_summary(start, end, **kwargs):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['Broker/Dealer'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='Broker/Dealer',
                              line=dict(color="#0B2138", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['HFs'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='HFs',
                              line=dict(color="#48DEE9", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['MMFs'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='MMFs',
                              line=dict(color="#7EC0EE", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['REITs'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='REITs',
                              line=dict(color="#aad8ef", width=3)))
     fig.update_layout(
@@ -99,22 +99,22 @@ def plot_shadow_bank_summary(start, end, **kwargs):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['bd_pct'] * 100,
-                             mode='lines+markers',
+                             mode='lines',
                              name='Broker/Dealer',
                              line=dict(color="#0B2138", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['hf_pct'] * 100,
-                             mode='lines+markers',
+                             mode='lines',
                              name='HFs',
                              line=dict(color="#48DEE9", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['mmf_pct'] * 100,
-                             mode='lines+markers',
+                             mode='lines',
                              name='MMFs',
                              line=dict(color="#7EC0EE", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['reit_pct'] * 100,
-                             mode='lines+markers',
+                             mode='lines',
                              name='REITs',
                              line=dict(color="#aad8ef", width=3)))
     fig.update_layout(
@@ -134,7 +134,7 @@ def plot_shadow_bank_summary(start, end, **kwargs):
 #     fig = go.Figure()
 #     fig.add_trace(go.Scatter(x=abcp.index,
 #                              y=abcp['ABCOMP'],
-#                              mode='lines+markers',
+#                              mode='lines',
 #                              name='ABCOMP',
 #                              line=dict(color="#46b5ca", width=3)))
 #     fig.update_layout(
@@ -184,17 +184,17 @@ def plot_shadow_bank_assets(start, end, **kwargs):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['Broker/Dealer'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='Broker/Dealer',
                              line=dict(color="#0B2138", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['HFs'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='HFs',
                              line=dict(color="#48DEE9", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['MMFs'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='REITs',
                              line=dict(color="#7EC0EE", width=3)))
     fig.update_layout(
@@ -208,17 +208,17 @@ def plot_shadow_bank_assets(start, end, **kwargs):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['bd_pct'] * 100,
-                             mode='lines+markers',
+                             mode='lines',
                              name='Broker/Dealer',
                              line=dict(color="#0B2138", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['hf_pct'] * 100,
-                             mode='lines+markers',
+                             mode='lines',
                              name='HFs',
                              line=dict(color="#48DEE9", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['mmf_pct'] * 100,
-                             mode='lines+markers',
+                             mode='lines',
                              name='MMFs',
                              line=dict(color="#7EC0EE", width=3)))
     fig.update_layout(
@@ -285,17 +285,17 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['Broker/Dealer'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='Broker/Dealer',
                              line=dict(color="#0B2138", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['HFs'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='HFs',
                              line=dict(color="#48DEE9", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['REITs'],
-                             mode='lines+markers',
+                             mode='lines',
                              name='REITs',
                              line=dict(color="#7EC0EE", width=3)))
     fig.update_layout(
@@ -309,17 +309,17 @@ def plot_shadow_bank_liabilities(start, end, **kwargs):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['bd_pct'] * 100,
-                             mode='lines+markers',
+                             mode='lines',
                              name='Broker/Dealer',
                              line=dict(color="#0B2138", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['hf_pct'] * 100,
-                             mode='lines+markers',
+                             mode='lines',
                              name='HFs',
                              line=dict(color="#48DEE9", width=3)))
     fig.add_trace(go.Scatter(x=merge_df.index,
                              y=merge_df['reit_pct'] * 100,
-                             mode='lines+markers',
+                             mode='lines',
                              name='REITs',
                              line=dict(color="#7EC0EE", width=3)))
     fig.update_layout(

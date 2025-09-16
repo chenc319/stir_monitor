@@ -133,7 +133,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
     colors = [asset_colors['securities_outright'], asset_colors['lending_portfolio']]
     for col, color, label in zip(cols, colors, labels):
         fig.add_trace(go.Scatter(x=fed_assets_merge.index, y=fed_assets_merge[col],
-                                 mode='lines+markers',
+                                 mode='lines',
                                  name=label,
                                  line=dict(color=color)))
     fig.update_layout(
@@ -161,7 +161,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
             go.Scatter(
                 x=fed_assets_merge.index,
                 y=fed_assets_merge[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -185,7 +185,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
             go.Scatter(
                 x=fed_assets_merge_diff.index,
                 y=fed_assets_merge_diff[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -209,7 +209,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
             go.Scatter(
                 x=fed_assets_merge_diff_z.index,
                 y=fed_assets_merge_diff_z[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -241,7 +241,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
             go.Scatter(
                 x=fed_assets_merge.index,
                 y=fed_assets_merge[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -273,7 +273,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
             go.Scatter(
                 x=fed_assets_merge.index,
                 y=fed_assets_merge[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -304,7 +304,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
             go.Scatter(
                 x=fed_assets_merge.index,
                 y=fed_assets_merge[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -386,7 +386,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
     colors = [liab_colors['currency'], liab_colors['total_reserves'],liab_colors['total_rrp']]
     for col, color, label in zip(cols,colors,labels):
         fig.add_trace(go.Scatter(x=fed_liabilities_merge.index, y=fed_liabilities_merge[col],
-                                 mode='lines+markers',
+                                 mode='lines',
                                  name=label,
                                  line=dict(color=color)))
     fig.update_layout(
@@ -415,7 +415,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
               liab_colors['gse_dmfu']]
     for col, color, label in zip(cols,colors,labels):
         fig.add_trace(go.Scatter(x=fed_liabilities_merge.index, y=fed_liabilities_merge[col],
-                                 mode='lines+markers',
+                                 mode='lines',
                                  name=label,
                                  line=dict(color=color)))
     fig.update_layout(
@@ -434,7 +434,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
             go.Scatter(
                 x=fed_liabilities_merge.index,
                 y=fed_liabilities_merge[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -458,7 +458,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
             go.Scatter(
                 x=fed_liabilities_merge_diff.index,
                 y=fed_liabilities_merge_diff[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
@@ -482,7 +482,7 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
             go.Scatter(
                 x=fed_liabilities_merge_diff_z.index,
                 y=fed_liabilities_merge_diff_z[col],
-                mode='lines+markers',
+                mode='lines',
                 name=label,
                 line=dict(color=color)
             ),
