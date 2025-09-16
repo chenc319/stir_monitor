@@ -438,7 +438,7 @@ def correlation_with_sofr(start,end,**kwargs):
     cot_positions['asset_mgr_net'] = cot_positions['asset_mgr_long'] - cot_positions['asset_mgr_short']
     cot_positions['lev_net'] = cot_positions['lev_long'] - cot_positions['lev_short']
     cot_positions['total_net'] = cot_positions['total_long'] - cot_positions['total_short']
-    cot_positions_diff = cot_positions.diff(4).dropna()
+    cot_positions_diff = cot_positions.diff(1).dropna()
 
     tri_merge_df = merge_dfs([
         rolling_zscore(cot_positions_diff,52),tri_df]).dropna()
@@ -458,11 +458,11 @@ def correlation_with_sofr(start,end,**kwargs):
     gcf_corr_dict = {}
     sofr_corr_dict = {}
     for col in tri_merge_df.columns:
-        tri_corr_dict[col] = rolling_corr(tri_merge_df[col],tri_merge_df['value'],26)
-        dvp_corr_dict[col] = rolling_corr(dvp_merge_df[col],dvp_merge_df['value'],26)
-        gcf_corr_dict[col] = rolling_corr(gcf_merge_df[col],gcf_merge_df['value'],26)
+        tri_corr_dict[col] = rolling_corr(tri_merge_df[col],tri_merge_df['value'],12)
+        dvp_corr_dict[col] = rolling_corr(dvp_merge_df[col],dvp_merge_df['value'],12)
+        gcf_corr_dict[col] = rolling_corr(gcf_merge_df[col],gcf_merge_df['value'],12)
     for col in sofr_merge_df.columns:
-        sofr_corr_dict[col] = rolling_corr(sofr_merge_df[col],sofr_merge_df['SOFR'],26)
+        sofr_corr_dict[col] = rolling_corr(sofr_merge_df[col],sofr_merge_df['SOFR'],12)
 
     tri_corr_df = pd.DataFrame(tri_corr_dict)
     tri_corr_df = tri_corr_df.drop('value',axis=1)
