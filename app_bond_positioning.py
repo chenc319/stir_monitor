@@ -56,8 +56,9 @@ def plot_2y_bond_pos(start, end, **kwargs):
 
     colors = ['#2567c4', '#83c3f7', '#e5433a']
     labels = ['Dealer', 'Asset Manager', 'Leveraged Funds']
-    cols = ['dealer_long','asset_mgr_long','lev_long']
 
+    ### PLOT ###
+    cols = ['dealer_long','asset_mgr_long','lev_long']
     fig = go.Figure()
     for col, color, label in zip(cols, colors, labels):
         fig.add_trace(go.Scatter(x=cot_positions.index, y=cot_positions[col],
@@ -65,7 +66,52 @@ def plot_2y_bond_pos(start, end, **kwargs):
                                  name=label,
                                  line=dict(color=color)))
     fig.update_layout(
-        title="TU Long Positioning",
+        title="2yr Long Positioning",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    cols = ['dealer_short', 'asset_mgr_short', 'lev_short']
+    fig = go.Figure()
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=cot_positions.index, y=cot_positions[col],
+                                 mode='lines',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="2yr Short Positioning",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    cols = ['dealer_net', 'asset_mgr_net', 'lev_net']
+    fig = go.Figure()
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=cot_positions.index, y=cot_positions[col],
+                                 mode='lines',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="2yr Net Positioning",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    cols = ['dealer_gross', 'asset_mgr_gross', 'lev_gross']
+    fig = go.Figure()
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=cot_positions.index, y=cot_positions[col],
+                                 mode='lines',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="2yr Gross Positioning",
         yaxis_title="Dollars",
         hovermode='x unified'
     )

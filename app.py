@@ -245,8 +245,12 @@ elif menu == 'Primary Dealers':
 ### ---------------------------------------------------------------------------------------- ###
 
 elif menu == 'Bond Positioning':
-    st.title("Futures")
+    st.title("2yr Treasury Futures")
     app_bond_positioning.plot_2y_bond_pos(start_date, end_date)
+    st.title("5yr Treasury Futures")
+    app_bond_positioning.plot_5y_bond_pos(start_date, end_date)
+    st.title("10yr Treasury Futures")
+    app_bond_positioning.plot_10y_bond_pos(start_date, end_date)
 
 
 ### ---------------------------------------------------------------------------------------- ###
