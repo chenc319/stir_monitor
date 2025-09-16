@@ -438,9 +438,7 @@ def correlation_with_sofr(start,end,**kwargs):
     cot_positions['asset_mgr_net'] = cot_positions['asset_mgr_long'] - cot_positions['asset_mgr_short']
     cot_positions['lev_net'] = cot_positions['lev_long'] - cot_positions['lev_short']
     cot_positions['total_net'] = cot_positions['total_long'] - cot_positions['total_short']
-    cot_positions = cot_positions[start:end]
     cot_positions_diff = cot_positions.diff(1).dropna()
-    cot_positions_diff = cot_positions_diff[start:end]
 
     tri_merge_df = merge_dfs([
         rolling_zscore(cot_positions_diff,52),tri_df]).dropna()
@@ -468,12 +466,16 @@ def correlation_with_sofr(start,end,**kwargs):
 
     tri_corr_df = pd.DataFrame(tri_corr_dict)
     tri_corr_df = tri_corr_df.drop('value',axis=1)
+    tri_corr_df = tri_corr_df[start:end]
     dvp_corr_dict = pd.DataFrame(dvp_corr_dict)
     dvp_corr_dict = dvp_corr_dict.drop('value',axis=1)
+    dvp_corr_dict = dvp_corr_dict[start:end]
     gcf_corr_dict = pd.DataFrame(gcf_corr_dict)
     gcf_corr_dict = gcf_corr_dict.drop('value',axis=1)
+    gcf_corr_dict = gcf_corr_dict[start:end]
     sofr_corr_dict = pd.DataFrame(sofr_corr_dict)
     sofr_corr_dict = sofr_corr_dict.drop('SOFR',axis=1)
+    sofr_corr_dict = sofr_corr_dict[start:end]
 
     ### PLOT ###
     fig = go.Figure()
