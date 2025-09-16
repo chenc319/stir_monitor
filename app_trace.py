@@ -2,12 +2,14 @@
 ### ------------------------------------------------ FUTURES ------------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### PACKAGES ###
 import pandas as pd
 import functools as ft
 import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt
 from pathlib import Path
+from plotly.subplots import make_subplots
 import os
 import pickle
 DATA_DIR = os.getenv('DATA_DIR', 'data')
@@ -19,9 +21,20 @@ def merge_dfs(array_of_dfs):
                                             right_index=True,
                                             how='outer'), array_of_dfs)
 
+asset_colors = {
+    '<2': '#5FB3FF',   # Vivid sky blue (QE, stable)
+    '10<>20': '#2DCDB2',   # Bright teal/mint (portfolio)
+    '2<>3': '#FFC145',   # Sun gold (Treasury)
+    '>20': '#FF6969',   # Approachable coral (MBS)
+    '3<>5': '#54C6EB',   # Aqua blue (permanent lending)
+    '5<>7': '#FFD166',   # Citrus yellow-orange (temp lending)
+    '7<>10': '#6FE7DD',   # Lively turquoise (repo facility)
+}
+
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### -------------------------------------------------- 2YR --------------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
+
 '''
 - Trades is the count of  trades in the "ATS and Interdealer" and "Dealer-to-Customer" categories, as described below.
 
@@ -77,6 +90,34 @@ def plot_on_the_run_nominal_coupons(start, end, **kwargs):
     # Reset the index if you want tradeDate as a column instead of index
     on_the_run_bonds_df.index = pd.to_datetime(on_the_run_bonds_df.index.values)
     on_the_run_bonds_df.columns = ['<2','10<>20','2<>3','>20','3<>5','5<>7','7<>10']
+
+    fig = go.Figure()
+    cols = on_the_run_bonds_df.columns
+    labels = on_the_run_bonds_df.columns
+    colors = [asset_colors['treasuries'],
+              asset_colors['mbs']]
+    fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
+    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
+        row = i // 2 + 1
+        col_position = i % 2 + 1
+        fig.add_trace(
+            go.Scatter(
+                x=on_the_run_bonds_df.index,
+                y=on_the_run_bonds_df[col],
+                mode='lines',
+                name=label,
+                line=dict(color=color)
+            ),
+            row=row,
+            col=col_position
+        )
+    fig.update_layout(
+        title="QE Securities: Weekly Averages",
+        showlegend=False,
+        height=300,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
 def plot_off_the_run_nominal_coupons(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'treasury_daily_aggregates_full.pkl', 'rb') as file:
