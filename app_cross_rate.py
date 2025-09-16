@@ -387,6 +387,148 @@ def plot_end_of_month_spreads(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
+### --------------------------------------- IS THE STABILITY LOWER ROC --------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_stability_lower_roc(start, end, **kwargs):
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gc_df.pkl', 'rb') as file:
+        gc_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+
+    combined_data = merge_dfs([sofr, rrp, gc_df, fed_funds, tri_df, dvp_df])
+    combined_data.columns = ['SOFR','ON_RRP_Rate','BGCR','Fed_Funds','TGCR','DVP']
+    clean_data = combined_data.dropna(subset=['SOFR','BGCR','TGCR','ON_RRP_Rate','Fed_Funds','DVP'])
+
+    clean_data['Private_Repo_Avg'] = (clean_data['DVP'] + clean_data['TGCR']) / 2
+    clean_data['Fed_Facility_Spread'] = clean_data['ON_RRP_Rate'] - clean_data['SOFR']
+    clean_data['Private_Repo_Spread'] = clean_data['Private_Repo_Avg'] - clean_data['SOFR']
+    clean_data['Fed_Facility_MA30'] = clean_data['Fed_Facility_Spread'].rolling(30).mean()
+    clean_data['Private_Repo_MA30'] = clean_data['Private_Repo_Spread'].rolling(30).mean()
+    clean_data['Fed_Facility_Z'] = (
+        (clean_data['Fed_Facility_MA30'] - clean_data['Fed_Facility_MA30'].mean())
+        / clean_data['Fed_Facility_MA30'].std()
+    )
+    clean_data['Private_Repo_Z'] = (
+        (clean_data['Private_Repo_MA30'] - clean_data['Private_Repo_MA30'].mean())
+        / clean_data['Private_Repo_MA30'].std()
+    )
+    plot_data = clean_data.dropna(subset=['Fed_Facility_Z','Private_Repo_Z'])
+    plot_data = plot_data.loc[str(start):str(end)]
+
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(plot_data.index, plot_data['Fed_Facility_Z'],
+    #          label="Fed Facility to Repo Spreads", color="#1f77b4", lw=2)
+    # plt.plot(plot_data.index, plot_data['Private_Repo_Z'],
+    #          label="Private Repo Spreads", color="#2E3A59", lw=2)
+    # for y_val in [-2, -1, 1, 2]:
+    #     plt.axhline(y=y_val, color='gray', linestyle='--', alpha=0.6, linewidth=1)
+    # plt.title("Is the Stability Lower\nRate of Change", fontsize=22, fontweight="bold")
+    # plt.ylabel("Z-Score")
+    # plt.ylim(-5, 5)
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.grid(True, alpha=0.3)
+    # plt.figtext(0.02, 0.02, 'Fonte: FED, MacroDispatch. Note: Calculations on a 30 MA Difference',
+    #             fontsize=9, color='gray')
+    # plt.figtext(0.95, 0.02, 'ie', fontsize=14, color='steelblue',
+    #             fontweight='bold', ha='right')
+    # plt.tight_layout()
+    # plt.show()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=plot_data.index, y=plot_data['Fed_Facility_Z'],
+                             name="Fed Facility to Repo Spreads", line=dict(color="#1f77b4", width=2)))
+    fig.add_trace(go.Scatter(x=plot_data.index, y=plot_data['Private_Repo_Z'],
+                             name="Private Repo Spreads", line=dict(color="#2E3A59", width=2)))
+    for y_val in [-2, -1, 1, 2]:
+        fig.add_hline(y=y_val, line_color='gray', line_dash='dash', opacity=0.6)
+    fig.update_layout(
+        title="Is the Stability Lower\nRate of Change",
+        yaxis_title="Z-Score",
+        hovermode='x unified',
+        yaxis_range=[-5, 5]
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ----------------------------------------- HOW DID LEVELS CHANGE ------------------------------------------ ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_how_did_levels_change(start, end, **kwargs):
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gc_df.pkl', 'rb') as file:
+        gc_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
+        tri_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+
+    combined_data = merge_dfs([sofr, rrp, gc_df, fed_funds, tri_df, dvp_df])
+    combined_data.columns = ['SOFR','ON_RRP_Rate','BGCR','Fed_Funds','TGCR','DVP']
+    clean_data = combined_data.dropna(subset=['SOFR','BGCR','TGCR','ON_RRP_Rate','Fed_Funds','DVP'])
+
+    clean_data['Private_Repo_Avg'] = (clean_data['DVP'] + clean_data['TGCR']) / 2
+    clean_data['Fed_Facility_Spread'] = clean_data['ON_RRP_Rate'] - clean_data['SOFR']
+    clean_data['Private_Repo_Spread'] = clean_data['Private_Repo_Avg'] - clean_data['SOFR']
+    clean_data['Fed_Facility_static_Z'] = (
+        (clean_data['Fed_Facility_Spread'] - clean_data['Fed_Facility_Spread'].mean()) /
+        clean_data['Fed_Facility_Spread'].std()
+    )
+    clean_data['Private_Repo_static_Z'] = (
+        (clean_data['Private_Repo_Spread'] - clean_data['Private_Repo_Spread'].mean()) /
+        clean_data['Private_Repo_Spread'].std()
+    )
+    plot_static_data = clean_data.dropna(subset=['Fed_Facility_static_Z','Private_Repo_static_Z'])
+    plot_static_data = plot_static_data.loc[str(start):str(end)]
+
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(plot_static_data.index, plot_static_data['Fed_Facility_static_Z'],
+    #          label="Fed Facility to Repo Spreads", color="#1f77b4", lw=2)
+    # plt.plot(plot_static_data.index, plot_static_data['Private_Repo_static_Z'],
+    #          label="Private Repo Spreads", color="#2E3A59", lw=2)
+    # for y_val in [-2, -1, 1, 2]:
+    #     plt.axhline(y=y_val, color='gray', linestyle='--', alpha=0.6, linewidth=1)
+    # plt.title("Is the Stability Lower\nRate of Change", fontsize=22, fontweight="bold")
+    # plt.ylabel("Z-Score")
+    # plt.ylim(-5, 5)
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.grid(True, alpha=0.3)
+    # plt.figtext(0.95, 0.02, 'ie', fontsize=14, color='steelblue',
+    #             fontweight='bold', ha='right')
+    # plt.tight_layout()
+    # plt.show()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=plot_static_data.index, y=plot_static_data['Fed_Facility_static_Z'],
+                             name="Fed Facility to Repo Spreads", line=dict(color="#1f77b4", width=2)))
+    fig.add_trace(go.Scatter(x=plot_static_data.index, y=plot_static_data['Private_Repo_static_Z'],
+                             name="Private Repo Spreads", line=dict(color="#2E3A59", width=2)))
+    for y_val in [-2, -1, 1, 2]:
+        fig.add_hline(y=y_val, line_color='gray', line_dash='dash', opacity=0.6)
+    fig.update_layout(
+        title="Is the Stability Lower\nRate of Change",
+        yaxis_title="Z-Score",
+        hovermode='x unified',
+        yaxis_range=[-5,5],
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
 ### ---------------------------------------- SOFR FLOOR AND CEILING ------------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 

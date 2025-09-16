@@ -205,6 +205,8 @@ elif menu == 'Cross Rates':
     app_cross_rate.plot_dollar_lending_complex(start_date, end_date)
     app_cross_rate.plot_end_of_month_spreads(start_date, end_date)
     app_cross_rate.plot_end_of_quarter_spreads(start_date, end_date)
+    app_cross_rate.plot_stability_lower_roc(start_date, end_date)
+    app_cross_rate.plot_how_did_levels_change(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### --------------------------------------- AUCTIONS --------------------------------------- ###
@@ -245,8 +247,7 @@ elif menu == 'Primary Dealers':
 elif menu == 'Bond Positioning':
     st.title("Futures")
     app_bond_positioning.plot_futures_leverage_money_short(start_date, end_date)
-    app_bond_positioning.plot_stability_lower_roc(start_date, end_date)
-    app_bond_positioning.plot_how_did_levels_change(start_date, end_date)
+
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ----------------------------------- STIR POSITIONING ----------------------------------- ###
