@@ -262,4 +262,6 @@ elif menu == 'Positioning':
     app_positioning.plot_sofr1m_futures_positions(start_date, end_date)
     st.title("SOFR 3M")
     app_positioning.plot_sofr3m_futures_positions(start_date, end_date)
+    st.title("Positioning Volatility vs. SOFR Delta")
+    app_positioning.correlation_with_sofr(start_date, end_date)
 
