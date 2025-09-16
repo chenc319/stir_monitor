@@ -54,7 +54,7 @@ def plot_dash_for_cash_spread(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
     st.markdown(
-        "<div style='text-align: left; color: #999; font-size: 0.8em; margin-top: -1em;'>"
+        "<div style='text-align: left; color: #999; font-size: 0.85em; margin-top: -1em;'>"
         "Data: FRED (IORB, EFFR)"
         "</div>", unsafe_allow_html=True
     )
@@ -116,7 +116,7 @@ def plot_new_sofr_system(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
     st.markdown(
-        "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
+        "<div style='text-align: left; color: #999; font-size: 0.85em; margin-top: -1em;'>"
         "Data: FRED (SOFR, SOFR30DAYAVG, SOFR90DAYAVG, RRPONTSYAWARD, EFFR, SRF=RRP+25bps)"
         "</div>", unsafe_allow_html=True
     )
@@ -177,7 +177,7 @@ def plot_repo_rate_complex(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
     st.markdown(
-        "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
+        "<div style='text-align: left; color: #999; font-size: 0.85em; margin-top: -1em;'>"
         "Data: FRED (SOFR, RRPONTSYAWARD, EFFR, SRF=RRP+25bps), OFR (REPO-DVP_AR_OO-P, REPO-GCF_AR_AG-P, REPO-TRI_AR_OO-P)"
         "</div>", unsafe_allow_html=True
     )
@@ -233,8 +233,7 @@ def plot_sofr_distribution(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
     st.markdown(
-        "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
-        "Notes: SOFR Distributions by Percentiles. <br>"
+        "<div style='text-align: left; color: #999; font-size: 0.85em; margin-top: -1em;'>"
         "Data: FRED (SOFR, SOFR1, SOFR25, SOFR75, SOFR99)"
         "</div>", unsafe_allow_html=True
     )
@@ -280,8 +279,7 @@ def plot_fed_balance_sheet(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
     st.markdown(
-        "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
-        "Notes: Fed Securities Outright Owned <br>"
+        "<div style='text-align: left; color: #999; font-size: 0.85em; margin-top: -1em;'>"
         "Data: FRED (TREAST, WSHOMCB)"
         "</div>", unsafe_allow_html=True
     )
@@ -345,8 +343,7 @@ def plot_monitoring_reserves(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
     st.markdown(
-        "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
-        "Notes: Various Reserves and Liabilities <br>"
+        "<div style='text-align: left; color: #999; font-size: 0.85em; margin-top: -1em;'>"
         "Data: FRED (WRESBAL, WTREGEN, WLRRAL, RRPONTSYD) OFR (REPO-TRI_TV_TOT-P)"
         "</div>", unsafe_allow_html=True
     )
