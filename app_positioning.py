@@ -4,15 +4,14 @@
 
 ### PACKAGES ###
 import pandas as pd
-import requests
 import functools as ft
 import streamlit as st
 import plotly.graph_objs as go
-from matplotlib import pyplot as plt
 from pathlib import Path
 import os
 import pickle
 from plotly.subplots import make_subplots
+import numpy as np
 DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 ### FUNCTIONS ###
@@ -467,17 +466,16 @@ def correlation_with_sofr(start,end,**kwargs):
     tri_corr_df = pd.DataFrame(tri_corr_dict)
     tri_corr_df = tri_corr_df.drop('value',axis=1)
     tri_corr_df = tri_corr_df[start:end]
-    dvp_corr_dict = pd.DataFrame(dvp_corr_dict)
-    dvp_corr_dict = dvp_corr_dict.drop('value',axis=1)
-    dvp_corr_dict = dvp_corr_dict[start:end]
-    gcf_corr_dict = pd.DataFrame(gcf_corr_dict)
-    gcf_corr_dict = gcf_corr_dict.drop('value',axis=1)
-    gcf_corr_dict = gcf_corr_dict[start:end]
-    sofr_corr_dict = pd.DataFrame(sofr_corr_dict)
-    sofr_corr_dict = sofr_corr_dict.drop('SOFR',axis=1)
-    sofr_corr_dict = sofr_corr_dict[start:end]
+    dvp_corr_df = pd.DataFrame(dvp_corr_dict)
+    dvp_corr_df = dvp_corr_df.drop('value',axis=1)
+    dvp_corr_df = dvp_corr_df[start:end]
+    gcf_corr_df = pd.DataFrame(gcf_corr_dict)
+    gcf_corr_df = gcf_corr_df.drop('value',axis=1)
+    gcf_corr_df = gcf_corr_df[start:end]
+    sofr_corr_df = pd.DataFrame(sofr_corr_dict)
+    sofr_corr_df = sofr_corr_df.drop('SOFR',axis=1)
+    sofr_corr_df = sofr_corr_df[start:end]
 
-    ### PLOT ###
     fig = go.Figure()
     cols = [
         'dealer_long', 'asset_mgr_long', 'lev_long',
@@ -512,14 +510,17 @@ def correlation_with_sofr(start,end,**kwargs):
               '#4FC3F7',
               '#FFC145'
               ]
+
+    ### PLOT ###
+    st.title("Positioning Volatility vs. SOFR Delta")
     fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 3 + 1
         col_position = i % 3 + 1
         fig.add_trace(
             go.Scatter(
-                x=sofr_corr_dict.index,
-                y=sofr_corr_dict[col],
+                x=sofr_corr_df.index,
+                y=sofr_corr_df[col],
                 mode='lines+markers',
                 name=label,
                 line=dict(color=color)
@@ -529,6 +530,31 @@ def correlation_with_sofr(start,end,**kwargs):
         )
     fig.update_layout(
         title="SOFR Rolling Correlation",
+        showlegend=False,
+        height=800,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    st.title("Positioning Volatility vs. Tri-Party Repo Delta")
+    fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
+    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
+        row = i // 3 + 1
+        col_position = i % 3 + 1
+        fig.add_trace(
+            go.Scatter(
+                x=tri_corr_df.index,
+                y=tri_corr_df[col],
+                mode='lines+markers',
+                name=label,
+                line=dict(color=color)
+            ),
+            row=row,
+            col=col_position
+        )
+    fig.update_layout(
+        title="Tri-Party Rolling Correlation",
         showlegend=False,
         height=800,
         hovermode='x unified'
