@@ -21,15 +21,15 @@ def merge_dfs(array_of_dfs):
                                             right_index=True,
                                             how='outer'), array_of_dfs)
 
-colors = {
-    '<2': '#5FB3FF',   # Vivid sky blue (QE, stable)
-    '10<>20': '#2DCDB2',   # Bright teal/mint (portfolio)
-    '2<>3': '#FFC145',   # Sun gold (Treasury)
-    '>20': '#FF6969',   # Approachable coral (MBS)
-    '3<>5': '#54C6EB',   # Aqua blue (permanent lending)
-    '5<>7': '#FFD166',   # Citrus yellow-orange (temp lending)
-    '7<>10': '#6FE7DD',   # Lively turquoise (repo facility)
-}
+colors = [
+    '#5FB3FF',   # Vivid sky blue (QE, stable)
+    '#2DCDB2',   # Bright teal/mint (portfolio)
+    '#FFC145',   # Sun gold (Treasury)
+    '#FF6969',   # Approachable coral (MBS)
+    '#54C6EB',   # Aqua blue (permanent lending)
+    '#FFD166',   # Citrus yellow-orange (temp lending)
+    '#6FE7DD',   # Lively turquoise (repo facility)
+]
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### -------------------------------------------------- 2YR --------------------------------------------------- ###
