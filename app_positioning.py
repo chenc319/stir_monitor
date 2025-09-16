@@ -272,7 +272,7 @@ def plot_sofr3m_futures_positions(start,end,**kwargs):
     future_contract_df = cftc_all_futures[cftc_all_futures['contract_market_name'] == 'SOFR-3M']
     future_contract_df['contract_units']
     future_contract_df.columns
-    contract_size = 5000000
+    contract_size = 2500
     cot_positions = future_contract_df[[
         'dealer_positions_long_all',
         'dealer_positions_short_all',
