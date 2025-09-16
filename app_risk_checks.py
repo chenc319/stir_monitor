@@ -54,8 +54,7 @@ def plot_dash_for_cash_spread(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
     st.markdown(
-        "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
-        "Notes: Spread = EFFR minus IORB (basis points). Negative value indicates Fed Funds below IORB.<br>"
+        "<div style='text-align: left; color: #999; font-size: 0.8em; margin-top: -1em;'>"
         "Data: FRED (IORB, EFFR)"
         "</div>", unsafe_allow_html=True
     )
@@ -118,7 +117,6 @@ def plot_new_sofr_system(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
     st.markdown(
         "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
-        "Notes: RRP and SRF create floor and ceiling for SOFR and EFFR. <br>"
         "Data: FRED (SOFR, SOFR30DAYAVG, SOFR90DAYAVG, RRPONTSYAWARD, EFFR, SRF=RRP+25bps)"
         "</div>", unsafe_allow_html=True
     )
@@ -180,7 +178,6 @@ def plot_repo_rate_complex(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
     st.markdown(
         "<div style='text-align: left; color: #999; font-size: 0.95em; margin-top: -1em;'>"
-        "Notes: RRP and SRF create floor and ceiling for repo rates as well. <br>"
         "Data: FRED (SOFR, RRPONTSYAWARD, EFFR, SRF=RRP+25bps), OFR (REPO-DVP_AR_OO-P, REPO-GCF_AR_AG-P, REPO-TRI_AR_OO-P)"
         "</div>", unsafe_allow_html=True
     )
