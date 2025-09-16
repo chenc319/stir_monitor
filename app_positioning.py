@@ -512,7 +512,7 @@ def correlation_with_sofr(start,end,**kwargs):
               ]
 
     ### PLOT ###
-    st.title("Positioning Volatility vs. SOFR Delta")
+    st.title("Positioning Volatility vs. SOFR Weekly Change")
     fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 3 + 1
@@ -537,7 +537,7 @@ def correlation_with_sofr(start,end,**kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
     ### PLOT ###
-    st.title("Positioning Volatility vs. Tri-Party Repo Delta")
+    st.title("Positioning Volatility vs. Tri-Party Repo Weekly Change")
     fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
         row = i // 3 + 1
@@ -561,6 +561,55 @@ def correlation_with_sofr(start,end,**kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
+    ### PLOT ###
+    st.title("Positioning Volatility vs. DVP Repo Weekly Change")
+    fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
+    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
+        row = i // 3 + 1
+        col_position = i % 3 + 1
+        fig.add_trace(
+            go.Scatter(
+                x=dvp_corr_df.index,
+                y=dvp_corr_df[col],
+                mode='lines+markers',
+                name=label,
+                line=dict(color=color)
+            ),
+            row=row,
+            col=col_position
+        )
+    fig.update_layout(
+        title="DVP Rolling Correlation",
+        showlegend=False,
+        height=800,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    st.title("Positioning Volatility vs. GCF Repo Weekly Change")
+    fig = make_subplots(rows=4, cols=3, subplot_titles=labels)
+    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
+        row = i // 3 + 1
+        col_position = i % 3 + 1
+        fig.add_trace(
+            go.Scatter(
+                x=tri_corr_df.index,
+                y=tri_corr_df[col],
+                mode='lines+markers',
+                name=label,
+                line=dict(color=color)
+            ),
+            row=row,
+            col=col_position
+        )
+    fig.update_layout(
+        title="GCF Rolling Correlation",
+        showlegend=False,
+        height=800,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
 
 
