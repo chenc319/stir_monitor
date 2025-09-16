@@ -12,11 +12,11 @@ import app_shadow_banks
 import app_repo
 import app_cross_rate
 import app_auctions
-import app_futures
+import app_bond_positioning
 import app_primary_dealers
 import app_datapull
 import app_mmf
-import app_positioning
+import app_stir_positioning
 import time
 
 ### FUNCTIONS ###
@@ -202,10 +202,9 @@ elif menu == 'Cross Rates':
     app_cross_rate.plot_gcf_tri_spread(start_date, end_date)
     app_cross_rate.plot_triparty_term_spread(start_date, end_date)
     app_cross_rate.plot_sofr_effr_chart(start_date, end_date)
-    app_cross_rate.plot_repo_rate_complex_cross(start_date, end_date)
     app_cross_rate.plot_dollar_lending_complex(start_date, end_date)
-    app_cross_rate.plot_sofr_floor_ceiling(start_date, end_date)
-    app_cross_rate.plot_unsecured_lending_floor_ceiling(start_date, end_date)
+    app_cross_rate.plot_end_of_month_spreads(start_date, end_date)
+    app_cross_rate.plot_end_of_quarter_spreads(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### --------------------------------------- AUCTIONS --------------------------------------- ###
@@ -245,11 +244,11 @@ elif menu == 'Primary Dealers':
 
 elif menu == 'Bond Positioning':
     st.title("Futures")
-    app_futures.plot_futures_leverage_money_short(start_date, end_date)
-    app_futures.plot_end_of_quarter_spreads(start_date, end_date)
-    app_futures.plot_end_of_month_spreads(start_date, end_date)
-    app_futures.plot_stability_lower_roc(start_date, end_date)
-    app_futures.plot_how_did_levels_change(start_date, end_date)
+    app_bond_positioning.plot_futures_leverage_money_short(start_date, end_date)
+    app_bond_positioning.plot_end_of_quarter_spreads(start_date, end_date)
+    app_bond_positioning.plot_end_of_month_spreads(start_date, end_date)
+    app_bond_positioning.plot_stability_lower_roc(start_date, end_date)
+    app_bond_positioning.plot_how_did_levels_change(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ----------------------------------- STIR POSITIONING ----------------------------------- ###
@@ -257,11 +256,11 @@ elif menu == 'Bond Positioning':
 
 elif menu == 'STIR Positioning':
     st.title("Fed Funds")
-    app_positioning.plot_fedfunds_futures_positions(start_date, end_date)
+    app_stir_positioning.plot_fedfunds_futures_positions(start_date, end_date)
     st.title("SOFR 1M")
-    app_positioning.plot_sofr1m_futures_positions(start_date, end_date)
+    app_stir_positioning.plot_sofr1m_futures_positions(start_date, end_date)
     st.title("SOFR 3M")
-    app_positioning.plot_sofr3m_futures_positions(start_date, end_date)
+    app_stir_positioning.plot_sofr3m_futures_positions(start_date, end_date)
     ### TITLE INCLUDED IN FUNCTION ###
-    app_positioning.correlation_with_sofr(start_date, end_date)
+    app_stir_positioning.correlation_with_sofr(start_date, end_date)
 

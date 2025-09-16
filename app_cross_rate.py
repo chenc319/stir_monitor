@@ -211,69 +211,6 @@ def plot_sofr_effr_chart(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### --------------------------------------- VISIBLE REPO RATE COMPLEX ---------------------------------------- ###
-### ---------------------------------------------------------------------------------------------------------- ###
-
-def plot_repo_rate_complex_cross(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
-        rrp = pickle.load(file)
-    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
-        sofr = pickle.load(file)
-    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
-        dvp_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
-        gcf_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
-        tri_df = pickle.load(file)
-    for df in [rrp, sofr]:
-        df.index = pd.to_datetime(df.index)
-    srf = pd.DataFrame(index=sofr.index)
-    srf['SRF'] = rrp['RRPONTSYAWARD'] + 0.25
-    repo_rate_complex_df = merge_dfs([rrp,srf,sofr,dvp_df,gcf_df,tri_df])['2025-04-01':str(end)]
-    repo_rate_complex_df.columns = ['RRP','SRF','SOFR','DVP','GCF','TRIPARTY']
-    repo_rate_complex_df = repo_rate_complex_df.dropna() * 100
-    colors = {
-        'SOFR':     '#0B2138',
-        'DVP':      '#48DEE9',
-        'TRIPARTY': '#7EC0EE',
-        'GCF':      '#F9D15B',
-        'SRF':      '#F9C846',
-        'RRP':      '#F39C12',
-    }
-
-    # ### PLOT ###
-    # plt.figure(figsize=(12, 7))
-    # plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['RRP'],
-    #          lw=2, color=colors['RRP'], label="RRP")
-    # plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['SRF'],
-    #          lw=2, color=colors['SRF'], label="SRF", alpha=0.95)
-    # plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['SOFR'],
-    #          lw=2, color=colors['SOFR'], label="SOFR")
-    # plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['DVP'],
-    #          lw=2, color=colors['DVP'], label="DVP")
-    # plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['GCF'],
-    #          lw=2, color=colors['GCF'], label="GCF")
-    # plt.plot(repo_rate_complex_df.index, repo_rate_complex_df['TRIPARTY'],
-    #          lw=2, color=colors['TRIPARTY'], label="TRIPARTY")
-    # plt.ylabel("bps")
-    # plt.title("Visible Repo Rate Complex", fontsize=20, fontweight="bold")
-    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
-    # plt.tight_layout()
-    # plt.show()
-
-    fig = go.Figure()
-    for col in ['RRP', 'SRF', 'SOFR', 'DVP', 'GCF', 'TRIPARTY']:
-        fig.add_trace(go.Scatter(x=repo_rate_complex_df.index,
-                                 y=repo_rate_complex_df[col],
-                                 name=col, line=dict(color=colors[col], width=2)))
-    fig.update_layout(
-        title="Visible Repo Rate Complex",
-        yaxis_title="Basis Points",
-        hovermode='x unified'
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-### ---------------------------------------------------------------------------------------------------------- ###
 ### ----------------------------------------- DOLLAR LENDING COMPLEX ----------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
@@ -343,108 +280,215 @@ def plot_dollar_lending_complex(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ---------------------------------------- SOFR FLOOR AND CEILING ------------------------------------------ ###
+### ---------------------------------------- END OF QUARTER SPREADS ------------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def plot_sofr_floor_ceiling(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
-        rrp = pickle.load(file)
-    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
-        sofr = pickle.load(file)
-    for df in [sofr, rrp]:
-        df.index = pd.to_datetime(df.index)
-    srf = pd.DataFrame(index=sofr.index)
-    srf["SRF"] = rrp["RRPONTSYAWARD"] + 0.25
-    sofr_floor_ceiling_merge = merge_dfs([sofr, rrp, srf])['2025-04-01':str(end)].dropna() * 100
-    sofr_floor_ceiling_merge.columns = ['SOFR','RRP','SRF']
+def plot_end_of_quarter_spreads(start, end, **kwargs):
+    with open(Path(DATA_DIR) / 'gc_df.pkl', 'rb') as file:
+        gc_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
+        gcf_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+
+    fed_funds.index = pd.to_datetime(fed_funds.index)
+    quarter_spreads_merge = merge_dfs([gc_df, dvp_df, gcf_df, fed_funds]).resample('QE').last()
+    quarter_spreads_merge.columns = ['gc','dvp','gcf','effr']
+    quarter_spreads_merge = quarter_spreads_merge.loc[str(start):str(end)]
+    quarter_spreads_merge['gc_effr'] = (quarter_spreads_merge['gc'] - quarter_spreads_merge['effr']) * 100
+    quarter_spreads_merge['gc_dvp'] = (quarter_spreads_merge['gc'] - quarter_spreads_merge['dvp']) * 100
+    quarter_spreads_merge['gc_gcf'] = (quarter_spreads_merge['gc'] - quarter_spreads_merge['gcf']) * 100
+    quarter_spreads_merge = quarter_spreads_merge[start:end]
 
     # ### PLOT ###
-    # plt.figure(figsize=(7, 6))
-    # plt.plot(sofr_floor_ceiling_merge.index, sofr_floor_ceiling_merge['SOFR'],
-    #          label='SOFR', color='#07AFE3', linewidth=2)
-    # plt.plot(sofr_floor_ceiling_merge.index, sofr_floor_ceiling_merge['SRF'],
-    #          label='SRF', color='#6ECFF6', linewidth=2)
-    # plt.plot(sofr_floor_ceiling_merge.index, sofr_floor_ceiling_merge['RRP'],
-    #          label='RRP', color='#FFB400', linewidth=2)
-    # plt.ylabel('Basis Points')
-    # plt.title('SOFR- Floor and Ceiling', fontweight='bold')
-    # plt.ylim(415, 455)
+    # plt.figure(figsize=(10, 7))
+    # plt.plot(quarter_spreads_merge.index, quarter_spreads_merge['gc_effr'],
+    #          label='GC-EFFR', color='#9DDCF9', lw=2)  # light blue
+    # plt.plot(quarter_spreads_merge.index, quarter_spreads_merge['gc_dvp'],
+    #          label='GC-DVP', color='#4CD0E9', lw=2)  # cyan
+    # plt.plot(quarter_spreads_merge.index, quarter_spreads_merge['gc_gcf'],
+    #          label='GC-GCF', color='#233852', lw=2)  # dark blue
+    # plt.ylabel("Basis Points")
+    # plt.title("End of Quarter Spreads", fontsize=17, fontweight="bold")
     # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
     # plt.tight_layout()
     # plt.show()
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=sofr_floor_ceiling_merge.index,
-                             y=sofr_floor_ceiling_merge['SOFR'],
-                             name='SOFR', line=dict(color='#07AFE3', width=2)))
-    fig.add_trace(go.Scatter(x=sofr_floor_ceiling_merge.index,
-                             y=sofr_floor_ceiling_merge['SRF'],
-                             name='SRF', line=dict(color='#6ECFF6', width=2)))
-    fig.add_trace(go.Scatter(x=sofr_floor_ceiling_merge.index,
-                             y=sofr_floor_ceiling_merge['RRP'],
-                             name='RRP', line=dict(color='#FFB400', width=2)))
+    fig.add_trace(go.Scatter(x=quarter_spreads_merge.index, y=quarter_spreads_merge['gc_effr'],
+                             name="GC-EFFR", line=dict(color="#9DDCF9", width=2)))
+    fig.add_trace(go.Scatter(x=quarter_spreads_merge.index, y=quarter_spreads_merge['gc_dvp'],
+                             name="GC-DVP", line=dict(color="#4CD0E9", width=2)))
+    fig.add_trace(go.Scatter(x=quarter_spreads_merge.index, y=quarter_spreads_merge['gc_gcf'],
+                             name="GC-GCF", line=dict(color="#233852", width=2)))
     fig.update_layout(
-        title='SOFR- Floor and Ceiling',
-        yaxis_title='Basis Points',
-        hovermode='x unified',
-        yaxis_range=[415, 455]
+        title="End of Quarter Spreads",
+        yaxis_title="Basis Points",
+        hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ----------------------------------------- END OF MONTH SPREADS ------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_end_of_month_spreads(start, end, **kwargs):
+    with open(Path(DATA_DIR) / 'gc_df.pkl', 'rb') as file:
+        gc_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'dvp_df.pkl', 'rb') as file:
+        dvp_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'gcf_df.pkl', 'rb') as file:
+        gcf_df = pickle.load(file)
+    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+        fed_funds = pickle.load(file)
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+    monthly_spreads_merge = merge_dfs([gc_df, dvp_df, gcf_df, fed_funds, rrp]).resample('ME').last()
+    monthly_spreads_merge.columns = ['gc','dvp','gcf','effr','rrp']
+    monthly_spreads_merge = monthly_spreads_merge.loc[str(start):str(end)]
+    monthly_spreads_merge['gc_effr'] = (monthly_spreads_merge['gc'] - monthly_spreads_merge['effr']) * 100
+    monthly_spreads_merge['gc_dvp'] = (monthly_spreads_merge['gc'] - monthly_spreads_merge['dvp']) * 100
+    monthly_spreads_merge['gc_gcf'] = (monthly_spreads_merge['gc'] - monthly_spreads_merge['gcf']) * 100
+    monthly_spreads_merge['gc_rrp'] = (monthly_spreads_merge['gc'] - monthly_spreads_merge['rrp']) * 100
+    monthly_spreads_merge = monthly_spreads_merge[start:end]
+
+    # ### PLOT ###
+    # plt.figure(figsize=(12, 7))
+    # plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_effr'],
+    #          label="GC-EFFR", color="#f8b62d", lw=2)
+    # plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_dvp'],
+    #          label="GC-DVP", color="#f8772d", lw=2)
+    # plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_gcf'],
+    #          label="GC-GCF", color="#2f90c5", lw=2)
+    # plt.plot(monthly_spreads_merge.index, monthly_spreads_merge['gc_rrp'],
+    #          label="GC-RRP", color="#67cbe7", lw=2)
+    # plt.title("End of Month Spreads", fontsize=22, fontweight="bold")
+    # plt.ylabel("Basis Points")
+    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+    # plt.tight_layout()
+    # plt.show()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=monthly_spreads_merge.index, y=monthly_spreads_merge['gc_effr'],
+                             name="GC-EFFR", line=dict(color="#f8b62d", width=2)))
+    fig.add_trace(go.Scatter(x=monthly_spreads_merge.index, y=monthly_spreads_merge['gc_dvp'],
+                             name="GC-DVP", line=dict(color="#f8772d", width=2)))
+    fig.add_trace(go.Scatter(x=monthly_spreads_merge.index, y=monthly_spreads_merge['gc_gcf'],
+                             name="GC-GCF", line=dict(color="#2f90c5", width=2)))
+    fig.add_trace(go.Scatter(x=monthly_spreads_merge.index, y=monthly_spreads_merge['gc_rrp'],
+                             name="GC-RRP", line=dict(color="#67cbe7", width=2)))
+    fig.update_layout(
+        title="End of Month Spreads",
+        yaxis_title="Basis Points",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ---------------------------------------- SOFR FLOOR AND CEILING ------------------------------------------ ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+# def plot_sofr_floor_ceiling(start, end, **kwargs):
+#     with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+#         rrp = pickle.load(file)
+#     with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+#         sofr = pickle.load(file)
+#     for df in [sofr, rrp]:
+#         df.index = pd.to_datetime(df.index)
+#     srf = pd.DataFrame(index=sofr.index)
+#     srf["SRF"] = rrp["RRPONTSYAWARD"] + 0.25
+#     sofr_floor_ceiling_merge = merge_dfs([sofr, rrp, srf])['2025-04-01':str(end)].dropna() * 100
+#     sofr_floor_ceiling_merge.columns = ['SOFR','RRP','SRF']
+#
+#     # ### PLOT ###
+#     # plt.figure(figsize=(7, 6))
+#     # plt.plot(sofr_floor_ceiling_merge.index, sofr_floor_ceiling_merge['SOFR'],
+#     #          label='SOFR', color='#07AFE3', linewidth=2)
+#     # plt.plot(sofr_floor_ceiling_merge.index, sofr_floor_ceiling_merge['SRF'],
+#     #          label='SRF', color='#6ECFF6', linewidth=2)
+#     # plt.plot(sofr_floor_ceiling_merge.index, sofr_floor_ceiling_merge['RRP'],
+#     #          label='RRP', color='#FFB400', linewidth=2)
+#     # plt.ylabel('Basis Points')
+#     # plt.title('SOFR- Floor and Ceiling', fontweight='bold')
+#     # plt.ylim(415, 455)
+#     # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+#     # plt.tight_layout()
+#     # plt.show()
+#
+#     fig = go.Figure()
+#     fig.add_trace(go.Scatter(x=sofr_floor_ceiling_merge.index,
+#                              y=sofr_floor_ceiling_merge['SOFR'],
+#                              name='SOFR', line=dict(color='#07AFE3', width=2)))
+#     fig.add_trace(go.Scatter(x=sofr_floor_ceiling_merge.index,
+#                              y=sofr_floor_ceiling_merge['SRF'],
+#                              name='SRF', line=dict(color='#6ECFF6', width=2)))
+#     fig.add_trace(go.Scatter(x=sofr_floor_ceiling_merge.index,
+#                              y=sofr_floor_ceiling_merge['RRP'],
+#                              name='RRP', line=dict(color='#FFB400', width=2)))
+#     fig.update_layout(
+#         title='SOFR- Floor and Ceiling',
+#         yaxis_title='Basis Points',
+#         hovermode='x unified',
+#         yaxis_range=[415, 455]
+#     )
+#     st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ---------------------------------- UNSECURED LENDING FLOOR AND CEILING ----------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def plot_unsecured_lending_floor_ceiling(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
-        rrp = pickle.load(file)
-    with open(Path(DATA_DIR) / 'iorb.pkl', 'rb') as file:
-        iorb = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
-        fed_funds = pickle.load(file)
-    for df in [fed_funds, iorb, rrp]:
-        df.index = pd.to_datetime(df.index)
-    srf = pd.DataFrame(index=fed_funds.index)
-    srf["SRF"] = rrp["RRPONTSYAWARD"] + 0.25
-    unsecured_lending_merge = merge_dfs([fed_funds, iorb, srf, rrp])['2025-04-01':str(end)].dropna() * 100
-    unsecured_lending_merge.columns = ['EFFR','IORB','SRF','RRP']
-
-    # ### PLOT ###
-    # plt.figure(figsize=(7, 6))
-    # plt.plot(unsecured_lending_merge.index, unsecured_lending_merge['EFFR'],
-    #          label='EFFR', color='#6ECFF6', linewidth=2)
-    # plt.plot(unsecured_lending_merge.index, unsecured_lending_merge['IORB'],
-    #          label='IORB', color='#07AFE3', linewidth=2)
-    # plt.plot(unsecured_lending_merge.index, unsecured_lending_merge['SRF'],
-    #          label='Discount Window', color='#FFB400', linewidth=2)
-    # plt.plot(unsecured_lending_merge.index, unsecured_lending_merge['RRP'],
-    #          label='RRP', color='#F57235', linewidth=2)
-    # plt.axhline(y=20, color='navy', linestyle='--', linewidth=1)
-    # plt.ylabel('Basis Points')
-    # plt.title('Unsecured Lending - Floor and Ceiling', fontweight='bold')
-    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
-    # plt.tight_layout()
-    # plt.ylim(415, 455)
-    # plt.show()
-
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=unsecured_lending_merge.index,
-                             y=unsecured_lending_merge['EFFR'],
-                             name='EFFR', line=dict(color='#6ECFF6', width=2)))
-    fig.add_trace(go.Scatter(x=unsecured_lending_merge.index,
-                             y=unsecured_lending_merge['IORB'],
-                             name='IORB', line=dict(color='#07AFE3', width=2)))
-    fig.add_trace(go.Scatter(x=unsecured_lending_merge.index,
-                             y=unsecured_lending_merge['SRF'],
-                             name='Discount Window', line=dict(color='#FFB400', width=2)))
-    fig.add_trace(go.Scatter(x=unsecured_lending_merge.index,
-                             y=unsecured_lending_merge['RRP'],
-                             name='RRP', line=dict(color='#F57235', width=2)))
-    fig.add_hline(y=20, line_dash='dash', line_color='navy', line_width=1)
-    fig.update_layout(
-        title='Unsecured Lending - Floor and Ceiling',
-        yaxis_title='Basis Points',
-        hovermode='x unified',
-        yaxis_range=[415, 455]
-    )
-    st.plotly_chart(fig, use_container_width=True)
+# def plot_unsecured_lending_floor_ceiling(start, end, **kwargs):
+#     with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+#         rrp = pickle.load(file)
+#     with open(Path(DATA_DIR) / 'iorb.pkl', 'rb') as file:
+#         iorb = pickle.load(file)
+#     with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
+#         fed_funds = pickle.load(file)
+#     for df in [fed_funds, iorb, rrp]:
+#         df.index = pd.to_datetime(df.index)
+#     srf = pd.DataFrame(index=fed_funds.index)
+#     srf["SRF"] = rrp["RRPONTSYAWARD"] + 0.25
+#     unsecured_lending_merge = merge_dfs([fed_funds, iorb, srf, rrp])['2025-04-01':str(end)].dropna() * 100
+#     unsecured_lending_merge.columns = ['EFFR','IORB','SRF','RRP']
+#
+#     # ### PLOT ###
+#     # plt.figure(figsize=(7, 6))
+#     # plt.plot(unsecured_lending_merge.index, unsecured_lending_merge['EFFR'],
+#     #          label='EFFR', color='#6ECFF6', linewidth=2)
+#     # plt.plot(unsecured_lending_merge.index, unsecured_lending_merge['IORB'],
+#     #          label='IORB', color='#07AFE3', linewidth=2)
+#     # plt.plot(unsecured_lending_merge.index, unsecured_lending_merge['SRF'],
+#     #          label='Discount Window', color='#FFB400', linewidth=2)
+#     # plt.plot(unsecured_lending_merge.index, unsecured_lending_merge['RRP'],
+#     #          label='RRP', color='#F57235', linewidth=2)
+#     # plt.axhline(y=20, color='navy', linestyle='--', linewidth=1)
+#     # plt.ylabel('Basis Points')
+#     # plt.title('Unsecured Lending - Floor and Ceiling', fontweight='bold')
+#     # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
+#     # plt.tight_layout()
+#     # plt.ylim(415, 455)
+#     # plt.show()
+#
+#     fig = go.Figure()
+#     fig.add_trace(go.Scatter(x=unsecured_lending_merge.index,
+#                              y=unsecured_lending_merge['EFFR'],
+#                              name='EFFR', line=dict(color='#6ECFF6', width=2)))
+#     fig.add_trace(go.Scatter(x=unsecured_lending_merge.index,
+#                              y=unsecured_lending_merge['IORB'],
+#                              name='IORB', line=dict(color='#07AFE3', width=2)))
+#     fig.add_trace(go.Scatter(x=unsecured_lending_merge.index,
+#                              y=unsecured_lending_merge['SRF'],
+#                              name='Discount Window', line=dict(color='#FFB400', width=2)))
+#     fig.add_trace(go.Scatter(x=unsecured_lending_merge.index,
+#                              y=unsecured_lending_merge['RRP'],
+#                              name='RRP', line=dict(color='#F57235', width=2)))
+#     fig.add_hline(y=20, line_dash='dash', line_color='navy', line_width=1)
+#     fig.update_layout(
+#         title='Unsecured Lending - Floor and Ceiling',
+#         yaxis_title='Basis Points',
+#         hovermode='x unified',
+#         yaxis_range=[415, 455]
+#     )
+#     st.plotly_chart(fig, use_container_width=True)
