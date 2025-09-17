@@ -243,7 +243,7 @@ def plot_on_vs_off(start, end, **kwargs):
     off_total_ratio = off_the_run_total / on_off_combined_total
 
     on_off_combined_total_sum = pd.DataFrame(on_off_combined_total.sum(axis=1))
-    on_off_combined_total_sum.columns = 'On-the-run + Off-the-run'
+    on_off_combined_total_sum.columns = ['On-the-run + Off-the-run']
     on_the_run_total_sum = pd.DataFrame(on_the_run_total.sum(axis=1))
     off_the_run_total_sum = pd.DataFrame(off_the_run_total.sum(axis=1))
     on_the_run_total_sum_ratio = on_the_run_total_sum / on_off_combined_total_sum
