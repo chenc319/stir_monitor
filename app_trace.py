@@ -245,9 +245,16 @@ def plot_on_vs_off(start, end, **kwargs):
     on_off_combined_total_sum = pd.DataFrame(on_off_combined_total.sum(axis=1))
     on_off_combined_total_sum.columns = ['On-the-run + Off-the-run']
     on_the_run_total_sum = pd.DataFrame(on_the_run_total.sum(axis=1))
+    on_the_run_total_sum.columns = ['On-the-run Total']
     off_the_run_total_sum = pd.DataFrame(off_the_run_total.sum(axis=1))
-    on_the_run_total_sum_ratio = on_the_run_total_sum / on_off_combined_total_sum
-    off_the_run_total_sum_ratio = off_the_run_total_sum / on_off_combined_total_sum
+    on_the_run_total_sum.columns = ['Off-the-run Total']
+
+    on_merge = merge_dfs([on_the_run_total_sum,on_off_combined_total_sum])
+    on_the_run_total_sum_ratio = pd.DataFrame(on_merge.iloc[:,0] / on_merge.iloc[:,1],
+                                              columns = ['On-the-run'])
+    off_merge = merge_dfs([off_the_run_total_sum, on_off_combined_total_sum])
+    off_the_run_total_sum_ratio = pd.DataFrame(off_merge.iloc[:,0] / off_merge.iloc[:,1],
+                                               columns = ['Off-the-run'])
     total_sum_ratio_merge = merge_dfs([on_the_run_total_sum_ratio,off_the_run_total_sum_ratio])
     total_sum_ratio_merge.columns = ['On-the-run','Off-the-run']
 
