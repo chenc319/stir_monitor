@@ -276,6 +276,8 @@ elif menu == 'STIR Positioning':
 elif menu == 'TRACE Model':
     st.title('On-the-Run vs. Off-the-Run')
     app_trace.plot_on_vs_off(start_date,end_date)
+    st.title('Dealer-to-Dealer vs Dealer-to-Client')
+    app_trace.plot_on_vs_off(start_date, end_date)
     st.title('On-the-Run Nominal Coupons')
     app_trace.plot_on_the_run_nominal_coupons(start_date,end_date)
     st.title('Off-the-Run Nominal Coupons')

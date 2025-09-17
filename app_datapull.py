@@ -596,7 +596,7 @@ def refresh_all_data():
     treasury_daily_aggregates_full = pd.concat(all_batches, ignore_index=True)
     treasury_daily_aggregates_full = treasury_daily_aggregates_full[treasury_daily_aggregates_full["dealerCustomerVolume"] != 0]
     treasury_daily_aggregates_full = treasury_daily_aggregates_full[treasury_daily_aggregates_full["atsInterdealerVolume"] != 0]
-
+    treasury_daily_aggregates_full.columns
     print("Total rows pulled:", len(treasury_daily_aggregates_full))
     with open(Path(DATA_DIR) / 'treasury_daily_aggregates_full.pkl', 'wb') as file:
         pickle.dump(treasury_daily_aggregates_full, file)
