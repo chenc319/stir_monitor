@@ -269,18 +269,16 @@ def plot_on_vs_off(start, end, **kwargs):
     ### PLOT ###
     labels = ['On-the-run', 'Off-the-run']
     cols = total_sum_ratio_merge.columns
-    colors = ['#2567c4','#e5433a']
     fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
     for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 1 + 1
-        col_position = i % 1 + 1
+        row = i // 2 + 1
+        col_position = i % 2 + 1
         fig.add_trace(
             go.Scatter(
                 x=total_sum_ratio_merge.index,
                 y=total_sum_ratio_merge[col],
                 mode='lines',
-                name=label,
-                line=dict(color=color)
+                name=label
             ),
             row=row,
             col=col_position
