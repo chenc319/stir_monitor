@@ -242,6 +242,23 @@ def plot_on_vs_off(start, end, **kwargs):
     on_total_ratio = on_the_run_total / on_off_combined_total
     off_total_ratio = off_the_run_total / on_off_combined_total
 
+    on_off_combined_total_sum = pd.DataFrame(on_off_combined_total.sum(axis=1))
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = on_off_combined_total.columns
+    for col, color in zip(cols, colors):
+        fig.add_trace(go.Scatter(x=on_off_combined_total.index, y=on_off_combined_total[col],
+                                 mode='lines',
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="Total On-the-Run + Off-the-Run Daily Liquidity",
+        xaxis_title="Dollars",
+        showlegend=False,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
     ### PLOT ###
     fig = go.Figure()
     cols = on_off_combined_total.columns
@@ -252,7 +269,7 @@ def plot_on_vs_off(start, end, **kwargs):
                                  name=label,
                                  line=dict(color=color)))
     fig.update_layout(
-        title="Dealer Customer Volume",
+        title="Total On-the-Run + Off-the-Run Daily Liquidity by Tenor",
         xaxis_title="Dollars",
         showlegend=True,
         hovermode='x unified'
