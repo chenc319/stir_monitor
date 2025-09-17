@@ -447,7 +447,7 @@ def plot_dealer_dealer_vs_dealer_client(start, end, **kwargs):
 
     ### PLOT ###
     fig = go.Figure()
-    cols = dealer_client_total_sum.columns
+    cols = dealer_client_on_spread.columns
     for col in cols:
         fig.add_trace(go.Scatter(x=dealer_client_on_spread.index, y=dealer_client_on_spread[col],
                                  mode='lines',
@@ -462,7 +462,7 @@ def plot_dealer_dealer_vs_dealer_client(start, end, **kwargs):
 
     ### PLOT ###
     fig = go.Figure()
-    cols = dealer_client_total_sum.columns
+    cols = dealer_client_off_spread.columns
     for col in cols:
         fig.add_trace(go.Scatter(x=dealer_client_off_spread.index, y=dealer_client_off_spread[col],
                                  mode='lines',
