@@ -329,6 +329,7 @@ def plot_dealer_dealer_vs_dealer_client(start, end, **kwargs):
     dealer_client_total_sum = pd.DataFrame(dealer_client_total.sum(axis=1),
                                            columns = ['Dealer-to-Client'])
 
+    ### DEALER TO DEALER ###
     on_the_run_dealer_sum = pd.DataFrame(on_the_run_interdealer.sum(axis=1),
                                          columns=['On-the-run'])
     on_merge = merge_dfs([on_the_run_dealer_sum, dealer_dealer_total_sum])
@@ -341,10 +342,11 @@ def plot_dealer_dealer_vs_dealer_client(start, end, **kwargs):
                                               columns=['Off-the-run'])
     dealer_merge = merge_dfs([on_the_run_total_sum_ratio,off_the_run_total_sum_ratio])
 
+    ### DEALER TO CLIENT ###
     on_the_run_client_sum = pd.DataFrame(on_the_run_dealer_client.sum(axis=1),
                                          columns=['On-the-run'])
     on_merge = merge_dfs([on_the_run_client_sum, dealer_client_total_sum])
-    on_the_run_dealer_sum_ratio = pd.DataFrame(on_merge.iloc[:, 0] / on_merge.iloc[:, 1],
+    on_the_run_total_sum_ratio = pd.DataFrame(on_merge.iloc[:, 0] / on_merge.iloc[:, 1],
                                               columns=['On-the-run'])
     off_the_run_client_sum = pd.DataFrame(off_the_run_dealer_client.sum(axis=1),
                                           columns=['Off-the-run'])
@@ -390,6 +392,21 @@ def plot_dealer_dealer_vs_dealer_client(start, end, **kwargs):
         title="Dealer-to-Dealer: On-the-run vs. Off-the-Run",
         showlegend=False,
         height=600,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = dealer_client_total_sum.columns
+    for col in cols:
+        fig.add_trace(go.Scatter(x=dealer_client_total_sum.index, y=dealer_client_total_sum[col],
+                                 mode='lines',
+                                 line=dict(color='#83c3f7')))
+    fig.update_layout(
+        title="Dealer-to-Client Total Daily Liquidity",
+        xaxis_title="Dollars",
+        showlegend=False,
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
