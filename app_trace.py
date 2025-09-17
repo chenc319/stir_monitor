@@ -246,9 +246,9 @@ def plot_on_vs_off(start, end, **kwargs):
 
     ### PLOT ###
     fig = go.Figure()
-    cols = on_off_combined_total.columns
+    cols = on_off_combined_total_sum.columns
     for col, color in zip(cols, colors):
-        fig.add_trace(go.Scatter(x=on_off_combined_total.index, y=on_off_combined_total[col],
+        fig.add_trace(go.Scatter(x=on_off_combined_total_sum.index, y=on_off_combined_total_sum[col],
                                  mode='lines',
                                  line=dict(color=color)))
     fig.update_layout(
