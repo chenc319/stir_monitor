@@ -333,27 +333,35 @@ def plot_dealer_dealer_vs_dealer_client(start, end, **kwargs):
     on_the_run_dealer_sum = pd.DataFrame(on_the_run_interdealer.sum(axis=1),
                                          columns=['On-the-run'])
     on_merge = merge_dfs([on_the_run_dealer_sum, dealer_dealer_total_sum])
-    on_the_run_total_sum_ratio = pd.DataFrame(on_merge.iloc[:, 0] / on_merge.iloc[:, 1],
+    on_the_run_dealer_ratio = pd.DataFrame(on_merge.iloc[:, 0] / on_merge.iloc[:, 1],
                                               columns=['On-the-run'])
     off_the_run_dealer_sum = pd.DataFrame(off_the_run_interdealer.sum(axis=1),
                                          columns=['Off-the-run'])
     off_merge = merge_dfs([off_the_run_dealer_sum, dealer_dealer_total_sum])
-    off_the_run_total_sum_ratio = pd.DataFrame(off_merge.iloc[:, 0] / off_merge.iloc[:, 1],
+    off_the_run_dealer_ratio = pd.DataFrame(off_merge.iloc[:, 0] / off_merge.iloc[:, 1],
                                               columns=['Off-the-run'])
-    dealer_merge = merge_dfs([on_the_run_total_sum_ratio,off_the_run_total_sum_ratio])
+    dealer_merge = merge_dfs([on_the_run_dealer_ratio,off_the_run_dealer_ratio])
 
     ### DEALER TO CLIENT ###
     on_the_run_client_sum = pd.DataFrame(on_the_run_dealer_client.sum(axis=1),
                                          columns=['On-the-run'])
     on_merge = merge_dfs([on_the_run_client_sum, dealer_client_total_sum])
-    on_the_run_total_sum_ratio = pd.DataFrame(on_merge.iloc[:, 0] / on_merge.iloc[:, 1],
+    on_the_run_client_ratio = pd.DataFrame(on_merge.iloc[:, 0] / on_merge.iloc[:, 1],
                                               columns=['On-the-run'])
     off_the_run_client_sum = pd.DataFrame(off_the_run_dealer_client.sum(axis=1),
                                           columns=['Off-the-run'])
     off_merge = merge_dfs([off_the_run_client_sum, dealer_client_total_sum])
-    off_the_run_total_sum_ratio = pd.DataFrame(off_merge.iloc[:, 0] / off_merge.iloc[:, 1],
+    off_the_run_client_ratio = pd.DataFrame(off_merge.iloc[:, 0] / off_merge.iloc[:, 1],
                                                columns=['Off-the-run'])
-    client_merge = merge_dfs([on_the_run_total_sum_ratio, off_the_run_total_sum_ratio])
+    client_merge = merge_dfs([on_the_run_client_ratio, off_the_run_client_ratio])
+
+    ### SPREADS ###
+    dealer_client_on_spread = pd.DataFrame(on_the_run_interdealer.sum(axis=1) -
+                                           on_the_run_dealer_client.sum(axis=1),
+                                           columns=['On-the-run Spread'])
+    dealer_client_off_spread = pd.DataFrame(off_the_run_interdealer.sum(axis=1) -
+                                            off_the_run_dealer_client.sum(axis=1),
+                                            columns=['On-the-run Spread'])
 
     ### PLOT ###
     fig = go.Figure()
@@ -436,6 +444,37 @@ def plot_dealer_dealer_vs_dealer_client(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = dealer_client_total_sum.columns
+    for col in cols:
+        fig.add_trace(go.Scatter(x=dealer_client_on_spread.index, y=dealer_client_on_spread[col],
+                                 mode='lines',
+                                 line=dict(color='#2567c4')))
+    fig.update_layout(
+        title="Dealer-to-Dealer vs. Dealer-to-Client: On-the-Run Spread",
+        xaxis_title="Dollars",
+        showlegend=False,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = dealer_client_total_sum.columns
+    for col in cols:
+        fig.add_trace(go.Scatter(x=dealer_client_off_spread.index, y=dealer_client_off_spread[col],
+                                 mode='lines',
+                                 line=dict(color='#e5433a')))
+    fig.update_layout(
+        title="Dealer-to-Dealer vs. Dealer-to-Client: Off-the-Run Spread",
+        xaxis_title="Dollars",
+        showlegend=False,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
 
 
 
