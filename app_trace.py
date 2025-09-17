@@ -243,11 +243,18 @@ def plot_on_vs_off(start, end, **kwargs):
     off_total_ratio = off_the_run_total / on_off_combined_total
 
     on_off_combined_total_sum = pd.DataFrame(on_off_combined_total.sum(axis=1))
+    on_the_run_total_sum = pd.DataFrame(on_the_run_total.sum(axis=1))
+    off_the_run_total_sum = pd.DataFrame(off_the_run_total.sum(axis=1))
+    on_the_run_total_sum_ratio = on_the_run_total_sum / on_off_combined_total_sum
+    off_the_run_total_sum_ratio = off_the_run_total_sum / on_off_combined_total_sum
+    total_sum_ratio_merge = merge_dfs([on_the_run_total_sum_ratio,off_the_run_total_sum_ratio])
+    total_sum_ratio_merge.columns = ['On-the-run','Off-the-run']
 
     ### PLOT ###
     fig = go.Figure()
     cols = on_off_combined_total_sum.columns
-    for col, color in zip(cols, colors):
+    color = ['#83c3f7']
+    for col in zip(cols):
         fig.add_trace(go.Scatter(x=on_off_combined_total_sum.index, y=on_off_combined_total_sum[col],
                                  mode='lines',
                                  line=dict(color=color)))
@@ -255,6 +262,33 @@ def plot_on_vs_off(start, end, **kwargs):
         title="Total On-the-Run + Off-the-Run Daily Liquidity",
         xaxis_title="Dollars",
         showlegend=False,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    labels = ['On-the-run', 'Off-the-run']
+    cols = total_sum_ratio_merge.columns
+    colors = ['#2567c4','#e5433a']
+    fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
+    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
+        row = i // 2 + 1
+        col_position = i % 2 + 1
+        fig.add_trace(
+            go.Scatter(
+                x=total_sum_ratio_merge.index,
+                y=total_sum_ratio_merge[col],
+                mode='lines',
+                name=label,
+                line=dict(color=color)
+            ),
+            row=row,
+            col=col_position
+        )
+    fig.update_layout(
+        title="On-the-run vs. Off-the-Run",
+        showlegend=False,
+        height=600,
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
