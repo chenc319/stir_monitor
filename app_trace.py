@@ -67,16 +67,17 @@ Settlement is not regular settle; and/or
 The reporting firm has applied a special price condition
 '''
 
-def plot_on_the_run_nominal_coupons(start, end, **kwargs):
+def pull_on_the_run_interdealer(start,end):
     with open(Path(DATA_DIR) / 'treasury_daily_aggregates_full.pkl', 'rb') as file:
         treasury_daily_aggregates_full = pickle.load(file)
+        treasury_daily_aggregates_full.columns
     treasury_daily_aggregates_full['atsInterdealerVolume'] = treasury_daily_aggregates_full['atsInterdealerVolume'] * 1e9
     treasury_daily_aggregates_full['dealerCustomerVolume'] = treasury_daily_aggregates_full['dealerCustomerVolume'] * 1e9
     on_the_run_bonds = treasury_daily_aggregates_full[
         (treasury_daily_aggregates_full['productCategory'] == 'Nominal Coupons') &
         (treasury_daily_aggregates_full['benchmark'] == 'On-the-run')]
     treasury_daily_aggregates_full['yearsToMaturity'].unique()
-    on_the_run_bonds = on_the_run_bonds[start:end]
+    on_the_run_bonds.index = pd.to_datetime(on_the_run_bonds.index)
 
     ats_interdealer_volume = on_the_run_bonds.pivot_table(
         index="tradeDate",
@@ -85,7 +86,20 @@ def plot_on_the_run_nominal_coupons(start, end, **kwargs):
         aggfunc="sum"
     )
     ats_interdealer_volume.index = pd.to_datetime(ats_interdealer_volume.index.values)
+    ats_interdealer_volume = ats_interdealer_volume[start:end]
     ats_interdealer_volume.columns = ['<2','10<>20','2<>3','>20','3<>5','5<>7','7<>10']
+    return(ats_interdealer_volume)
+
+def pull_on_the_run_dealer_client(start,end):
+    with open(Path(DATA_DIR) / 'treasury_daily_aggregates_full.pkl', 'rb') as file:
+        treasury_daily_aggregates_full = pickle.load(file)
+        treasury_daily_aggregates_full.columns
+    treasury_daily_aggregates_full['atsInterdealerVolume'] = treasury_daily_aggregates_full['atsInterdealerVolume'] * 1e9
+    treasury_daily_aggregates_full['dealerCustomerVolume'] = treasury_daily_aggregates_full['dealerCustomerVolume'] * 1e9
+    on_the_run_bonds = treasury_daily_aggregates_full[
+        (treasury_daily_aggregates_full['productCategory'] == 'Nominal Coupons') &
+        (treasury_daily_aggregates_full['benchmark'] == 'On-the-run')]
+    treasury_daily_aggregates_full['yearsToMaturity'].unique()
 
     dealer_customer_volume = on_the_run_bonds.pivot_table(
         index="tradeDate",
@@ -94,7 +108,55 @@ def plot_on_the_run_nominal_coupons(start, end, **kwargs):
         aggfunc="sum"
     )
     dealer_customer_volume.index = pd.to_datetime(dealer_customer_volume.index.values)
+    dealer_customer_volume = dealer_customer_volume[start:end]
     dealer_customer_volume.columns = ['<2', '10<>20', '2<>3', '>20', '3<>5', '5<>7', '7<>10']
+    return(dealer_customer_volume)
+
+def pull_off_the_run_interdealer(start,end):
+    with open(Path(DATA_DIR) / 'treasury_daily_aggregates_full.pkl', 'rb') as file:
+        treasury_daily_aggregates_full = pickle.load(file)
+        treasury_daily_aggregates_full.columns
+    treasury_daily_aggregates_full['atsInterdealerVolume'] = treasury_daily_aggregates_full['atsInterdealerVolume'] * 1e9
+    treasury_daily_aggregates_full['dealerCustomerVolume'] = treasury_daily_aggregates_full['dealerCustomerVolume'] * 1e9
+    off_the_run_bonds = treasury_daily_aggregates_full[
+        (treasury_daily_aggregates_full['productCategory'] == 'Nominal Coupons') &
+        (treasury_daily_aggregates_full['benchmark'] == 'Off-the-run')]
+
+    ats_interdealer_volume = off_the_run_bonds.pivot_table(
+        index="tradeDate",
+        columns="yearsToMaturity",
+        values="atsInterdealerVolume",
+        aggfunc="sum"
+    )
+    ats_interdealer_volume.index = pd.to_datetime(ats_interdealer_volume.index.values)
+    ats_interdealer_volume = ats_interdealer_volume[start:end]
+    ats_interdealer_volume.columns = ['<2', '10<>20', '2<>3', '>20', '3<>5', '5<>7', '7<>10']
+    return(ats_interdealer_volume)
+
+def pull_off_the_run_dealer_client(start,end):
+    with open(Path(DATA_DIR) / 'treasury_daily_aggregates_full.pkl', 'rb') as file:
+        treasury_daily_aggregates_full = pickle.load(file)
+        treasury_daily_aggregates_full.columns
+    treasury_daily_aggregates_full['atsInterdealerVolume'] = treasury_daily_aggregates_full['atsInterdealerVolume'] * 1e9
+    treasury_daily_aggregates_full['dealerCustomerVolume'] = treasury_daily_aggregates_full['dealerCustomerVolume'] * 1e9
+    off_the_run_bonds = treasury_daily_aggregates_full[
+        (treasury_daily_aggregates_full['productCategory'] == 'Nominal Coupons') &
+        (treasury_daily_aggregates_full['benchmark'] == 'Off-the-run')]
+
+    dealer_customer_volume = off_the_run_bonds.pivot_table(
+        index="tradeDate",
+        columns="yearsToMaturity",
+        values="dealerCustomerVolume",
+        aggfunc="sum"
+    )
+    dealer_customer_volume.index = pd.to_datetime(dealer_customer_volume.index.values)
+    dealer_customer_volume = dealer_customer_volume[start:end]
+    dealer_customer_volume.columns = ['<2', '10<>20', '2<>3', '>20', '3<>5', '5<>7', '7<>10']
+    return(dealer_customer_volume)
+
+def plot_on_the_run_nominal_coupons(start, end, **kwargs):
+    ats_interdealer_volume = pull_on_the_run_interdealer(start,end)
+    dealer_customer_volume = pull_on_the_run_dealer_client(start,end)
 
     ### PLOT ###
     fig = go.Figure()
@@ -131,32 +193,8 @@ def plot_on_the_run_nominal_coupons(start, end, **kwargs):
     st.plotly_chart(fig, use_container_width=True)
 
 def plot_off_the_run_nominal_coupons(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'treasury_daily_aggregates_full.pkl', 'rb') as file:
-        treasury_daily_aggregates_full = pickle.load(file)
-    treasury_daily_aggregates_full['atsInterdealerVolume'] = treasury_daily_aggregates_full['atsInterdealerVolume'] * 1e9
-    treasury_daily_aggregates_full['dealerCustomerVolume'] = treasury_daily_aggregates_full['dealerCustomerVolume'] * 1e9
-    off_the_run_bonds = treasury_daily_aggregates_full[
-        (treasury_daily_aggregates_full['productCategory'] == 'Nominal Coupons') &
-        (treasury_daily_aggregates_full['benchmark'] == 'Off-the-run')]
-    off_the_run_bonds = off_the_run_bonds[start:end]
-
-    ats_interdealer_volume = off_the_run_bonds.pivot_table(
-        index="tradeDate",
-        columns="yearsToMaturity",
-        values="atsInterdealerVolume",
-        aggfunc="sum"
-    )
-    ats_interdealer_volume.index = pd.to_datetime(ats_interdealer_volume.index.values)
-    ats_interdealer_volume.columns = ['<2','10<>20','2<>3','>20','3<>5','5<>7','7<>10']
-
-    dealer_customer_volume = off_the_run_bonds.pivot_table(
-        index="tradeDate",
-        columns="yearsToMaturity",
-        values="dealerCustomerVolume",
-        aggfunc="sum"
-    )
-    dealer_customer_volume.index = pd.to_datetime(dealer_customer_volume.index.values)
-    dealer_customer_volume.columns = ['<2', '10<>20', '2<>3', '>20', '3<>5', '5<>7', '7<>10']
+    ats_interdealer_volume = pull_off_the_run_interdealer(start, end)
+    dealer_customer_volume = pull_off_the_run_dealer_client(start, end)
 
     ### PLOT ###
     fig = go.Figure()
@@ -191,6 +229,37 @@ def plot_off_the_run_nominal_coupons(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+def plot_on_vs_off(start, end, **kwargs):
+    on_the_run_interdealer = pull_on_the_run_interdealer(start, end)
+    on_the_run_dealer_client = pull_on_the_run_dealer_client(start, end)
+    off_the_run_interdealer = pull_off_the_run_interdealer(start, end)
+    off_the_run_dealer_client = pull_off_the_run_dealer_client(start, end)
+
+    on_the_run_total = on_the_run_interdealer + on_the_run_dealer_client
+    off_the_run_total = off_the_run_interdealer + off_the_run_dealer_client
+    on_off_combined_total = on_the_run_total + off_the_run_total
+    on_total_ratio = on_the_run_total / on_off_combined_total
+    off_total_ratio = off_the_run_total / on_off_combined_total
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = on_off_combined_total.columns
+    labels = on_off_combined_total.columns
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=on_off_combined_total.index, y=on_off_combined_total[col],
+                                 mode='lines',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="Dealer Customer Volume",
+        xaxis_title="Dollars",
+        showlegend=True,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+
 
 
 
