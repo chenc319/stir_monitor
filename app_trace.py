@@ -276,9 +276,8 @@ def plot_on_vs_off(start, end, **kwargs):
     ### PLOT ###
     labels = ['On-the-run', 'Off-the-run']
     cols = total_sum_ratio_merge.columns
-    colors = ['#2567c4','#e5433a']
     fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
-    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
+    for i, (col, color, label) in enumerate(zip(cols, ['#2567c4','#e5433a'], labels)):
         row = i // 2 + 1
         col_position = i % 2 + 1
         fig.add_trace(
