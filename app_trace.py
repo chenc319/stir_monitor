@@ -243,7 +243,7 @@ def plot_on_vs_off(start, end, **kwargs):
     off_total_ratio = off_the_run_total / on_off_combined_total
 
     on_off_combined_total_sum = pd.DataFrame(on_off_combined_total.sum(axis=1))
-    on_off_combined_total_sum.columns = ['total']
+    on_off_combined_total_sum.columns = ['On-the-run + Off-the-run']
     on_the_run_total_sum = pd.DataFrame(on_the_run_total.sum(axis=1))
     on_the_run_total_sum.columns = ['On-the-run Total']
     off_the_run_total_sum = pd.DataFrame(off_the_run_total.sum(axis=1))
@@ -261,7 +261,7 @@ def plot_on_vs_off(start, end, **kwargs):
     ### PLOT ###
     fig = go.Figure()
     cols = on_off_combined_total_sum.columns
-    for col in zip(cols):
+    for col in cols:
         fig.add_trace(go.Scatter(x=on_off_combined_total_sum.index, y=on_off_combined_total_sum[col],
                                  mode='lines',
                                  line=dict(color='#83c3f7')))
