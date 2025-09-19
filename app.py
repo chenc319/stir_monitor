@@ -134,12 +134,11 @@ menu = st.sidebar.radio(
 ### ---------------------------------------------------------------------------------------- ###
 
 if menu == 'Liquidity Stress':
-    st.title("SOFR vs. IORB")
+    st.title("SOFR Spreads")
     app_liquidity_stress.plot_sofr_iorb(start_date, end_date)
-    st.title("SOFR vs. Fed Funds")
     app_liquidity_stress.plot_sofr_fedfunds(start_date, end_date)
-    st.title("SOFR vs. Repo Venues")
     app_liquidity_stress.plot_sofr_repo_venues(start_date, end_date)
+    app_liquidity_stress.plot_sofr_rrp(start_date, end_date)
 
 
 ### ---------------------------------------------------------------------------------------- ###

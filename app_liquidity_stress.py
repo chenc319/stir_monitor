@@ -34,17 +34,6 @@ def plot_sofr_iorb(start, end, **kwargs):
     spread_df['Spread_bp'] = (spread_df['SOFR'] - spread_df['IORB']) * 100
     spread_df = spread_df[start:end].dropna()
 
-    ### PLOT ###
-    plt.figure(figsize=(10, 5))
-    plt.step(spread_df.index, spread_df['Spread_bp'],
-             where='post', color='skyblue', alpha=0.85, linewidth=3)
-    plt.title('Repo Liquidity Stress: SOFR - IORB', fontsize=18, fontweight='bold', loc='left')
-    plt.ylabel('Basis Points', fontsize=13)
-    plt.xlabel('')
-    plt.grid(alpha=0.17)
-    plt.tight_layout()
-    plt.show()
-
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=spread_df.index, y=spread_df['Spread_bp'],
                              mode='lines', name="SOFR - IORB"))
@@ -68,17 +57,6 @@ def plot_sofr_fedfunds(start, end, **kwargs):
     spread_df = fed_funds.join(sofr, how='inner', lsuffix='_IORB', rsuffix='_SOFR')
     spread_df['Spread_bp'] = (spread_df['SOFR'] - spread_df['EFFR']) * 100
     spread_df = spread_df[start:end].dropna()
-
-    ### PLOT ###
-    plt.figure(figsize=(10, 5))
-    plt.step(spread_df.index, spread_df['Spread_bp'],
-             where='post', color='skyblue', alpha=0.85, linewidth=3)
-    plt.title('Secured vs. Unsecured: SOFR - EFFR', fontsize=18, fontweight='bold', loc='left')
-    plt.ylabel('Basis Points', fontsize=13)
-    plt.xlabel('')
-    plt.grid(alpha=0.17)
-    plt.tight_layout()
-    plt.show()
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=spread_df.index, y=spread_df['Spread_bp'],
@@ -135,6 +113,30 @@ def plot_sofr_repo_venues(start, end, **kwargs):
         title="SOFR vs. Repo Venue Spreads",
         showlegend=False,
         height=600,
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ---------------------------------------------- SOFR - RRP ----------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_sofr_rrp(start, end, **kwargs):
+    with open(Path(DATA_DIR) / 'rrp.pkl', 'rb') as file:
+        rrp = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
+
+    spread_df = rrp.join(sofr, how='inner', lsuffix='_rrp', rsuffix='_SOFR')
+    spread_df['Spread_bp'] = (spread_df['SOFR'] - spread_df['RRPONTSYAWARD']) * 100
+    spread_df = spread_df[start:end].dropna()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=spread_df.index, y=spread_df['Spread_bp'],
+                             mode='lines', name="SOFR - IORB"))
+    fig.update_layout(
+        title="Repo Liquidity Stress: SOFR - RRP",
+        yaxis_title="Basis Points",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
