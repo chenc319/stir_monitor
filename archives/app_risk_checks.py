@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 from pathlib import Path
 import os
 import pickle
-DATA_DIR = os.getenv('DATA_DIR', 'data')
+DATA_DIR = os.getenv('DATA_DIR', '../data')
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right,
@@ -26,23 +26,23 @@ def merge_dfs(array_of_dfs):
 def plot_dash_for_cash_spread(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'iorb.pkl', 'rb') as file:
         iorb = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_funds.pkl', 'rb') as file:
-        fed_funds = pickle.load(file)
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
 
-    dash_spread = iorb.join(fed_funds, how='inner', lsuffix='_IORB', rsuffix='_EFFR')
-    dash_spread['Spread_bp'] = (dash_spread['EFFR'] - dash_spread['IORB']) * 100
+    dash_spread = iorb.join(sofr, how='inner', lsuffix='_IORB', rsuffix='_EFFR')
+    dash_spread['Spread_bp'] = (dash_spread['SOFR'] - dash_spread['IORB']) * 100
     dash_spread = dash_spread[start:end]
 
-    # ### PLOT ###
-    # plt.figure(figsize=(10, 5))
-    # plt.step(dash_spread.index, dash_spread['Spread_bp'],
-    #          where='post', color='skyblue', alpha=0.85, linewidth=3)
-    # plt.title('Monitoring the Dash For Cash\nFed Funds - IORB', fontsize=18, fontweight='bold', loc='left')
-    # plt.ylabel('Basis Points', fontsize=13)
-    # plt.xlabel('')
-    # plt.grid(alpha=0.17)
-    # plt.tight_layout()
-    # plt.show()
+    ### PLOT ###
+    plt.figure(figsize=(10, 5))
+    plt.step(dash_spread.index, dash_spread['Spread_bp'],
+             where='post', color='skyblue', alpha=0.85, linewidth=3)
+    plt.title('Monitoring the Dash For Cash\nFed Funds - IORB', fontsize=18, fontweight='bold', loc='left')
+    plt.ylabel('Basis Points', fontsize=13)
+    plt.xlabel('')
+    plt.grid(alpha=0.17)
+    plt.tight_layout()
+    plt.show()
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=dash_spread.index, y=dash_spread['Spread_bp'],

@@ -6,7 +6,7 @@
 import streamlit as st
 import pandas as pd
 import functools as ft
-import app_risk_checks
+import app_liquidity_stress
 import app_fed_balance_sheet
 import app_shadow_banks
 import app_repo
@@ -97,7 +97,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 ### SIDEBAR ###
-st.sidebar.title("Mistral STIR Monitor")
+st.sidebar.title("STIR Monitor")
 start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime('2019-12-31'))
 end_date = st.sidebar.date_input("End Date", value=pd.to_datetime('today'))
 
@@ -115,7 +115,7 @@ else:
 
 menu = st.sidebar.radio(
     "Go to section:",
-    ['Overview',
+    ['Liquidity Stress',
      'Fed Balance Sheet',
      'Repo Activity',
      'Money Markets',
@@ -133,16 +133,14 @@ menu = st.sidebar.radio(
 ### -------------------------------------- RISK CHECKS ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-if menu == 'Overview':
-    st.title("Risk Checks")
-    app_risk_checks.plot_dash_for_cash_spread(start_date, end_date)
-    app_risk_checks.plot_new_sofr_system(start_date, end_date)
-    app_risk_checks.plot_repo_rate_complex(start_date, end_date)
-    app_risk_checks.plot_sofr_distribution(start_date, end_date)
-    app_risk_checks.plot_fed_balance_sheet(start_date, end_date)
-    app_risk_checks.plot_monitoring_reserves(start_date, end_date)
-    app_risk_checks.plot_fed_action_vs_reserve_response(start_date, end_date)
-    app_risk_checks.plot_fed_action_vs_reserve_response_v2(start_date, end_date)
+if menu == 'Liquidity Stress':
+    st.title("SOFR vs. IORB")
+    app_liquidity_stress.plot_sofr_iorb(start_date, end_date)
+    st.title("SOFR vs. Fed Funds")
+    app_liquidity_stress.plot_sofr_fedfunds(start_date, end_date)
+    st.title("SOFR vs. Repo Venues")
+    app_liquidity_stress.plot_sofr_repo_venues(start_date, end_date)
+
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ----------------------------------- FED BALANCE SHEET ---------------------------------- ###
