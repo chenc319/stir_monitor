@@ -167,7 +167,7 @@ def plot_sofr_term_sofr(start, end, **kwargs):
     ]
     colors = ['#4dc6c6', '#356c82', '#001f35']
     for col, color, label in zip(cols, colors, labels):
-        fig.add_trace(go.Scatter(x=colors.index, y=colors[col],
+        fig.add_trace(go.Scatter(x=spread_df.index, y=spread_df[col],
                                  mode='lines',
                                  name=label,
                                  line=dict(color=color)))
@@ -187,7 +187,7 @@ def plot_sofr_term_sofr(start, end, **kwargs):
     ]
     colors = ['#fbc430', '#fdad23']
     for col, color, label in zip(cols, colors, labels):
-        fig.add_trace(go.Scatter(x=colors.index, y=colors[col],
+        fig.add_trace(go.Scatter(x=spread_df.index, y=spread_df[col],
                                  mode='lines',
                                  name=label,
                                  line=dict(color=color)))
@@ -223,7 +223,7 @@ def plot_sofr_term_sofr(start, end, **kwargs):
     ]
     colors = ['#4dc6c6', '#356c82', '#001f35']
     for col, color, label in zip(cols, colors, labels):
-        fig.add_trace(go.Scatter(x=colors.index, y=colors[col],
+        fig.add_trace(go.Scatter(x=spread_df.index, y=spread_df[col],
                                  mode='lines',
                                  name=label,
                                  line=dict(color=color)))
@@ -243,7 +243,7 @@ def plot_sofr_term_sofr(start, end, **kwargs):
     ]
     colors = ['#fbc430', '#fdad23']
     for col, color, label in zip(cols, colors, labels):
-        fig.add_trace(go.Scatter(x=colors.index, y=colors[col],
+        fig.add_trace(go.Scatter(x=spread_df.index, y=spread_df[col],
                                  mode='lines',
                                  name=label,
                                  line=dict(color=color)))
