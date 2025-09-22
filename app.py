@@ -121,7 +121,6 @@ menu = st.sidebar.radio(
      'Money Markets',
      'Primary Dealers',
      'Shadow Banks',
-     'Rate Spreads',
      'Treasury Auctions',
      'UST Positioning',
      'STIR Positioning',
@@ -141,7 +140,13 @@ if menu == 'Liquidity Stress':
     app_liquidity_stress.plot_sofr_rrp(start_date, end_date)
     app_liquidity_stress.plot_sofr_term_sofr(start_date, end_date)
     st.title("Repo Spreads")
-    app_liquidity_stress.plot_sofr_iorb(start_date, end_date)
+    app_liquidity_stress.plot_iorb_spreads(start_date, end_date)
+    app_liquidity_stress.plot_gcf_tri_spread(start_date, end_date)
+    app_liquidity_stress.plot_triparty_term_spread(start_date, end_date)
+    app_liquidity_stress.plot_sofr_effr_chart(start_date, end_date)
+    app_liquidity_stress.plot_dollar_lending_complex(start_date, end_date)
+    app_liquidity_stress.plot_end_of_month_spreads(start_date, end_date)
+    app_liquidity_stress.plot_end_of_quarter_spreads(start_date, end_date)
 
 
 ### ---------------------------------------------------------------------------------------- ###
@@ -193,22 +198,6 @@ elif menu == 'Shadow Banks':
     app_shadow_banks.plot_shadow_bank_assets(start_date, end_date)
     st.title('Shadow Bank Liabilities Mapping')
     app_shadow_banks.plot_shadow_bank_liabilities(start_date,end_date)
-
-### ---------------------------------------------------------------------------------------- ###
-### --------------------------------------- CROSS RATE ------------------------------------- ###
-### ---------------------------------------------------------------------------------------- ###
-
-elif menu == 'Rate Spreads':
-    st.title("Rate Spreads")
-    app_cross_rate.plot_iorb_spreads(start_date, end_date)
-    app_cross_rate.plot_gcf_tri_spread(start_date, end_date)
-    app_cross_rate.plot_triparty_term_spread(start_date, end_date)
-    app_cross_rate.plot_sofr_effr_chart(start_date, end_date)
-    app_cross_rate.plot_dollar_lending_complex(start_date, end_date)
-    app_cross_rate.plot_end_of_month_spreads(start_date, end_date)
-    app_cross_rate.plot_end_of_quarter_spreads(start_date, end_date)
-    app_cross_rate.plot_stability_lower_roc(start_date, end_date)
-    app_cross_rate.plot_how_did_levels_change(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### --------------------------------------- AUCTIONS --------------------------------------- ###
