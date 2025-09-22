@@ -241,7 +241,7 @@ def plot_sofr_term_sofr(start, end, **kwargs):
         '1m Term - Spot',
         '3m Term - Spot',
     ]
-    colors = ['#fbc430', '#fdad23']
+    colors = ['#4dc6c6', '#356c82']
     for col, color, label in zip(cols, colors, labels):
         fig.add_trace(go.Scatter(x=spread_df.index, y=spread_df[col],
                                  mode='lines',
