@@ -602,5 +602,74 @@ def refresh_all_data():
         pickle.dump(treasury_daily_aggregates_full, file)
     ### ---------------------------------------------------------------------------------------------- ###
 
+    ### SOFR SWAP 1 MONTH TERM ###
+    cookie_value = ('_cfuvid=1mys.p_B60UzbCaXccDa18vo_9.uW0vwouSgxWg8uj8-'
+                    '1758556744610-0.0.1.1-604800000; cf-email-auth=true; _'
+                    'hjSession_3589284=eyJpZCI6IjQzNTk2NDQwLTIzZWUtNGZhNi1hZ'
+                    'TgzLWRjN2JjZDkyOWNmYyIsImMiOjE3NTg1NTY4MTMxOTEsInMiOjAs'
+                    'InIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjoxfQ==; _hjSe'
+                    'ssionUser_3589284=eyJpZCI6IjBkMzFhYmQ3LWY2OTUtNTU5OS1iMz'
+                    'ljLTBiZWJmYTdjNjkxMCIsImNyZWF0ZWQiOjE3NTg1NTY4MTMxOTEsImV'
+                    '4aXN0aW5nIjp0cnVlfQ==; __cf_bm=g2cSFMeVb5vP0_H63seoQOJ2F6'
+                    'KnpUlyW3JSkXBbnCM-1758557719-1.0.1.1-osvRwqfsvoOzp1yujyqwz'
+                    'Qx_lJk4B0wwYkGLUNzthFjhUjk22mmChdl7c8uOnd1uCEdN8PcTTnl7mzS'
+                    'L3fiR66awgtZirxoP6OHgaWS1ZvehZg34yfuE_FmHnjyEmATz; cf-omnom'
+                    'nomnom=83c7e747-c3db-4ee2-b636-af07f6b7558f; cf-user-info=6'
+                    '5052cb1-65c7-40fd-b068-7b44930cbda6; fs_uid=#o-1G5BDR-na1#d7'
+                    '3ec8ea-695e-4017-bc47-c7d11ee2717a:e7ba52dd-39e4-45c2-ba83-8'
+                    'a9965d2a1fb:1758556745054::6#8350714f#/1790092760; fs_lua=1.17'
+                    '58558110400')
+    url = "https://chathamdirect.com/rates/api/v1/rateset/1-month-term-sofr-swaps/historical-rates"
+    headers = {
+        "Accept": "application/json, text/plain, */*",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Referer": "https://chathamdirect.com/",
+        "Origin": "https://chathamdirect.com",
+        "Cookie": cookie_value,
+    }
+    response = requests.get(url, headers=headers)
+    raw_sofr1term = response.json()
+    sofr_1m_term_swaps = pd.DataFrame()
+    column_names = ['1yr','2yr','3yr','5yr','7yr','10yr','15yr','30yr']
+    for x in range(0,len(column_names)):
+        raw_df = pd.DataFrame(raw_sofr1term['result']['data'][x]['data'])[['date', 'value']]
+        raw_df.index = pd.to_datetime(raw_df['date']).values
+        raw_df.drop(columns=['date'], inplace=True)
+        sofr_1m_term_swaps[column_names[x]]  = raw_df
+    with open(Path(DATA_DIR) / 'sofr_1m_term_swaps.pkl', 'wb') as file:
+        pickle.dump(sofr_1m_term_swaps, file)
+
+        ### SOFR 1 MONTH AND 3 MONTH TERM ###
+        cookie_value = ('cf-email-auth=true; _hjSessionUser_3589284=eyJpZCI6IjBkMzFhYmQ3LWY2OTUtNT'
+                        'U5OS1iMzljLTBiZWJmYTdjNjkxMCIsImNyZWF0ZWQiOjE3NTg1NTY4MTMxOTEsImV4aXN0aW5'
+                        'nIjp0cnVlfQ==; cf-user-info=65052cb1-65c7-40fd-b068-7b44930cbda6; cf-omno'
+                        'mnomnom=9ee02e62-fae0-418a-ac14-e0f915b88f79; _cfuvid=R_Wfr5UlmgvvM_ZbERt'
+                        'l4JFLIW.WHlVvhy53dI80nck-1758562384099-0.0.1.1-604800000; __cf_bm=MA3VWeKb'
+                        'BG2dPl93PxYF2cvp_JxJ0CzsWpullNZpuS8-1758565087-1.0.1.1-DNZrZevoXoSTBeqoGJB'
+                        'BnXTj7J61uQUN1wm4nhbv8TC_hxRDgofsSGeiTrqvyh1pJ97F0iNtZKNkH2PABOCHaXJ5cb_8E'
+                        'Yz_RZFKmS7MIqM; _hjSession_3589284=eyJpZCI6ImFmNTFiZmIyLTQwMGEtNDg0MS04ODkw'
+                        'LTA1OTE1MmQ1YzhkMyIsImMiOjE3NTg1NjUwODg3NDksInMiOjAsInIiOjAsInNiIjowLCJzciI'
+                        '6MCwic2UiOjAsImZzIjowfQ==; fs_lua=1.1758565124289; fs_uid=#o-1G5BDR-na1#d73'
+                        'ec8ea-695e-4017-bc47-c7d11ee2717a:0801b750-9f1f-4448-9493-a10882182e6d:1758'
+                        '565087285::3#8350714f#/1790092763')
+        url = "https://chathamdirect.com/rates/api/v1/rateset/sofr/historical-rates"
+        headers = {
+            "Accept": "application/json, text/plain, */*",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Referer": "https://chathamdirect.com/",
+            "Origin": "https://chathamdirect.com",
+            "Cookie": cookie_value,
+        }
+        response = requests.get(url, headers=headers)
+        raw_sofr13term = response.json()
+        sofr_1m_3m_term = pd.DataFrame()
+        column_names = ['1m', '3m']
+        for x in range(0, len(column_names)):
+            raw_df = pd.DataFrame(raw_sofr13term['result']['data'][x+3]['data'])[['date', 'value']]
+            raw_df.index = pd.to_datetime(raw_df['date']).values
+            raw_df.drop(columns=['date'], inplace=True)
+            sofr_1m_3m_term[column_names[x]] = raw_df
+        with open(Path(DATA_DIR) / 'sofr_1m_3m_term.pkl', 'wb') as file:
+            pickle.dump(sofr_1m_3m_term, file)
 
 

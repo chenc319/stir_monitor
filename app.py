@@ -139,6 +139,9 @@ if menu == 'Liquidity Stress':
     app_liquidity_stress.plot_sofr_fedfunds(start_date, end_date)
     app_liquidity_stress.plot_sofr_repo_venues(start_date, end_date)
     app_liquidity_stress.plot_sofr_rrp(start_date, end_date)
+    app_liquidity_stress.plot_sofr_term_sofr(start_date, end_date)
+    st.title("Repo Spreads")
+    app_liquidity_stress.plot_sofr_iorb(start_date, end_date)
 
 
 ### ---------------------------------------------------------------------------------------- ###

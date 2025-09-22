@@ -30,9 +30,10 @@ def plot_sofr_iorb(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
         sofr = pickle.load(file)
 
-    spread_df = iorb.join(sofr, how='inner', lsuffix='_IORB', rsuffix='_SOFR')
+    spread_df = merge_dfs([iorb,sofr])
     spread_df['Spread_bp'] = (spread_df['SOFR'] - spread_df['IORB']) * 100
     spread_df = spread_df[start:end].dropna()
+    spread_df = spread_df[spread_df['Spread_bp'] != 0]
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=spread_df.index, y=spread_df['Spread_bp'],
@@ -54,7 +55,7 @@ def plot_sofr_fedfunds(start, end, **kwargs):
     with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
         sofr = pickle.load(file)
 
-    spread_df = fed_funds.join(sofr, how='inner', lsuffix='_IORB', rsuffix='_SOFR')
+    spread_df = merge_dfs([fed_funds, sofr])
     spread_df['Spread_bp'] = (spread_df['SOFR'] - spread_df['EFFR']) * 100
     spread_df = spread_df[start:end].dropna()
 
@@ -137,6 +138,118 @@ def plot_sofr_rrp(start, end, **kwargs):
     fig.update_layout(
         title="Repo Liquidity Stress: SOFR - RRP",
         yaxis_title="Basis Points",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------- SOFR VS. SOFR TERMS ------------------------------------------ ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_sofr_term_sofr(start, end, **kwargs):
+    with open(Path(DATA_DIR) / 'sofr_1m_3m_term.pkl', 'rb') as file:
+        sofr_1m_3m_term = pickle.load(file) * 100
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
+
+    spread_df = merge_dfs([sofr_1m_3m_term,sofr]).dropna()
+    spread_df['1m_spread'] = (spread_df['1m'] - spread_df['SOFR']) * 100
+    spread_df['3m_spread'] = (spread_df['3m'] - spread_df['SOFR']) * 100
+    spread_df = spread_df[start:end].dropna()
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = ['1m', '3m','SOFR']
+    labels = [
+        '1m Term SOFR',
+        '3m Term SOFR',
+        'Spot SOFR'
+    ]
+    colors = ['#4dc6c6', '#356c82', '#001f35']
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=colors.index, y=colors[col],
+                                 mode='lines',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="Spot and Term SOFRs",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = ['1m_spread', '3m_spread']
+    labels = [
+        '1m Term - Spot',
+        '3m Term - Spot',
+    ]
+    colors = ['#fbc430', '#fdad23']
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=colors.index, y=colors[col],
+                                 mode='lines',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="Spot vs. Term SOFR",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------ REPO VS. SOFR TERMS ------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_sofr_term_sofr(start, end, **kwargs):
+    with open(Path(DATA_DIR) / 'sofr_1m_3m_term.pkl', 'rb') as file:
+        sofr_1m_3m_term = pickle.load(file) * 100
+    with open(Path(DATA_DIR) / 'sofr.pkl', 'rb') as file:
+        sofr = pickle.load(file)
+
+    spread_df = merge_dfs([sofr_1m_3m_term,sofr]).dropna()
+    spread_df['1m_spread'] = (spread_df['1m'] - spread_df['SOFR']) * 100
+    spread_df['3m_spread'] = (spread_df['3m'] - spread_df['SOFR']) * 100
+    spread_df = spread_df[start:end].dropna()
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = ['1m', '3m','SOFR']
+    labels = [
+        '1m Term SOFR',
+        '3m Term SOFR',
+        'Spot SOFR'
+    ]
+    colors = ['#4dc6c6', '#356c82', '#001f35']
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=colors.index, y=colors[col],
+                                 mode='lines',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="Spot and Term SOFRs",
+        yaxis_title="Dollars",
+        hovermode='x unified'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    ### PLOT ###
+    fig = go.Figure()
+    cols = ['1m_spread', '3m_spread']
+    labels = [
+        '1m Term - Spot',
+        '3m Term - Spot',
+    ]
+    colors = ['#fbc430', '#fdad23']
+    for col, color, label in zip(cols, colors, labels):
+        fig.add_trace(go.Scatter(x=colors.index, y=colors[col],
+                                 mode='lines',
+                                 name=label,
+                                 line=dict(color=color)))
+    fig.update_layout(
+        title="Spot vs. Term SOFR",
+        yaxis_title="Dollars",
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
