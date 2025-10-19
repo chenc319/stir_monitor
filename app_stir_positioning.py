@@ -43,10 +43,11 @@ def rolling_corr_matrix(df: pd.DataFrame, window: int) -> dict:
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------------------ FED FUNDS ----------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
+with open(Path(DATA_DIR) / 'cftc_all_futures.pkl', 'rb') as file:
+    cftc_all_futures = pickle.load(file)
 
 def plot_fedfunds_futures_positions(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'cftc_all_futures.pkl', 'rb') as file:
-        cftc_all_futures = pickle.load(file)
+
     future_contract_df = cftc_all_futures[cftc_all_futures['contract_market_name'] == 'FED FUNDS']
     contract_size = 5000000
 
@@ -116,8 +117,6 @@ def plot_fedfunds_futures_positions(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_sofr1m_futures_positions(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'cftc_all_futures.pkl', 'rb') as file:
-        cftc_all_futures = pickle.load(file)
     future_contract_df = cftc_all_futures[cftc_all_futures['contract_market_name'] == 'SOFR-1M']
     contract_size = 5000000
 
@@ -182,8 +181,6 @@ def plot_sofr1m_futures_positions(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_sofr3m_futures_positions(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'cftc_all_futures.pkl', 'rb') as file:
-        cftc_all_futures = pickle.load(file)
     future_contract_df = cftc_all_futures[cftc_all_futures['contract_market_name'] == 'SOFR-3M']
     contract_size = 2500
 
@@ -256,8 +253,6 @@ def correlation_with_sofr(start,end,**kwargs):
         gcf_df = pickle.load(file)
     with open(Path(DATA_DIR) / 'tri_df.pkl', 'rb') as file:
         tri_df = pickle.load(file)
-    with open(Path(DATA_DIR) / 'cftc_all_futures.pkl', 'rb') as file:
-        cftc_all_futures = pickle.load(file)
 
     future_contract_df = cftc_all_futures[cftc_all_futures['contract_market_name'] == 'FED FUNDS']
     contract_size = 5000000
