@@ -73,7 +73,7 @@ def plot_fedfunds_futures_positions(start, end, **kwargs):
     cot_positions['lev_net'] = cot_positions['lev_long'] - cot_positions['lev_short']
     cot_positions = cot_positions[start:end]
 
-    colors = ['#2567c4', '#83c3f7', '#e5433a']
+    colors = ['#83c3f7','#2567c4', '#e5433a']
     labels = ['Dealer', 'Asset Manager', 'Leveraged Funds']
 
     # Long
@@ -137,7 +137,7 @@ def plot_sofr1m_futures_positions(start, end, **kwargs):
     cot_positions['lev_net'] = cot_positions['lev_long'] - cot_positions['lev_short']
     cot_positions = cot_positions[start:end]
 
-    colors = ['#2567c4', '#83c3f7', '#e5433a']
+    colors = ['#83c3f7','#2567c4', '#e5433a']
     labels = ['Dealer', 'Asset Manager', 'Leveraged Funds']
 
     # Long
@@ -201,7 +201,7 @@ def plot_sofr3m_futures_positions(start, end, **kwargs):
     cot_positions['lev_net'] = cot_positions['lev_long'] - cot_positions['lev_short']
     cot_positions = cot_positions[start:end]
 
-    colors = ['#2567c4', '#83c3f7', '#e5433a']
+    colors = ['#83c3f7','#2567c4', '#e5433a']
     labels = ['Dealer', 'Asset Manager', 'Leveraged Funds']
 
     # Long
