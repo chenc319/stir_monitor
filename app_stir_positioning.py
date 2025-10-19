@@ -318,6 +318,7 @@ def correlation_with_sofr(start,end,**kwargs):
     sofr_corr_df = sofr_corr_df.drop('SOFR',axis=1)
     sofr_corr_df = sofr_corr_df[start:end]
 
+
     fig = go.Figure()
     cols = [
         'dealer_long', 'asset_mgr_long', 'lev_long',
