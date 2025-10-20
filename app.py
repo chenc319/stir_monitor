@@ -119,7 +119,7 @@ menu = st.sidebar.radio(
      'Repo Activity',
      'Money Markets',
      'Primary Dealers',
-     'Shadow Banks',
+     # 'Shadow Banks',
      'Treasury Auctions',
      'UST Positioning',
      'STIR Positioning',
