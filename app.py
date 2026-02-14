@@ -90,7 +90,43 @@ st.markdown("""
         border-radius: 4px;
         display: inline-block;
         margin-right: 10px;
-        font-size: 12px;
+    }
+
+    /* ----- Mistral sidebar theming ----- */
+
+    /* Sidebar background */
+    [data-testid="stSidebar"] {
+        background-color: #0F3B2E;  /* Mistral green */
+    }
+
+    /* Sidebar headings and labels */
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] label {
+        color: #FFFFFF !important;
+    }
+
+    /* Selectbox + other inputs: white box, dark text (placeholder + value) */
+    [data-testid="stSidebar"] div[data-baseweb="select"] > div {
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
+    }
+
+    [data-testid="stSidebar"] div[data-baseweb="select"] span {
+        color: #000000 !important;
+    }
+
+    [data-testid="stSidebar"] .stDateInput input,
+    [data-testid="stSidebar"] input,
+    [data-testid="stSidebar"] textarea {
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
+    }
+
+    /* Dropdown menu options */
+    div[role="listbox"] * {
+        color: #000000 !important;
     }
     </style>
 """, unsafe_allow_html=True)
