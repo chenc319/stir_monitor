@@ -132,7 +132,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 ### SIDEBAR ###
-st.sidebar.title("STIR Monitor")
+st.sidebar.title("Mistral STIR Monitor")
 start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime('2019-12-31'))
 end_date = st.sidebar.date_input("End Date", value=pd.to_datetime('today'))
 
