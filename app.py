@@ -148,26 +148,89 @@ if st.sidebar.button("Refresh Data"):
 else:
     progress_placeholder.empty()
 
-menu = st.sidebar.radio(
-    "Go to section:",
-    ['Liquidity Stress',
-     'Fed Balance Sheet',
-     'Repo Activity',
-     'Money Markets',
-     'Primary Dealers',
-     # 'Shadow Banks',
-     'Treasury Auctions',
-     'UST Positioning',
-     'STIR Positioning',
-     'TRACE Model']
-)
+def reset_other_selections(current_section):
+    sections = [
+        "Plumbing",
+        "Auctions & Flow",
+        "Positioning"
+    ]
+    for section in sections:
+        if section != current_section:
+            st.session_state[f"{section}_selection"] = "Select an option..."
+
+with st.sidebar:
+    # Create a dictionary mapping sections to their options
+    sections = {
+        "Plumbing": {
+            "Select an option...": "Select an option...",
+            "Liquidity Stress": "Liquidity Stress",
+            "Fed Balance Sheet": "Fed Balance Sheet",
+            "Repo Activity": "Repo Activity",
+            "Money Markets": 'Money Markets'
+        },
+        "Auctions & Flow": {
+            "Select an option...": "Select an option...",
+            "Treasury Auctions": "Treasury Auctions",
+            "Primary Dealers": "Primary Dealers",
+            "TRACE Model": "TRACE Model"
+        },
+        "Positioning": {
+            "Select an option...": "Select an option...",
+            "UST Positioning": "UST Positioning",
+            "STIR Positioning": "STIR Positioning"
+        }
+    }
+
+    # Initialize session state for each section if not exists
+    for section in sections:
+        if f"{section}_selection" not in st.session_state:
+            st.session_state[f"{section}_selection"] = "Select an option..."
+
+    # Create section headers and selectboxes
+    st.markdown("### Plumbing")
+    plumbing = st.selectbox(
+        "Plumbing",
+        list(sections["Plumbing"].keys()),
+        key="Plumbing_selection",
+        on_change=lambda: reset_other_selections("Plumbing"),
+        label_visibility="collapsed"
+    )
+
+    st.markdown("### Auctions & Flow")
+    auctions_and_flow = st.selectbox(
+        "Auctions & Flow",
+        list(sections["Auctions & Flow"].keys()),
+        key="Auctions & Flow_selection",
+        on_change=lambda: reset_other_selections("Auctions & Flow"),
+        label_visibility="collapsed"
+    )
+
+    st.markdown("### Positioning")
+    positioning = st.selectbox(
+        "Positioning",
+        list(sections["Positioning"].keys()),
+        key="Positioning_selection",
+        on_change=lambda: reset_other_selections("Positioning"),
+        label_visibility="collapsed"
+    )
+
+    # Set the current page based on any non-default selection
+    page = "Select an option..."
+    for selection in [
+        plumbing,
+        auctions_and_flow,
+        positioning
+    ]:
+        if selection != "Select an option...":
+            page = selection
+            break
 
 
 ### ---------------------------------------------------------------------------------------- ###
 ### -------------------------------------- RISK CHECKS ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-if menu == 'Liquidity Stress':
+if page == 'Liquidity Stress':
     st.title("SOFR Spreads")
     app_liquidity_stress.plot_sofr_iorb(start_date, end_date)
     app_liquidity_stress.plot_sofr_fedfunds(start_date, end_date)
@@ -188,7 +251,7 @@ if menu == 'Liquidity Stress':
 ### ----------------------------------- FED BALANCE SHEET ---------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Fed Balance Sheet':
+elif page == 'Fed Balance Sheet':
     st.title("Assets")
     app_fed_balance_sheet.plot_fed_balance_sheet_assets(start_date, end_date)
     st.title("Liabilities")
@@ -198,7 +261,7 @@ elif menu == 'Fed Balance Sheet':
 ### ------------------------------------------ REPO ---------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Repo Activity':
+elif page == 'Repo Activity':
     st.title("Repo Activity")
     app_repo.plot_volume_per_venue(start_date, end_date)
     app_repo.plot_proxy_percent_without_clearing(start_date, end_date)
@@ -211,7 +274,7 @@ elif menu == 'Repo Activity':
 ### ------------------------------------------ MMF ----------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Money Markets':
+elif page == 'Money Markets':
     st.title("Money Market Funds")
     app_mmf.plot_volume_invested_in_mmf(start_date, end_date)
     app_mmf.plot_shadow_bank_mmf_repo(start_date, end_date)
@@ -225,7 +288,7 @@ elif menu == 'Money Markets':
 ### ------------------------------------- SHADOW BANKS ------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Shadow Banks':
+elif page == 'Shadow Banks':
     st.title("Shadow Bank Components")
     st.title('Summary')
     app_shadow_banks.plot_shadow_bank_summary(start_date, end_date)
@@ -238,7 +301,7 @@ elif menu == 'Shadow Banks':
 ### --------------------------------------- AUCTIONS --------------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Treasury Auctions':
+elif page == 'Treasury Auctions':
     st.title("Issuance")
     app_auctions.plot_issuance_by_security(start_date, end_date)
     app_auctions.plot_bills_issuance(start_date, end_date)
@@ -257,7 +320,7 @@ elif menu == 'Treasury Auctions':
 ### ------------------------------------ PRIMARY DEALERS ----------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'Primary Dealers':
+elif page == 'Primary Dealers':
     st.title("Primary Dealers")
     app_primary_dealers.plot_sponsored_volumes_solution(start_date, end_date)
     app_primary_dealers.plot_sponsored_volumes(start_date, end_date)
@@ -270,7 +333,7 @@ elif menu == 'Primary Dealers':
 ### ------------------------------------ BOND POSITIONING ---------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'UST Positioning':
+elif page == 'UST Positioning':
     st.title("2yr Treasury Futures")
     app_bond_positioning.plot_2y_bond_pos(start_date, end_date)
     st.title("5yr Treasury Futures")
@@ -283,7 +346,7 @@ elif menu == 'UST Positioning':
 ### ----------------------------------- STIR POSITIONING ----------------------------------- ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'STIR Positioning':
+elif page == 'STIR Positioning':
     st.title("Fed Funds")
     app_stir_positioning.plot_fedfunds_futures_positions(start_date, end_date)
     st.title("SOFR 1M")
@@ -297,7 +360,7 @@ elif menu == 'STIR Positioning':
 ### ------------------------------------ TRACE MODELING ------------------------------------ ###
 ### ---------------------------------------------------------------------------------------- ###
 
-elif menu == 'TRACE Model':
+elif page == 'TRACE Model':
     st.title('On-the-Run vs. Off-the-Run')
     app_trace.plot_on_vs_off(start_date,end_date)
     st.title('Dealer-Dealer vs. Dealer-Client')
