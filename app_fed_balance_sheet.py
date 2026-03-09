@@ -2,24 +2,11 @@
 ### ------------------------------------------- FED BALANCE SHEET -------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-import pandas as pd
-import functools as ft
-import requests
-import streamlit as st
-import plotly.graph_objs as go
-from matplotlib import pyplot as plt
+### FUNCTIONS AND PACKAGES ###
+from Functions import *
 from pathlib import Path
 import os
-import pickle
-from plotly.subplots import make_subplots
 DATA_DIR = os.getenv('DATA_DIR', 'data')
-
-def merge_dfs(array_of_dfs):
-    return ft.reduce(lambda left,
-                            right: pd.merge(left, right,
-                                            left_index=True,
-                                            right_index=True,
-                                            how='outer'), array_of_dfs)
 
 asset_colors = {
     'securities_outright': '#5FB3FF',   # Vivid sky blue (QE, stable)
@@ -143,7 +130,16 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    ### PLOT ###
+    ### ASSETS SUMMARY ###
+    streamlit_plot(
+        fed_assets_merge,
+        ['securities_outright', 'lending_portfolio'],
+        [asset_colors['securities_outright'], asset_colors['lending_portfolio']],
+        "Assets: Summary",
+        "Dollars"
+    )
+
+    ### QE SECURITIES ###
     st.title("1. QE Securities")
     fig = go.Figure()
     cols = ['treasuries', 'mbs']
