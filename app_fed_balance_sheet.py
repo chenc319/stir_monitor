@@ -110,67 +110,24 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
     fed_assets_merge_diff = fed_assets_merge_diff[start:end]
     fed_assets_merge_diff_z = fed_assets_merge_diff_z[start:end]
 
-    ### PLOT ###
-    fig = go.Figure()
-    cols = ['securities_outright', 'lending_portfolio']
-    labels = [
-        'QE Securities',
-        'Lending Portfolio',
-    ]
-    colors = [asset_colors['securities_outright'], asset_colors['lending_portfolio']]
-    for col, color, label in zip(cols, colors, labels):
-        fig.add_trace(go.Scatter(x=fed_assets_merge.index, y=fed_assets_merge[col],
-                                 mode='lines',
-                                 name=label,
-                                 line=dict(color=color)))
-    fig.update_layout(
-        title="Assets: Summary",
-        yaxis_title="Dollars",
-        hovermode='x unified'
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
     ### ASSETS SUMMARY ###
     streamlit_plot(
         fed_assets_merge,
         ['securities_outright', 'lending_portfolio'],
         [asset_colors['securities_outright'], asset_colors['lending_portfolio']],
         "Assets: Summary",
-        "Dollars"
+        ""
     )
 
     ### QE SECURITIES ###
     st.title("1. QE Securities")
-    fig = go.Figure()
-    cols = ['treasuries', 'mbs']
-    labels = [
-        'Treasury',
-        'MBS',
-    ]
-    colors = [asset_colors['treasuries'],
-              asset_colors['mbs']]
-    fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
-    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 2 + 1
-        col_position = i % 2 + 1
-        fig.add_trace(
-            go.Scatter(
-                x=fed_assets_merge.index,
-                y=fed_assets_merge[col],
-                mode='lines',
-                name=label,
-                line=dict(color=color)
-            ),
-            row=row,
-            col=col_position
-        )
-    fig.update_layout(
-        title="QE Securities: Weekly Averages",
-        showlegend=False,
-        height=300,
-        hovermode='x unified'
+    streamlit_plot(
+        fed_assets_merge,
+        ['treasuries', 'mbs'],
+        [asset_colors['treasuries'], asset_colors['MBS']],
+        "QE Securities: Weekly Averages",
+        ""
     )
-    st.plotly_chart(fig, use_container_width=True)
 
     ### PLOT ###
     fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
