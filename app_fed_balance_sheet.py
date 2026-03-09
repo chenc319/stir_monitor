@@ -238,26 +238,18 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
     fed_liabilities_merge_diff = fed_liabilities_merge_diff[start:end]
     fed_liabilities_merge_diff_z = fed_liabilities_merge_diff_z[start:end]
 
-    ### PLOT ###
-    fig = go.Figure()
-    cols = ['currency', 'total_reserves', 'total_rrp']
-    labels = [
-        'Currency',
-        'Total Reserves',
-        'Total RRP'
-    ]
-    colors = [liab_colors['currency'], liab_colors['total_reserves'],liab_colors['total_rrp']]
-    for col, color, label in zip(cols,colors,labels):
-        fig.add_trace(go.Scatter(x=fed_liabilities_merge.index, y=fed_liabilities_merge[col],
-                                 mode='lines',
-                                 name=label,
-                                 line=dict(color=color)))
-    fig.update_layout(
-        title="Liabilities: Summary",
-        yaxis_title="Dollars",
-        hovermode='x unified'
+    ### LIABILITIES SUMMARY ###
+    streamlit_plot(
+        fed_liabilities_merge,
+        ['currency', 'total_reserves', 'total_rrp'],
+        [liab_colors['currency'], liab_colors['total_reserves'], liab_colors['total_rrp']],
+        [
+            'Currency',
+            'Total Reserves',
+            'Total RRP'],
+        "Liabilities: Summary",
+        ""
     )
-    st.plotly_chart(fig, use_container_width=True)
 
     ### PLOT ###
     fig = go.Figure()
