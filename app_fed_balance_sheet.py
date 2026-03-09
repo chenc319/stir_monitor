@@ -115,6 +115,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         fed_assets_merge,
         ['securities_outright', 'lending_portfolio'],
         [asset_colors['securities_outright'], asset_colors['lending_portfolio']],
+        ['Securities Outright','Lending Portfolio'],
         "Assets: Summary",
         ""
     )
@@ -124,153 +125,62 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
     streamlit_plot(
         fed_assets_merge,
         ['treasuries', 'mbs'],
-        [asset_colors['treasuries'], asset_colors['MBS']],
+        [asset_colors['treasuries'], asset_colors['mbs']],
+        ['Treasuries','MBS'],
         "QE Securities: Weekly Averages",
         ""
     )
-
-    ### PLOT ###
-    fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
-    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 2 + 1
-        col_position = i % 2 + 1
-        fig.add_trace(
-            go.Scatter(
-                x=fed_assets_merge_diff.index,
-                y=fed_assets_merge_diff[col],
-                mode='lines',
-                name=label,
-                line=dict(color=color)
-            ),
-            row=row,
-            col=col_position
-        )
-    fig.update_layout(
-        title="QE Securities: Weekly Changes",
-        showlegend=False,
-        height=300,
-        hovermode='x unified'
+    streamlit_plot(
+        fed_assets_merge_diff,
+        ['treasuries', 'mbs'],
+        [asset_colors['treasuries'], asset_colors['mbs']],
+        ['Treasuries','MBS'],
+        "QE Securities: Weekly Changes",
+        ""
     )
-    st.plotly_chart(fig, use_container_width=True)
-
-    ### PLOT ###
-    fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
-    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 2 + 1
-        col_position = i % 2 + 1
-        fig.add_trace(
-            go.Scatter(
-                x=fed_assets_merge_diff_z.index,
-                y=fed_assets_merge_diff_z[col],
-                mode='lines',
-                name=label,
-                line=dict(color=color)
-            ),
-            row=row,
-            col=col_position
-        )
-    fig.update_layout(
-        title="QE Securities: Weekly Changes Z-Scored",
-        showlegend=False,
-        height=300,
-        hovermode='x unified'
+    streamlit_plot(
+        fed_assets_merge_diff_z,
+        ['treasuries', 'mbs'],
+        [asset_colors['treasuries'], asset_colors['mbs']],
+        ['Treasuries','MBS'],
+        "QE Securities: Weekly Z-Scored",
+        ""
     )
-    st.plotly_chart(fig, use_container_width=True)
 
-    ### PLOT ###
+    ### LENDING PORTFOLIO ###
     st.title("2. Lending Portfolio")
-    fig = go.Figure()
-    cols = ['permanent_lending', 'temporary_lending']
-    labels = [
-        'Permanent Lending Portfolio',
-        'Temporary Lending Portfolio',
-    ]
-    colors = [asset_colors['permanent_lending'], asset_colors['temporary_lending']]
-    fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
-    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 2 + 1
-        col_position = i % 2 + 1
-        fig.add_trace(
-            go.Scatter(
-                x=fed_assets_merge.index,
-                y=fed_assets_merge[col],
-                mode='lines',
-                name=label,
-                line=dict(color=color)
-            ),
-            row=row,
-            col=col_position
-        )
-    fig.update_layout(
-        title="Lending Portfolio: Weekly Averages",
-        showlegend=False,
-        height=300,
-        hovermode='x unified'
+    streamlit_plot(
+        fed_assets_merge,
+        ['permanent_lending', 'temporary_lending'],
+        [asset_colors['permanent_lending'], asset_colors['temporary_lending']],
+        [
+            'Permanent Lending Portfolio',
+            'Temporary Lending Portfolio'],
+        "Lending Portfolio: Weekly Averages",
+        ""
     )
-    st.plotly_chart(fig, use_container_width=True)
+    streamlit_plot(
+        fed_assets_merge_diff_z,
+        ['srf', 'discount_window','fx_swap_line'],
+        [asset_colors['srf'], asset_colors['discount_window'], asset_colors['fx_swap_line']],
+        [
+            'SRF',
+            'Discount Window',
+            'FX Swap Line'],
+        "Permanent Lending Portfolio: Weekly Averages",
+        ""
+    )
+    streamlit_plot(
+        fed_assets_merge_diff_z,
+        ['ppp', 'ms'],
+        [asset_colors['ppp'], asset_colors['ms']],
+        [
+            'PPP Liquidity Facility (Direct Lending)',
+            'Main Street Lending Facility (Indirect Lending)'],
+        "Temporary Lending Portfolio: Weekly Averages",
 
-    ### PLOT ###
-    fig = go.Figure()
-    cols = ['srf', 'discount_window','fx_swap_line']
-    labels = [
-        'SRF',
-        'Discount Window',
-        'FX Swap Line',
-    ]
-    colors = [asset_colors['srf'], asset_colors['discount_window'], asset_colors['fx_swap_line']]
-    fig = make_subplots(rows=1, cols=3, subplot_titles=labels)
-    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 3 + 1
-        col_position = i % 3 + 1
-        fig.add_trace(
-            go.Scatter(
-                x=fed_assets_merge.index,
-                y=fed_assets_merge[col],
-                mode='lines',
-                name=label,
-                line=dict(color=color)
-            ),
-            row=row,
-            col=col_position
-        )
-    fig.update_layout(
-        title="Permanent Lending Portfolio: Weekly Averages",
-        showlegend=False,
-        height=300,
-        hovermode='x unified'
+        ""
     )
-    st.plotly_chart(fig, use_container_width=True)
-
-    ### PLOT ###
-    fig = go.Figure()
-    cols = ['ppp', 'ms']
-    labels = [
-        'PPP Liquidity Facility (Direct Lending)',
-        'Main Street Lending Facility (Indirect Lending)',
-    ]
-    colors = [asset_colors['ppp'], asset_colors['ms']]
-    fig = make_subplots(rows=1, cols=2, subplot_titles=labels)
-    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 2 + 1
-        col_position = i % 2 + 1
-        fig.add_trace(
-            go.Scatter(
-                x=fed_assets_merge.index,
-                y=fed_assets_merge[col],
-                mode='lines',
-                name=label,
-                line=dict(color=color)
-            ),
-            row=row,
-            col=col_position
-        )
-    fig.update_layout(
-        title="Temporary Lending Portfolio: Weekly Averages",
-        showlegend=False,
-        height=300,
-        hovermode='x unified'
-    )
-    st.plotly_chart(fig, use_container_width=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ---------------------------------------------- LIABILITIES ----------------------------------------------- ###

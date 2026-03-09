@@ -88,13 +88,13 @@ def return_metrics(backtest_returns_data, benchmark_data, ann_factor):
         ]
     return return_metrics_df
 
-def streamlit_plot(df,columns_array,colors_array,graph_title,y_axis_label):
+def streamlit_plot(df,columns_array,colors_array,labels_array,graph_title,y_axis_label):
     fig = go.Figure()
-    for name, color in zip(columns_array, colors_array):
+    for col, label, color in zip(columns_array,labels_array,colors_array):
         fig.add_trace(go.Scatter(
             x=df.index,
-            y=df[name],
-            name=name,
+            y=df[col],
+            name=label,
             mode='lines',
             line=dict(color=color, width=2)
         ))
