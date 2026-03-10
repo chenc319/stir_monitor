@@ -138,8 +138,7 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         "QE Securities: Weekly Changes",
         "",
         rows = 1,
-        cols = 2,
-        subplot_titles = ['Treasuries','MBS']
+        cols = 2
     )
     streamlit_plot(
         fed_assets_merge_diff_z,
