@@ -96,18 +96,12 @@ def streamlit_plot(
     graph_title,
     y_axis_label,
     rows: int = 1,
-    cols: int = 1,
-    subplot_titles=None
-):
+    cols: int = 1):
     if rows > 1 or cols > 1:
-        # Default subplot titles to labels if not provided
-        if subplot_titles is None:
-            subplot_titles = labels_array
-
         fig = make_subplots(
             rows=rows,
             cols=cols,
-            subplot_titles=subplot_titles
+            subplot_titles=labels_array
         )
 
         for i, (col_name, label, color) in enumerate(
