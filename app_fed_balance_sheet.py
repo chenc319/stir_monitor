@@ -146,7 +146,9 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
         [asset_colors['treasuries'], asset_colors['mbs']],
         ['Treasuries','MBS'],
         "QE Securities: Weekly Z-Scored",
-        ""
+        "",
+        rows = 1,
+        cols = 2
     )
 
     ### LENDING PORTFOLIO ###
@@ -170,7 +172,9 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
             'Discount Window',
             'FX Swap Line'],
         "Permanent Lending Portfolio: Weekly Averages",
-        ""
+        "",
+        rows = 1,
+        cols = 3
     )
     streamlit_plot(
         fed_assets_merge_diff_z,
@@ -180,8 +184,9 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
             'PPP Liquidity Facility (Direct Lending)',
             'Main Street Lending Facility (Indirect Lending)'],
         "Temporary Lending Portfolio: Weekly Averages",
-
-        ""
+        "",
+        rows = 1,
+        cols = 2
     )
 
 ### ---------------------------------------------------------------------------------------------------------- ###
@@ -254,102 +259,92 @@ def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
     )
 
     ### PLOT ###
-    fig = go.Figure()
-    cols = ['currency', 'rrp', 'foreign_repo', 'reserves', 'tga', 'gse_dmfu']
-    labels = [
-        'Currency',
-        'RRP Facility',
-        'Foreign RP Facility',
-        'DI Reserves',
-        'TGA',
-        'GSE/DMFU'
-    ]
-    colors = [liab_colors['currency'],
-              liab_colors['rrp'],
-              liab_colors['foreign_repo'],
-              liab_colors['reserves'],
-              liab_colors['tga'],
-              liab_colors['gse_dmfu']]
-    for col, color, label in zip(cols,colors,labels):
-        fig.add_trace(go.Scatter(x=fed_liabilities_merge.index, y=fed_liabilities_merge[col],
-                                 mode='lines',
-                                 name=label,
-                                 line=dict(color=color)))
-    fig.update_layout(
-        title="Liabilities: Components",
-        yaxis_title="Dollars",
-        hovermode='x unified'
+    streamlit_plot(
+        fed_liabilities_merge,
+        ['currency', 'rrp', 'foreign_repo', 'reserves', 'tga', 'gse_dmfu'],
+        [liab_colors['currency'],
+         liab_colors['rrp'],
+         liab_colors['foreign_repo'],
+         liab_colors['reserves'],
+         liab_colors['tga'],
+         liab_colors['gse_dmfu']],
+        [
+            'Currency',
+            'RRP Facility',
+            'Foreign RP Facility',
+            'DI Reserves',
+            'TGA',
+            'GSE/DMFU'
+        ],
+        "Liabilities: Components",
+        ""
     )
-    st.plotly_chart(fig, use_container_width=True)
 
-    ### PLOT ###
-    fig = make_subplots(rows=3, cols=2, subplot_titles=labels)
-    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 2 + 1
-        col_position = i % 2 + 1
-        fig.add_trace(
-            go.Scatter(
-                x=fed_liabilities_merge.index,
-                y=fed_liabilities_merge[col],
-                mode='lines',
-                name=label,
-                line=dict(color=color)
-            ),
-            row=row,
-            col=col_position
-        )
-    fig.update_layout(
-        title="Liabilities: Weekly Averages",
-        showlegend=False,
-        height=600,
-        hovermode='x unified'
+    streamlit_plot(
+        fed_liabilities_merge,
+        ['currency', 'rrp', 'foreign_repo', 'reserves', 'tga', 'gse_dmfu'],
+        [liab_colors['currency'],
+         liab_colors['rrp'],
+         liab_colors['foreign_repo'],
+         liab_colors['reserves'],
+         liab_colors['tga'],
+         liab_colors['gse_dmfu']],
+        [
+            'Currency',
+            'RRP Facility',
+            'Foreign RP Facility',
+            'DI Reserves',
+            'TGA',
+            'GSE/DMFU'
+        ],
+        "Liabilities: Weekly Averages",
+        "",
+        rows = 3,
+        cols = 2
     )
-    st.plotly_chart(fig, use_container_width=True)
 
-    ### PLOT ###
-    fig = make_subplots(rows=3, cols=2, subplot_titles=labels)
-    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 2 + 1
-        col_position = i % 2 + 1
-        fig.add_trace(
-            go.Scatter(
-                x=fed_liabilities_merge_diff.index,
-                y=fed_liabilities_merge_diff[col],
-                mode='lines',
-                name=label,
-                line=dict(color=color)
-            ),
-            row=row,
-            col=col_position
-        )
-    fig.update_layout(
-        title="Liabilities: Weekly Change",
-        showlegend=False,
-        height=600,
-        hovermode='x unified'
+    streamlit_plot(
+        fed_liabilities_merge_diff,
+        ['currency', 'rrp', 'foreign_repo', 'reserves', 'tga', 'gse_dmfu'],
+        [liab_colors['currency'],
+         liab_colors['rrp'],
+         liab_colors['foreign_repo'],
+         liab_colors['reserves'],
+         liab_colors['tga'],
+         liab_colors['gse_dmfu']],
+        [
+            'Currency',
+            'RRP Facility',
+            'Foreign RP Facility',
+            'DI Reserves',
+            'TGA',
+            'GSE/DMFU'
+        ],
+        "Liabilities: Weekly Change",
+        "",
+        rows=3,
+        cols=2
     )
-    st.plotly_chart(fig, use_container_width=True)
 
-    ### PLOT ###
-    fig = make_subplots(rows=3, cols=2, subplot_titles=labels)
-    for i, (col, color, label) in enumerate(zip(cols, colors, labels)):
-        row = i // 2 + 1
-        col_position = i % 2 + 1
-        fig.add_trace(
-            go.Scatter(
-                x=fed_liabilities_merge_diff_z.index,
-                y=fed_liabilities_merge_diff_z[col],
-                mode='lines',
-                name=label,
-                line=dict(color=color)
-            ),
-            row=row,
-            col=col_position
-        )
-    fig.update_layout(
-        title="Liabilities: Weekly Change Z-Scored",
-        showlegend=False,
-        height=600,
-        hovermode='x unified'
+    streamlit_plot(
+        fed_liabilities_merge_diff_z,
+        ['currency', 'rrp', 'foreign_repo', 'reserves', 'tga', 'gse_dmfu'],
+        [liab_colors['currency'],
+         liab_colors['rrp'],
+         liab_colors['foreign_repo'],
+         liab_colors['reserves'],
+         liab_colors['tga'],
+         liab_colors['gse_dmfu']],
+        [
+            'Currency',
+            'RRP Facility',
+            'Foreign RP Facility',
+            'DI Reserves',
+            'TGA',
+            'GSE/DMFU'
+        ],
+        "Liabilities: Weekly Change Z-Scored",
+        "",
+        rows=3,
+        cols=2
     )
-    st.plotly_chart(fig, use_container_width=True)
