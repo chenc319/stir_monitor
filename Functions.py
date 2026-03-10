@@ -139,24 +139,24 @@ def streamlit_plot(
         height=450,
         hovermode='x unified',
         legend=dict(title='Legend', orientation='h', y=-0.25),
-        margin=dict(t=80, b=30),  # more top margin for space above everything
+        margin=dict(t=80, b=30),
         title=dict(
             text=graph_title,
-            y=0.96,                 # move main title slightly down
-            x=0.5,
-            xanchor='center',
+            y=0.96,
+            x=0.0,
+            xanchor='left',
             yanchor='top'
         ),
         yaxis_title=y_axis_label,
         showlegend=(rows == 1 and cols == 1)
     )
 
-    # Nudge subplot titles upward to add space between them and main title
     if (rows > 1 or cols > 1) and 'annotations' in fig.layout:
         for ann in fig.layout.annotations:
-            ann.y += 0.03  # tweak this value if you want more/less gap
+            ann.y += 0.03
 
     st.plotly_chart(fig, use_container_width=True)
+
 
 def streamlit_plot_with_spreads(
     df,
