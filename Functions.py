@@ -88,24 +88,68 @@ def return_metrics(backtest_returns_data, benchmark_data, ann_factor):
         ]
     return return_metrics_df
 
-def streamlit_plot(df,columns_array,colors_array,labels_array,graph_title,y_axis_label):
-    fig = go.Figure()
-    for col, label, color in zip(columns_array,labels_array,colors_array):
-        fig.add_trace(go.Scatter(
-            x=df.index,
-            y=df[col],
-            name=label,
-            mode='lines',
-            line=dict(color=color, width=2)
-        ))
+def streamlit_plot(
+    df,
+    columns_array,
+    colors_array,
+    labels_array,
+    graph_title,
+    y_axis_label,
+    rows: int = 1,
+    cols: int = 1,
+    subplot_titles=None
+):
+    if rows > 1 or cols > 1:
+        # Default subplot titles to labels if not provided
+        if subplot_titles is None:
+            subplot_titles = labels_array
+
+        fig = make_subplots(
+            rows=rows,
+            cols=cols,
+            subplot_titles=subplot_titles
+        )
+
+        for i, (col_name, label, color) in enumerate(
+            zip(columns_array, labels_array, colors_array)
+        ):
+            row = i // cols + 1
+            col_pos = i % cols + 1
+
+            fig.add_trace(
+                go.Scatter(
+                    x=df.index,
+                    y=df[col_name],
+                    name=label,
+                    mode='lines',
+                    line=dict(color=color, width=2),
+                ),
+                row=row,
+                col=col_pos
+            )
+    else:
+        fig = go.Figure()
+        for col_name, label, color in zip(columns_array, labels_array, colors_array):
+            fig.add_trace(
+                go.Scatter(
+                    x=df.index,
+                    y=df[col_name],
+                    name=label,
+                    mode='lines',
+                    line=dict(color=color, width=2),
+                )
+            )
+
     fig.update_layout(
         height=450,
         hovermode='x unified',
         legend=dict(title='Legend', orientation='h', y=-0.25),
         margin=dict(t=30, b=30),
         title=graph_title,
-        yaxis_title=y_axis_label
+        yaxis_title=y_axis_label,
+        showlegend=(rows == 1 and cols == 1)  # hide legend for multi-subplots if you want
     )
+
     st.plotly_chart(fig, use_container_width=True)
 
 def streamlit_plot_with_spreads(
