@@ -169,9 +169,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                     "props": [
                         ("border-collapse", "collapse"),
                         ("font-family", "Calibri, Arial, sans-serif"),
-                        ("font-size", "12px"),
-                        ("table-layout", "fixed"),   # force equal column widths
-                        ("width", "100%"),
+                        ("font-size", "12px")
                     ],
                 },
                 {
@@ -182,6 +180,8 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                         ("text-align", "center"),
                         ("border", "1px solid #CCCCCC"),
                         ("font-weight", "bold"),
+                        ("table-layout", "fixed"),   # force equal column widths
+                        ("width", "100%"),
                     ],
                 },
                 {
