@@ -252,12 +252,13 @@ if page == 'Liquidity Stress':
 ### ---------------------------------------------------------------------------------------- ###
 
 elif page == 'Fed Balance Sheet':
+    st.title('Weekly Fed H.4.1 Balance Sheet Snapshot')
+    app_fed_balance_sheet.plot_fed_balance_sheet_snapshot(start_date, end_date)
     st.title("Assets")
     app_fed_balance_sheet.plot_fed_balance_sheet_assets(start_date, end_date)
     st.title("Liabilities")
     app_fed_balance_sheet.plot_fed_balance_sheet_liabilities(start_date, end_date)
-    st.title('Fed Balance Sheet')
-    app_fed_balance_sheet.plot_fed_balance_sheet_snapshot(start_date, end_date)
+
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------------------ REPO ---------------------------------------- ###
