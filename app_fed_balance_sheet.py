@@ -90,7 +90,6 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     ### ---------------------------------------------------------------------------------------------------------- ###
 
     # 1) Get list of dates from one known series
-    base_series = fed_balance_sheet_dict["Reserve Bank Credit"]
     all_dates = base_series.index.sort_values()
 
     ### ROUND ALL NUMBERS ###
