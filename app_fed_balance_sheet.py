@@ -131,9 +131,9 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         "Memorandum": ["Level", "1w", "4w", "6m", "12m"],
         "Fed Custody Holdings": fed_balance_sheet_dict["Fed Custody Holdings"].loc[chosen_date],
-        "Treasury Custody": fed_balance_sheet_dict["Treasury Custody"].loc[chosen_date],
-        "MBS Custody": fed_balance_sheet_dict["MBS Custody"].loc[chosen_date],
-        "Other Custody": fed_balance_sheet_dict["Other"].loc[chosen_date],
+        "Treasury": fed_balance_sheet_dict["Treasury Custody"].loc[chosen_date],
+        "MBS": fed_balance_sheet_dict["MBS Custody"].loc[chosen_date],
+        "Other": fed_balance_sheet_dict["Other"].loc[chosen_date],
     }).T
 
     df = fed_consolidated_balance_sheet.copy()
