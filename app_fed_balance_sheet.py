@@ -147,7 +147,22 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     df = df[cols]
 
     # 5) Styling to match the Excel screenshot
-    section_rows = {"Assets", "Liabilities", "Memorandum"}
+    section_rows = {
+        "Assets",
+        'Securities Held',
+        'Repo',
+        'Loans',
+        'Central Bank Liquidity Swaps',
+        'Other Assets'
+        "Liabilities",
+        'Currency in Circulation',
+        'Reverse Repurchase Agreements',
+        'Deposits with FRB Banks (ex. Reserves)',
+        'Reserves Balances',
+        'Other Liabilities (incl. Tsy Remittances)',
+        "Memorandum",
+        'Fed Custody Holdings',
+    }
 
     def style_fed_table(df):
         styler = df.style
