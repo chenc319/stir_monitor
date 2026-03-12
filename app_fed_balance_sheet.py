@@ -196,7 +196,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                     "selector": "td",
                     "props": [
                         ("border", "1px solid #CCCCCC"),
-                        ("text-align", "right"),
+                        ("text-align", "center"),
                     ],
                 },
             ]
