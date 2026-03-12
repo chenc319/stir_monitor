@@ -85,11 +85,9 @@ liab_colors = {
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
-    # 1) Get list of dates from one known series
     base_series = fed_balance_sheet_dict["Reserve Bank Credit"]
     all_dates = base_series.index.sort_values()
 
-    # 2) Round all numeric data once and remove -0
     for key, obj in fed_balance_sheet_dict.items():
         if isinstance(obj, (pd.DataFrame, pd.Series)):
             fed_balance_sheet_dict[key] = obj.round(0)
@@ -100,11 +98,10 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     chosen_date = st.selectbox(
         "Select H.4.1 date",
         options=all_dates,
-        index=len(all_dates) - 1,   # latest by default
+        index=len(all_dates) - 1,
         format_func=lambda d: d.strftime("%Y-%m-%d"),
     )
 
-    # 3) Build consolidated snapshot for that date
     fed_consolidated_balance_sheet = pd.DataFrame({
         "Assets": ["Level", "1w", "4w", "6m", "12m"],
         "Reserve Bank Credit": fed_balance_sheet_dict["Reserve Bank Credit"].loc[chosen_date],
@@ -141,41 +138,39 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     }).T
 
     df = fed_consolidated_balance_sheet.copy()
-
-    # 4) Ensure canonical column order
     cols = ["Level", "1w", "4w", "6m", "12m"]
     df = df[cols]
 
-    # 5) Styling to match the Excel screenshot
+    # all headers (untabbed + bold)
     section_rows = {
         "Assets",
-        'Securities Held',
-        'Repo',
-        'Loans',
-        'Central Bank Liquidity Swaps',
-        'Other Assets'
+        "Securities Held",
+        "Repo",
+        "Loans",
+        "Central Bank Liquidity Swaps",
+        "Other Assets",
         "Liabilities",
-        'Currency in Circulation',
-        'Reverse Repurchase Agreements',
-        'Deposits with FRB Banks (ex. Reserves)',
-        'Reserves Balances',
-        'Other Liabilities (incl. Tsy Remittances)',
+        "Currency in Circulation",
+        "Reverse Repurchase Agreements",
+        "Deposits with FRB Banks (ex. Reserves)",
+        "Reserves Balances",
+        "Other Liabilities (incl. Tsy Remittances)",
         "Memorandum",
-        'Fed Custody Holdings',
+        "Fed Custody Holdings",
     }
+
+    # only these get the dark-blue band
+    dark_blue_rows = {"Assets", "Liabilities", "Memorandum"}
 
     def style_fed_table(df):
         styler = df.style
 
-        # Only format numeric cells; leave strings as-is
         def numeric_formatter(x):
             if isinstance(x, (int, float)) and not pd.isna(x):
                 return f"{x:,.0f}"
             return x
-
         styler = styler.format(numeric_formatter, na_rep="")
 
-        # Base table look + fixed row-name width
         styler = styler.set_table_styles(
             [
                 {
@@ -218,7 +213,6 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
             ]
         )
 
-        # Explicitly center numeric columns
         numeric_cols = ["Level", "1w", "4w", "6m", "12m"]
         existing_cols = [c for c in numeric_cols if c in df.columns]
         if existing_cols:
@@ -226,10 +220,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                 subset=pd.IndexSlice[:, existing_cols],
                 **{"text-align": "center"},
             )
-
-        # Make data columns reasonably wide (row-name stays 300px)
-        if existing_cols:
-            data_share = 90  # % of table width for numeric cols
+            data_share = 90
             per_col = data_share / len(existing_cols)
             styler = styler.set_table_styles(
                 styler.table_styles
@@ -241,44 +232,46 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                 ]
             )
 
-        # Section header band (and bold only section row names)
-        def section_style(row):
-            if row.name in section_rows:
+        # row background:
+        # dark blue only for dark_blue_rows, otherwise white
+        def row_style(row):
+            if row.name in dark_blue_rows:
                 return [
                     "background-color: #002b55; color: white; "
                     "font-weight: bold; text-align:left;"
                 ] * len(row)
+            # keep other rows default background; bold handled via index
             return [""] * len(row)
+        styler = styler.apply(row_style, axis=1)
 
-        styler = styler.apply(section_style, axis=1)
-
-        # Indent subsections once; sections not indented, not touched besides band
+        # index (row label) styling:
+        # - any section_rows: bold + no indent
+        # - others: normal + single indent
         def index_style(idx_series):
             styles = []
             for label in idx_series:
                 if label in section_rows:
-                    # Section: no extra indent (just minimal padding)
-                    styles.append("padding-left: 4px;")
+                    styles.append("padding-left: 4px; font-weight: bold;")
                 else:
-                    # Subsection: single tab
-                    styles.append("padding-left: 20px;")
+                    styles.append("padding-left: 20px; font-weight: normal;")
             return styles
-
         styler = styler.apply_index(index_style, axis=0)
 
-        # Color +/- changes and bold all non-zero numbers in change columns
-        def color_changes(val):
+        # color and bold only non-zero numbers
+        def color_and_bold_nonzero(val):
             if pd.isna(val) or not isinstance(val, (int, float)):
                 return ""
             if val > 0:
-                return "color: #008000; font-weight:bold;"   # green + bold
+                return "color: #008000; font-weight:bold;"
             if val < 0:
-                return "color: #CC0000; font-weight:bold;"   # red + bold
-            return ""  # zero: neutral
+                return "color: #CC0000; font-weight:bold;"
+            return ""  # zero
 
-        for col in ["1w", "4w", "6m", "12m"]:
+        for col in ["Level", "1w", "4w", "6m", "12m"]:
             if col in df.columns:
-                styler = styler.applymap(color_changes, subset=pd.IndexSlice[:, col])
+                styler = styler.applymap(
+                    color_and_bold_nonzero, subset=pd.IndexSlice[:, col]
+                )
 
         return styler
 
@@ -286,7 +279,6 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     styled = style_fed_table(df)
     html = styled.to_html()
     st.markdown(html, unsafe_allow_html=True)
-
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
