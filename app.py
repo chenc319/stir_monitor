@@ -256,6 +256,8 @@ elif page == 'Fed Balance Sheet':
     app_fed_balance_sheet.plot_fed_balance_sheet_assets(start_date, end_date)
     st.title("Liabilities")
     app_fed_balance_sheet.plot_fed_balance_sheet_liabilities(start_date, end_date)
+    st.title('Fed Balance Sheet')
+    app_fed_balance_sheet.plot_fed_balance_sheet_snapshot(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------------------ REPO ---------------------------------------- ###

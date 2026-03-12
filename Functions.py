@@ -16,6 +16,15 @@ from plotly.subplots import make_subplots
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 from io import StringIO
+from pandas_datareader import data as pdr
+import base64
+from fredapi import Fred
+fred = Fred(api_key="6905137c26f03db5c8c09f70b7839150")
+
+def get_fred_series(series_id, start, end):
+    s = fred.get_series(series_id, observation_start=start, observation_end=end)
+    s = s.to_frame(name=series_id)
+    return s
 
 def merge_dfs(array_of_dfs):
     return ft.reduce(lambda left, right: pd.merge(left, right,

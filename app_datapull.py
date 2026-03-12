@@ -3,18 +3,9 @@
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 ### PACKAGES ###
-import functools as ft
-import requests
-from pandas_datareader import data as pdr
+from Functions import *
 from pathlib import Path
 import os
-import pickle
-from io import StringIO
-import pandas as pd
-import requests
-import base64
-import pandas as pd
-from io import StringIO
 DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 ### FUNCTIONS ###

@@ -8,6 +8,53 @@ from pathlib import Path
 import os
 DATA_DIR = os.getenv('DATA_DIR', 'data')
 
+### ASSETS ###
+with open(Path(DATA_DIR) / 'fed_assets_securities_outright.pkl', 'rb') as file:
+    fed_assets_securities_outright = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_assets_treasury_securities.pkl', 'rb') as file:
+    fed_assets_treasury_securities = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_assets_notes_and_bonds.pkl', 'rb') as file:
+    fed_assets_notes_and_bonds = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_assets_mbs.pkl', 'rb') as file:
+    fed_assets_mbs = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_assets_total.pkl', 'rb') as file:
+    fed_assets_total = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_assets_total.pkl', 'rb') as file:
+    fed_assets_total = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_assets_srf.pkl', 'rb') as file:
+    fed_assets_srf = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_assets_dw_primary.pkl', 'rb') as file:
+    fed_assets_dw_primary = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_assets_dw_secondary.pkl', 'rb') as file:
+    fed_assets_dw_secondary = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_assets_dw_seasonal.pkl', 'rb') as file:
+    fed_assets_dw_seasonal = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_assets_fx_swap_line.pkl', 'rb') as file:
+    fed_assets_fx_swap_line = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_assets_main_street.pkl', 'rb') as file:
+    fed_assets_main_street = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_assets_ppp_facility.pkl', 'rb') as file:
+    fed_assets_ppp_facility = pickle.load(file)
+
+### LIABILITIES ###
+with open(Path(DATA_DIR) / 'fed_liabilities_currency.pkl', 'rb') as file:
+    fed_liabilities_currency = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_liabilities_foreign_repo.pkl', 'rb') as file:
+    fed_liabilities_foreign_repo = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_liabilities_rrp.pkl', 'rb') as file:
+    fed_liabilities_rrp = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_liabilities_reserves.pkl', 'rb') as file:
+    fed_liabilities_reserves = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_liabilities_tga.pkl', 'rb') as file:
+    fed_liabilities_tga = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_liabilities_gse_dmfu.pkl', 'rb') as file:
+    fed_liabilities_gse_dmfu = pickle.load(file)
+with open(Path(DATA_DIR) / 'fed_liabilities_total.pkl', 'rb') as file:
+    fed_liabilities_total = pickle.load(file)
+
+with open(Path(DATA_DIR) / 'fed_balance_sheet_dict.pkl', 'rb') as file:
+    fed_balance_sheet_dict = pickle.load(file)
+
 asset_colors = {
     'securities_outright': '#5FB3FF',   # Vivid sky blue (QE, stable)
     'lending_portfolio':   '#2DCDB2',   # Bright teal/mint (portfolio)
@@ -34,38 +81,168 @@ liab_colors = {
 }
 
 ### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------------- SUMMARY ------------------------------------------------ ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
+    ### ---------------------------------------------------------------------------------------------------------- ###
+    ### ------------------------------ ALL ARE WEDNESDAY LEVELS NOT WEEKLY AVERAGES ------------------------------ ###
+    ### ---------------------------------------------------------------------------------------------------------- ###
+
+    chosen_date = '2026-02-18'
+    fed_consolidated_balance_sheet = pd.DataFrame({
+        'Assets': ['Level', '1w', '4w', '6m', '12m'],
+        'Reserve Bank Credit': fed_balance_sheet_dict['Reserve Bank Credit'].loc[chosen_date],
+        'Securities Held': fed_balance_sheet_dict['Securities Held'].loc[chosen_date],
+        'Treasury': fed_balance_sheet_dict['Treasury'].loc[chosen_date],
+        'MBS': fed_balance_sheet_dict['MBS'].loc[chosen_date],
+        'Agency': fed_balance_sheet_dict['Agency'].loc[chosen_date],
+        'Repo': fed_balance_sheet_dict['Repo'].loc[chosen_date],
+        'FIMA Repo Facility': fed_balance_sheet_dict['FIMA Repo Facility'].loc[chosen_date],
+        'Standing Repo Facility': fed_balance_sheet_dict['Standing Repo Facility'].loc[chosen_date],
+        'Loans': fed_balance_sheet_dict['Loans'].loc[chosen_date],
+        'Primary Credit (Discount Window)': fed_balance_sheet_dict['Primary Credit (Discount Window)'].loc[chosen_date],
+        'Securities': fed_balance_sheet_dict['Securities'].loc[chosen_date],
+        'Other Credit Extensions': fed_balance_sheet_dict['Other Credit Extensions'].loc[chosen_date],
+        'Other Assets': fed_balance_sheet_dict['Other Assets'].loc[chosen_date],
+
+        'Liabilities': ['Level', '1w', '4w', '6m', '12m'],
+        'Currency in Circulation': fed_balance_sheet_dict['Currency in Circulation'].loc[chosen_date],
+        'Reverse Repurchase Agreements': fed_balance_sheet_dict['Reverse Repurchase Agreements'].loc[chosen_date],
+        'Foreign RRP': fed_balance_sheet_dict['Foreign RRP'].loc[chosen_date],
+        'Domestic RRP': fed_balance_sheet_dict['Domestic RRP'].loc[chosen_date],
+        'Deposits with FRB Banks (ex. Reserves)': fed_balance_sheet_dict['Deposits with FRB Banks (ex. Reserves)'].loc[chosen_date],
+        'TGA': fed_balance_sheet_dict['TGA'].loc[chosen_date],
+        'Foreign Official': fed_balance_sheet_dict['Foreign Official'].loc[chosen_date],
+        'Other Deposits (GSE Cash)': fed_balance_sheet_dict['Other Deposits (GSE Cash)'].loc[chosen_date],
+        'Reserves Balances': fed_balance_sheet_dict['Reserves Balances'].loc[chosen_date],
+        'Other Liabilities (incl. Tsy Remittances)': fed_balance_sheet_dict['Other Liabilities (incl. Tsy Remittances)'].loc[chosen_date],
+
+        'Memorandum': ['Level', '1w', '4w', '6m', '12m'],
+        'Fed Custody Holdings': fed_balance_sheet_dict['Fed Custody Holdings'].loc[chosen_date],
+        'Treasury': fed_balance_sheet_dict['Treasury'].loc[chosen_date],
+        'MBS': fed_balance_sheet_dict['MBS'].loc[chosen_date],
+        'Other': fed_balance_sheet_dict['Other'].loc[chosen_date],
+    }).T
+
+    df_full = fed_consolidated_balance_sheet
+
+    # --- 1. Date dropdown ---
+    # index is datetime
+    all_dates = df_full.index.unique().sort_values()
+
+    chosen_date = st.selectbox(
+        "Select H.4.1 date",
+        options=all_dates,
+        index=len(all_dates) - 1,  # latest by default
+        format_func=lambda d: d.strftime("%Y-%m-%d"),
+    )
+
+    # --- 2. Slice to chosen date ---
+    # If df_full is MultiIndex (date, row), use xs; if simple index, use loc
+    if isinstance(df_full.index, pd.MultiIndex):
+        day_df = df_full.xs(chosen_date, level=0)
+    else:
+        day_df = df_full.loc[chosen_date]
+
+    # Ensure column order
+    cols = ["Level", "1w", "4w", "6m", "12m"]
+    day_df = day_df[cols]
+
+    # --- 3. Identify section header rows (match your labels) ---
+    section_rows = {
+        "Assets ($bn)",  # or "Assets" depending on your index
+        "Liabilities",
+        "Memorandum",
+    }
+
+    # If your index uses slightly different labels, normalize here:
+    # day_df = day_df.rename(index={"Assets": "Assets ($bn)"})
+
+    # --- 4. Styling to mimic the Excel screenshot ---
+    def style_balance_sheet(df: pd.DataFrame):
+        styler = df.style
+
+        # Number formatting
+        styler = styler.format("{:,.0f}", na_rep="")
+
+        # Base table look
+        styler = styler.set_table_styles(
+            [
+                {
+                    "selector": "table",
+                    "props": [
+                        ("border-collapse", "collapse"),
+                        ("font-family", "Calibri, Arial, sans-serif"),
+                        ("font-size", "12px"),
+                    ],
+                },
+                {
+                    "selector": "th.col_heading",
+                    "props": [
+                        ("background-color", "#005A9C"),
+                        ("color", "white"),
+                        ("text-align", "center"),
+                        ("border", "1px solid #CCCCCC"),
+                        ("font-weight", "bold"),
+                    ],
+                },
+                {
+                    "selector": "th.row_heading",
+                    "props": [
+                        ("text-align", "left"),
+                        ("border", "1px solid #CCCCCC"),
+                    ],
+                },
+                {
+                    "selector": "td",
+                    "props": [
+                        ("border", "1px solid #CCCCCC"),
+                        ("text-align", "right"),
+                    ],
+                },
+            ]
+        )
+
+        # Section header rows: dark band
+        def section_style(row):
+            if row.name in section_rows:
+                return [
+                    "background-color: #002b55; color: white; "
+                    "font-weight: bold; text-align:left;"
+                ] * len(row)
+            return [""] * len(row)
+
+        styler = styler.apply(section_style, axis=1)
+
+        # Color +/- changes
+        def color_changes(val):
+            if pd.isna(val):
+                return ""
+            if val > 0:
+                return "color: #008000; font-weight:bold;"  # green
+            if val < 0:
+                return "color: #CC0000; font-weight:bold;"  # red
+            return ""
+
+        for col in ["1w", "4w", "6m", "12m"]:
+            if col in df.columns:
+                styler = styler.applymap(color_changes, subset=pd.IndexSlice[:, col])
+
+        return styler
+
+    st.subheader("Fed Consolidated Balance Sheet")
+    st.dataframe(
+        style_balance_sheet(day_df),
+        use_container_width=True,
+        hide_index=False,
+    )
+
+### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------------------- ASSETS ------------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_balance_sheet_assets(start, end, **kwargs):
-    ### ASSETS ###
-    with open(Path(DATA_DIR) / 'fed_assets_securities_outright.pkl', 'rb') as file:
-        fed_assets_securities_outright = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_assets_treasury_securities.pkl', 'rb') as file:
-        fed_assets_treasury_securities = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_assets_notes_and_bonds.pkl', 'rb') as file:
-        fed_assets_notes_and_bonds = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_assets_mbs.pkl', 'rb') as file:
-        fed_assets_mbs = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_assets_total.pkl', 'rb') as file:
-        fed_assets_total = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_assets_total.pkl', 'rb') as file:
-        fed_assets_total = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_assets_srf.pkl', 'rb') as file:
-        fed_assets_srf = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_assets_dw_primary.pkl', 'rb') as file:
-        fed_assets_dw_primary = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_assets_dw_secondary.pkl', 'rb') as file:
-        fed_assets_dw_secondary = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_assets_dw_seasonal.pkl', 'rb') as file:
-        fed_assets_dw_seasonal = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_assets_fx_swap_line.pkl', 'rb') as file:
-        fed_assets_fx_swap_line = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_assets_main_street.pkl', 'rb') as file:
-        fed_assets_main_street = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_assets_ppp_facility.pkl', 'rb') as file:
-        fed_assets_ppp_facility = pickle.load(file)
-
     fed_assets_merge = merge_dfs([fed_assets_securities_outright,
                                   fed_assets_treasury_securities,
                                   fed_assets_notes_and_bonds,
@@ -194,21 +371,6 @@ def plot_fed_balance_sheet_assets(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_balance_sheet_liabilities(start, end, **kwargs):
-    ### LIABILITIES ###
-    with open(Path(DATA_DIR) / 'fed_liabilities_currency.pkl', 'rb') as file:
-        fed_liabilities_currency = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_liabilities_foreign_repo.pkl', 'rb') as file:
-        fed_liabilities_foreign_repo = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_liabilities_rrp.pkl', 'rb') as file:
-        fed_liabilities_rrp = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_liabilities_reserves.pkl', 'rb') as file:
-        fed_liabilities_reserves = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_liabilities_tga.pkl', 'rb') as file:
-        fed_liabilities_tga = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_liabilities_gse_dmfu.pkl', 'rb') as file:
-        fed_liabilities_gse_dmfu = pickle.load(file)
-    with open(Path(DATA_DIR) / 'fed_liabilities_total.pkl', 'rb') as file:
-        fed_liabilities_total = pickle.load(file)
     fed_liabilities_merge = merge_dfs([fed_liabilities_currency,
                                        fed_liabilities_rrp,
                                        fed_liabilities_foreign_repo,
