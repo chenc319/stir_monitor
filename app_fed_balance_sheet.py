@@ -126,42 +126,17 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
         'Other': fed_balance_sheet_dict['Other'].loc[chosen_date],
     }).T
 
-    df_full = fed_consolidated_balance_sheet
+    # df = fed_consolidated_balance_sheet  # your existing DataFrame
+    df = fed_consolidated_balance_sheet.copy()
 
-    # --- 1. Date dropdown ---
-    # index is datetime
-    all_dates = df_full.index.unique().sort_values()
-
-    chosen_date = st.selectbox(
-        "Select H.4.1 date",
-        options=all_dates,
-        index=len(all_dates) - 1,  # latest by default
-        format_func=lambda d: d.strftime("%Y-%m-%d"),
-    )
-
-    # --- 2. Slice to chosen date ---
-    # If df_full is MultiIndex (date, row), use xs; if simple index, use loc
-    if isinstance(df_full.index, pd.MultiIndex):
-        day_df = df_full.xs(chosen_date, level=0)
-    else:
-        day_df = df_full.loc[chosen_date]
-
-    # Ensure column order
+    # Ensure canonical column order
     cols = ["Level", "1w", "4w", "6m", "12m"]
-    day_df = day_df[cols]
+    df = df[cols]
 
-    # --- 3. Identify section header rows (match your labels) ---
-    section_rows = {
-        "Assets ($bn)",  # or "Assets" depending on your index
-        "Liabilities",
-        "Memorandum",
-    }
+    # Section header rows (exact index labels)
+    section_rows = {"Assets", "Liabilities", "Memorandum"}
 
-    # If your index uses slightly different labels, normalize here:
-    # day_df = day_df.rename(index={"Assets": "Assets ($bn)"})
-
-    # --- 4. Styling to mimic the Excel screenshot ---
-    def style_balance_sheet(df: pd.DataFrame):
+    def style_fed_table(df: pd.DataFrame) -> pd.io.formats.style.Styler:
         styler = df.style
 
         # Number formatting
@@ -205,7 +180,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
             ]
         )
 
-        # Section header rows: dark band
+        # Section header rows: dark band like screenshot
         def section_style(row):
             if row.name in section_rows:
                 return [
@@ -232,9 +207,10 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         return styler
 
+    # In your Streamlit page:
     st.subheader("Fed Consolidated Balance Sheet")
     st.dataframe(
-        style_balance_sheet(day_df),
+        style_fed_table(df),
         use_container_width=True,
         hide_index=False,
     )
