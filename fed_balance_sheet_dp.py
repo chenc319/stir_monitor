@@ -155,8 +155,8 @@ fed_balance_sheet_dict = {
 
     'Memorandum': ['Level', '1w', '4w', '6m', '12m'],
     'Fed Custody Holdings': fed_custody_holdings_total_wed,
-    'Treasury': fed_custody_holdings_of_tsys_wed,
-    'MBS': fed_custody_holdings_of_mbs_wed,
+    'Treasury Custody': fed_custody_holdings_of_tsys_wed,
+    'MBS Custody': fed_custody_holdings_of_mbs_wed,
     'Other': fed_custody_holdings_others_wed,
 }
 
