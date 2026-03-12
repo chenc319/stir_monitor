@@ -89,54 +89,67 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     ### ------------------------------ ALL ARE WEDNESDAY LEVELS NOT WEEKLY AVERAGES ------------------------------ ###
     ### ---------------------------------------------------------------------------------------------------------- ###
 
+    # 1) Let user pick any date in the available index
+    all_dates = None
+    for s in fed_balance_sheet_dict.values():
+        all_dates = s.index if all_dates is None else all_dates.intersection(s.index)
+    all_dates = all_dates.sort_values()
 
-    chosen_date = '2026-02-18'
+    chosen_date = st.selectbox(
+        "Select H.4.1 date",
+        options=all_dates,
+        index=len(all_dates) - 1,
+        format_func=lambda d: d.strftime("%Y-%m-%d"),
+    )
+
+    # 2) Build the consolidated snapshot for that date (rows = items, cols = Level/changes)
+    #    Every fed_balance_sheet_dict[...] is assumed to be a DataFrame/Series
+    #    with columns/index ["Level","1w","4w","6m","12m"] at chosen_date.
     fed_consolidated_balance_sheet = pd.DataFrame({
-        'Assets': ['Level', '1w', '4w', '6m', '12m'],
-        'Reserve Bank Credit': fed_balance_sheet_dict['Reserve Bank Credit'].loc[chosen_date],
-        'Securities Held': fed_balance_sheet_dict['Securities Held'].loc[chosen_date],
-        'Treasury': fed_balance_sheet_dict['Treasury'].loc[chosen_date],
-        'MBS': fed_balance_sheet_dict['MBS'].loc[chosen_date],
-        'Agency': fed_balance_sheet_dict['Agency'].loc[chosen_date],
-        'Repo': fed_balance_sheet_dict['Repo'].loc[chosen_date],
-        'FIMA Repo Facility': fed_balance_sheet_dict['FIMA Repo Facility'].loc[chosen_date],
-        'Standing Repo Facility': fed_balance_sheet_dict['Standing Repo Facility'].loc[chosen_date],
-        'Loans': fed_balance_sheet_dict['Loans'].loc[chosen_date],
-        'Primary Credit (Discount Window)': fed_balance_sheet_dict['Primary Credit (Discount Window)'].loc[chosen_date],
-        'Securities': fed_balance_sheet_dict['Securities'].loc[chosen_date],
-        'Other Credit Extensions': fed_balance_sheet_dict['Other Credit Extensions'].loc[chosen_date],
-        'Other Assets': fed_balance_sheet_dict['Other Assets'].loc[chosen_date],
+        "Assets": ["Level", "1w", "4w", "6m", "12m"],
+        "Reserve Bank Credit": fed_balance_sheet_dict["Reserve Bank Credit"].loc[chosen_date],
+        "Securities Held": fed_balance_sheet_dict["Securities Held"].loc[chosen_date],
+        "Treasury": fed_balance_sheet_dict["Treasury"].loc[chosen_date],
+        "MBS": fed_balance_sheet_dict["MBS"].loc[chosen_date],
+        "Agency": fed_balance_sheet_dict["Agency"].loc[chosen_date],
+        "Repo": fed_balance_sheet_dict["Repo"].loc[chosen_date],
+        "FIMA Repo Facility": fed_balance_sheet_dict["FIMA Repo Facility"].loc[chosen_date],
+        "Standing Repo Facility": fed_balance_sheet_dict["Standing Repo Facility"].loc[chosen_date],
+        "Loans": fed_balance_sheet_dict["Loans"].loc[chosen_date],
+        "Primary Credit (Discount Window)": fed_balance_sheet_dict["Primary Credit (Discount Window)"].loc[chosen_date],
+        "Securities": fed_balance_sheet_dict["Securities"].loc[chosen_date],
+        "Other Credit Extensions": fed_balance_sheet_dict["Other Credit Extensions"].loc[chosen_date],
+        "Other Assets": fed_balance_sheet_dict["Other Assets"].loc[chosen_date],
 
-        'Liabilities': ['Level', '1w', '4w', '6m', '12m'],
-        'Currency in Circulation': fed_balance_sheet_dict['Currency in Circulation'].loc[chosen_date],
-        'Reverse Repurchase Agreements': fed_balance_sheet_dict['Reverse Repurchase Agreements'].loc[chosen_date],
-        'Foreign RRP': fed_balance_sheet_dict['Foreign RRP'].loc[chosen_date],
-        'Domestic RRP': fed_balance_sheet_dict['Domestic RRP'].loc[chosen_date],
-        'Deposits with FRB Banks (ex. Reserves)': fed_balance_sheet_dict['Deposits with FRB Banks (ex. Reserves)'].loc[chosen_date],
-        'TGA': fed_balance_sheet_dict['TGA'].loc[chosen_date],
-        'Foreign Official': fed_balance_sheet_dict['Foreign Official'].loc[chosen_date],
-        'Other Deposits (GSE Cash)': fed_balance_sheet_dict['Other Deposits (GSE Cash)'].loc[chosen_date],
-        'Reserves Balances': fed_balance_sheet_dict['Reserves Balances'].loc[chosen_date],
-        'Other Liabilities (incl. Tsy Remittances)': fed_balance_sheet_dict['Other Liabilities (incl. Tsy Remittances)'].loc[chosen_date],
+        "Liabilities": ["Level", "1w", "4w", "6m", "12m"],
+        "Currency in Circulation": fed_balance_sheet_dict["Currency in Circulation"].loc[chosen_date],
+        "Reverse Repurchase Agreements": fed_balance_sheet_dict["Reverse Repurchase Agreements"].loc[chosen_date],
+        "Foreign RRP": fed_balance_sheet_dict["Foreign RRP"].loc[chosen_date],
+        "Domestic RRP": fed_balance_sheet_dict["Domestic RRP"].loc[chosen_date],
+        "Deposits with FRB Banks (ex. Reserves)": fed_balance_sheet_dict["Deposits with FRB Banks (ex. Reserves)"].loc[chosen_date],
+        "TGA": fed_balance_sheet_dict["TGA"].loc[chosen_date],
+        "Foreign Official": fed_balance_sheet_dict["Foreign Official"].loc[chosen_date],
+        "Other Deposits (GSE Cash)": fed_balance_sheet_dict["Other Deposits (GSE Cash)"].loc[chosen_date],
+        "Reserves Balances": fed_balance_sheet_dict["Reserves Balances"].loc[chosen_date],
+        "Other Liabilities (incl. Tsy Remittances)": fed_balance_sheet_dict["Other Liabilities (incl. Tsy Remittances)"].loc[chosen_date],
 
-        'Memorandum': ['Level', '1w', '4w', '6m', '12m'],
-        'Fed Custody Holdings': fed_balance_sheet_dict['Fed Custody Holdings'].loc[chosen_date],
-        'Treasury': fed_balance_sheet_dict['Treasury'].loc[chosen_date],
-        'MBS': fed_balance_sheet_dict['MBS'].loc[chosen_date],
-        'Other': fed_balance_sheet_dict['Other'].loc[chosen_date],
+        "Memorandum": ["Level", "1w", "4w", "6m", "12m"],
+        "Fed Custody Holdings": fed_balance_sheet_dict["Fed Custody Holdings"].loc[chosen_date],
+        "Treasury Custody": fed_balance_sheet_dict["Treasury Custody"].loc[chosen_date],
+        "MBS Custody": fed_balance_sheet_dict["MBS Custody"].loc[chosen_date],
+        "Other Custody": fed_balance_sheet_dict["Other"].loc[chosen_date],
     }).T
 
-    # df = fed_consolidated_balance_sheet  # your existing DataFrame
     df = fed_consolidated_balance_sheet.copy()
 
-    # Ensure canonical column order
+    # 3) Ensure canonical column order
     cols = ["Level", "1w", "4w", "6m", "12m"]
     df = df[cols]
 
-    # Section header rows (exact index labels)
+    # 4) Styling to match the Excel screenshot
     section_rows = {"Assets", "Liabilities", "Memorandum"}
 
-    def style_fed_table(df: pd.DataFrame) -> pd.io.formats.style.Styler:
+    def style_fed_table(df):
         styler = df.style
 
         # Number formatting
@@ -180,7 +193,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
             ]
         )
 
-        # Section header rows: dark band like screenshot
+        # Section header rows: dark band
         def section_style(row):
             if row.name in section_rows:
                 return [
@@ -196,9 +209,9 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
             if pd.isna(val):
                 return ""
             if val > 0:
-                return "color: #008000; font-weight:bold;"  # green
+                return "color: #008000; font-weight:bold;"   # green
             if val < 0:
-                return "color: #CC0000; font-weight:bold;"  # red
+                return "color: #CC0000; font-weight:bold;"   # red
             return ""
 
         for col in ["1w", "4w", "6m", "12m"]:
@@ -207,13 +220,13 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         return styler
 
-    # In your Streamlit page:
-    st.subheader("Fed Consolidated Balance Sheet")
+    st.subheader("Fed Consolidated Balance Sheet (Wednesday Levels)")
     st.dataframe(
         style_fed_table(df),
         use_container_width=True,
         hide_index=False,
     )
+
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------------------- ASSETS ------------------------------------------------- ###
