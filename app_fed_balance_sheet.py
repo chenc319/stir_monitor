@@ -96,7 +96,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     chosen_date = st.selectbox(
         "Select H.4.1 date",
         options=all_dates,
-        index=len(all_dates) - 1,   # latest by default
+        index=len(all_dates) - 1,
         format_func=lambda d: d.strftime("%Y-%m-%d"),
     )
 
@@ -139,27 +139,27 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
     # 3) Build numeric blocks for each section
     def get_row(name):
-        # strip leading spaces for lookup
         key = name.lstrip()
         return fed_balance_sheet_dict[key].loc[chosen_date]
 
-    assets_block = pd.DataFrame([get_row(r) for r in asset_rows], index=asset_rows)
-    liabs_block = pd.DataFrame([get_row(r) for r in liability_rows], index=liability_rows)
-    memo_block = pd.DataFrame([get_row(r) for r in memo_rows], index=memo_rows)
+    assets_block = pd.DataFrame([get_row(r) for r in asset_rows])
+    assets_block.index = asset_rows
 
-    # Ensure canonical column order
+    liabs_block = pd.DataFrame([get_row(r) for r in liability_rows])
+    liabs_block.index = liability_rows
+
+    memo_block = pd.DataFrame([get_row(r) for r in memo_rows])
+    memo_block.index = memo_rows
+
     cols = ["Level", "1w", "4w", "6m", "12m"]
     assets_block = assets_block[cols]
     liabs_block = liabs_block[cols]
     memo_block = memo_block[cols]
 
-    # 4) Insert pure-text section header rows (no numbers)
+    # 4) Insert section header rows (pure text)
     def add_section_header(title, block_df):
-        header = pd.DataFrame(
-            [[None] * block_df.shape[1]],
-            index=[title],
-            columns=block_df.columns,
-        )
+        header = pd.DataFrame([[None] * block_df.shape[1]], columns=block_df.columns)
+        header.index = [title]
         return pd.concat([header, block_df], axis=0)
 
     assets_block = add_section_header("Assets ($bn)", assets_block)
@@ -168,9 +168,14 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
     df = pd.concat([assets_block, liabs_block, memo_block], axis=0)
 
-    section_rows = {"Assets ($bn)", "Liabilities", "Memorandum"}
+    # 5) Create a unique index for styling, keep nice labels separately
+    display_labels = df.index.tolist()
+    df = df.copy()
+    df.index = pd.Index(range(len(df)))  # unique integer index for Styler
 
-    # 5) Styling to match the Excel screenshot
+    section_rows = {"Assets ($bn)", "Liabilities", "Memorandum"}
+    section_idx = {i for i, lbl in enumerate(display_labels) if lbl in section_rows}
+
     def style_fed_table(df):
         styler = df.style
 
@@ -207,58 +212,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                     "selector": "th.row_heading",
                     "props": [
                         ("text-align", "left"),
-                        ("border", "1px solid #CCCCCC"),
-                    ],
-                },
-                {
-                    "selector": "td",
-                    "props": [
-                        ("border", "1px solid #CCCCCC"),
-                        ("text-align", "right"),
-                    ],
-                },
-            ]
-        )
-
-        # Section header band
-        def section_style(row):
-            if row.name in section_rows:
-                return [
-                    "background-color: #002b55; color: white; "
-                    "font-weight: bold; text-align:left;"
-                ] * len(row)
-            return [""] * len(row)
-
-        styler = styler.apply(section_style, axis=1)
-
-        # Indent sub‑rows (those starting with two spaces)
-        new_index = []
-        for r in df.index:
-            if r.startswith("  "):
-                new_index.append("\u00A0\u00A0" + r.lstrip())  # non‑breaking spaces
-            else:
-                new_index.append(r)
-        styler.index = pd.Index(new_index, name=df.index.name)
-
-        # Color +/- changes, skipping non‑numeric values
-        def color_changes(val):
-            if pd.isna(val) or not isinstance(val, (int, float)):
-                return ""
-            if val > 0:
-                return "color: #008000; font-weight:bold;"   # green
-            if val < 0:
-                return "color: #CC0000; font-weight:bold;"   # red
-            return ""
-
-        for col in ["1w", "4w", "6m", "12m"]:
-            if col in df.columns:
-                styler = styler.applymap(color_changes, subset=pd.IndexSlice[:, col])
-
-        return styler
-
-    st.subheader("Fed Consolidated Balance Sheet (Wednesday Levels)")
-    styled = style_fed_table(df)
-    st.table(styled)
+                        ("border", "1px solid
 
 
 
