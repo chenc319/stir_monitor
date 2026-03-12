@@ -93,7 +93,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     base_series = fed_balance_sheet_dict["Reserve Bank Credit"]
     all_dates = base_series.index.sort_values()
 
-    ### ROUND ALL NUMBERS ###
+    # 2) Round all numeric data once
     for key, obj in fed_balance_sheet_dict.items():
         if isinstance(obj, (pd.DataFrame, pd.Series)):
             fed_balance_sheet_dict[key] = obj.round(0)
@@ -105,7 +105,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
         format_func=lambda d: d.strftime("%Y-%m-%d"),
     )
 
-    # 2) Build consolidated snapshot for that date
+    # 3) Build consolidated snapshot for that date
     fed_consolidated_balance_sheet = pd.DataFrame({
         "Assets": ["Level", "1w", "4w", "6m", "12m"],
         "Reserve Bank Credit": fed_balance_sheet_dict["Reserve Bank Credit"].loc[chosen_date],
@@ -143,11 +143,11 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
     df = fed_consolidated_balance_sheet.copy()
 
-    # 3) Ensure canonical column order
+    # 4) Ensure canonical column order
     cols = ["Level", "1w", "4w", "6m", "12m"]
     df = df[cols]
 
-    # 4) Styling to match the Excel screenshot
+    # 5) Styling to match the Excel screenshot
     section_rows = {"Assets", "Liabilities", "Memorandum"}
 
     def style_fed_table(df):
@@ -161,7 +161,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         styler = styler.format(numeric_formatter, na_rep="")
 
-        # Base table look
+        # Base table look + fixed row-name width + centered numbers
         styler = styler.set_table_styles(
             [
                 {
@@ -170,7 +170,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                         ("border-collapse", "collapse"),
                         ("font-family", "Calibri, Arial, sans-serif"),
                         ("font-size", "12px"),
-                        ("table-layout", "fixed"),   # force equal column widths
+                        ("table-layout", "fixed"),
                         ("width", "100%"),
                     ],
                 },
@@ -181,7 +181,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                         ("color", "white"),
                         ("text-align", "center"),
                         ("border", "1px solid #CCCCCC"),
-                        ("font-weight", "bold")
+                        ("font-weight", "bold"),
                     ],
                 },
                 {
@@ -189,8 +189,8 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                     "props": [
                         ("text-align", "left"),
                         ("border", "1px solid #CCCCCC"),
-                        ("white-space", "nowrap"),   # keep labels on one line
-                        ("width", "300px"),          # shrink this value as needed
+                        ("white-space", "nowrap"),
+                        ("width", "300px"),
                         ("max-width", "300px"),
                     ],
                 },
@@ -198,11 +198,32 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                     "selector": "td",
                     "props": [
                         ("border", "1px solid #CCCCCC"),
-                        ("text-align", "center")
+                        ("text-align", "center"),
                     ],
                 },
             ]
         )
+
+        # Explicitly center numeric columns
+        numeric_cols = ["Level", "1w", "4w", "6m", "12m"]
+        existing_cols = [c for c in numeric_cols if c in df.columns]
+        if existing_cols:
+            styler = styler.set_properties(
+                subset=pd.IndexSlice[:, existing_cols],
+                **{"text-align": "center"},
+            )
+
+        # Equal width for data columns (row-name column stays 300px)
+        if existing_cols:
+            styler = styler.set_table_styles(
+                styler.table_styles
+                + [
+                    {
+                        "selector": "col",
+                        "props": [("width", f"{100 / (len(existing_cols) + 1):.2f}%")],
+                    }
+                ]
+            )
 
         # Section header band
         def section_style(row):
@@ -215,7 +236,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         styler = styler.apply(section_style, axis=1)
 
-        # Color +/- changes, skipping non‑numeric values
+        # Color +/- changes, skipping non‑numeric values and leaving zeros neutral
         def color_changes(val):
             if pd.isna(val) or not isinstance(val, (int, float)):
                 return ""
@@ -223,7 +244,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                 return "color: #008000; font-weight:bold;"   # green
             if val < 0:
                 return "color: #CC0000; font-weight:bold;"   # red
-            return ""
+            return ""  # zero
 
         for col in ["1w", "4w", "6m", "12m"]:
             if col in df.columns:
@@ -234,6 +255,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     st.subheader("Fed Consolidated Balance Sheet (Wednesday Levels)")
     styled = style_fed_table(df)
     st.table(styled)
+
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
