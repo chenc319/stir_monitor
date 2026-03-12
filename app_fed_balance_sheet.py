@@ -97,6 +97,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     for key, obj in fed_balance_sheet_dict.items():
         if isinstance(obj, (pd.DataFrame, pd.Series)):
             fed_balance_sheet_dict[key] = obj.round(0)
+            fed_balance_sheet_dict[key] = fed_balance_sheet_dict[key].where(fed_balance_sheet_dict[key] != 0, 0)
 
     chosen_date = st.selectbox(
         "Select H.4.1 date",
