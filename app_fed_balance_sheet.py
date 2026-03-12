@@ -203,6 +203,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                 },
             ]
         )
+    
 
         # Section header band
         def section_style(row):
