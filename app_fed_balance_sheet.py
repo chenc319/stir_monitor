@@ -222,12 +222,11 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
         return styler
 
     st.subheader("Fed Consolidated Balance Sheet (Wednesday Levels)")
-    st.dataframe(
-        style_fed_table(df),
-        use_container_width=True,
-        hide_index=False,
-    )
 
+    styled = style_fed_table(df)
+
+    # st.table renders the full table without scroll virtualization
+    st.table(styled)
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
