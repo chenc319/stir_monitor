@@ -56,11 +56,11 @@ other_deposits_wed = get_fred_series('WLODL', start, end) / 1000
 
 reserves_balanaces_wed = get_fred_series('WRBWFRBL', start, end) / 1000
 
-other_liabilities_wed = get_fred_series('WMTSECL1', start, end) / 1000
+other_liabilities_wed = get_fred_series('WLAD', start, end) / 1000
 
 ### MEMORANDUM ###
 fed_custody_holdings_total_wed = get_fred_series('WSEFINTL1', start, end) / 1000
-fed_custody_holdings_of_tsys_wed = get_fred_series('WLAD', start, end) / 1000
+fed_custody_holdings_of_tsys_wed = get_fred_series('WMTSECL1', start, end) / 1000
 fed_custody_holdings_of_mbs_wed = get_fred_series('WFASECL1', start, end) / 1000
 fed_custody_holdings_others_wed = pd.DataFrame(merge_dfs([fed_custody_holdings_total_wed,
                                                           pd.DataFrame(merge_dfs([
