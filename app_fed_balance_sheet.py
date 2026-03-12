@@ -188,8 +188,8 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                         ("text-align", "left"),
                         ("border", "1px solid #CCCCCC"),
                         ("white-space", "nowrap"),   # keep labels on one line
-                        ("width", "140px"),          # shrink this value as needed
-                        ("max-width", "140px"),
+                        ("width", "240px"),          # shrink this value as needed
+                        ("max-width", "240px"),
                     ],
                 },
                 {
