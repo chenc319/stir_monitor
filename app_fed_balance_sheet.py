@@ -169,7 +169,9 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                     "props": [
                         ("border-collapse", "collapse"),
                         ("font-family", "Calibri, Arial, sans-serif"),
-                        ("font-size", "12px")
+                        ("font-size", "12px"),
+                        ("table-layout", "fixed"),   # force equal column widths
+                        ("width", "100%"),
                     ],
                 },
                 {
@@ -179,9 +181,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                         ("color", "white"),
                         ("text-align", "center"),
                         ("border", "1px solid #CCCCCC"),
-                        ("font-weight", "bold"),
-                        ("table-layout", "fixed"),   # force equal column widths
-                        ("width", "100%"),
+                        ("font-weight", "bold")
                     ],
                 },
                 {
@@ -198,12 +198,11 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                     "selector": "td",
                     "props": [
                         ("border", "1px solid #CCCCCC"),
-                        ("text-align", "center"),
+                        ("text-align", "center")
                     ],
                 },
             ]
         )
-    
 
         # Section header band
         def section_style(row):
