@@ -93,6 +93,11 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     base_series = fed_balance_sheet_dict["Reserve Bank Credit"]
     all_dates = base_series.index.sort_values()
 
+    ### ROUND ALL NUMBERS ###
+    for key, obj in fed_balance_sheet_dict.items():
+        if isinstance(obj, (pd.DataFrame, pd.Series)):
+            fed_balance_sheet_dict[key] = obj.round(0)
+
     chosen_date = st.selectbox(
         "Select H.4.1 date",
         options=all_dates,
