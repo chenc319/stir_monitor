@@ -158,7 +158,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         styler = styler.format(numeric_formatter, na_rep="")
 
-        # Base table look + fixed row-name width
+        # Base table look + fixed row-name width + centered numbers
         styler = styler.set_table_styles(
             [
                 {
@@ -233,21 +233,19 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         styler = styler.apply(section_style, axis=1)
 
-        # Color +/- changes AND bold all non-zero numbers
-        def color_and_bold(val):
+        # Color +/- changes, skipping non‑numeric values and leaving zeros neutral
+        def color_changes(val):
             if pd.isna(val) or not isinstance(val, (int, float)):
                 return ""
             if val > 0:
-                return "color: #008000; font-weight:bold;"   # green + bold
+                return "color: #008000; font-weight:bold;"   # green
             if val < 0:
-                return "color: #CC0000; font-weight:bold;"   # red + bold
-            # val == 0
-            return ""  # keep zeros neutral
+                return "color: #CC0000; font-weight:bold;"   # red
+            return ""  # zero
 
-        # apply to change columns
-        for col in ["Level", "1w", "4w", "6m", "12m"]:
+        for col in ["1w", "4w", "6m", "12m"]:
             if col in df.columns:
-                styler = styler.applymap(color_and_bold, subset=pd.IndexSlice[:, col])
+                styler = styler.applymap(color_changes, subset=pd.IndexSlice[:, col])
 
         return styler
 
