@@ -89,9 +89,9 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     ### ------------------------------ ALL ARE WEDNESDAY LEVELS NOT WEEKLY AVERAGES ------------------------------ ###
     ### ---------------------------------------------------------------------------------------------------------- ###
 
-    # 1) Get list of dates from any one series in fed_balance_sheet_dict
-    any_key = next(iter(fed_balance_sheet_dict))
-    all_dates = fed_balance_sheet_dict[any_key].index.sort_values()
+    # 1) Get list of dates from one known series
+    base_series = fed_balance_sheet_dict["Reserve Bank Credit"]
+    all_dates = base_series.index.sort_values()
 
     chosen_date = st.selectbox(
         "Select H.4.1 date",
