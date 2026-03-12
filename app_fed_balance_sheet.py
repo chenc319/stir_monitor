@@ -96,90 +96,59 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     chosen_date = st.selectbox(
         "Select H.4.1 date",
         options=all_dates,
-        index=len(all_dates) - 1,
+        index=len(all_dates) - 1,   # latest by default
         format_func=lambda d: d.strftime("%Y-%m-%d"),
     )
 
-    # 2) Define ordered row labels (with sub‑row names)
-    asset_rows = [
-        "Reserve Bank Credit",
-        "Securities Held",
-        "  Treasury",
-        "  MBS",
-        "  Agency",
-        "Repo",
-        "  FIMA Repo Facility",
-        "  Standing Repo Facility",
-        "Loans",
-        "  Primary Credit (Discount Window)",
-        "  Securities",
-        "  Other Credit Extensions",
-        "Other Assets",
-    ]
+    # 2) Build consolidated snapshot for that date
+    fed_consolidated_balance_sheet = pd.DataFrame({
+        "Assets": ["Level", "1w", "4w", "6m", "12m"],
+        "Reserve Bank Credit": fed_balance_sheet_dict["Reserve Bank Credit"].loc[chosen_date],
+        "Securities Held": fed_balance_sheet_dict["Securities Held"].loc[chosen_date],
+        "Treasury": fed_balance_sheet_dict["Treasury"].loc[chosen_date],
+        "MBS": fed_balance_sheet_dict["MBS"].loc[chosen_date],
+        "Agency": fed_balance_sheet_dict["Agency"].loc[chosen_date],
+        "Repo": fed_balance_sheet_dict["Repo"].loc[chosen_date],
+        "FIMA Repo Facility": fed_balance_sheet_dict["FIMA Repo Facility"].loc[chosen_date],
+        "Standing Repo Facility": fed_balance_sheet_dict["Standing Repo Facility"].loc[chosen_date],
+        "Loans": fed_balance_sheet_dict["Loans"].loc[chosen_date],
+        "Primary Credit (Discount Window)": fed_balance_sheet_dict["Primary Credit (Discount Window)"].loc[chosen_date],
+        "Securities": fed_balance_sheet_dict["Securities"].loc[chosen_date],
+        "Other Credit Extensions": fed_balance_sheet_dict["Other Credit Extensions"].loc[chosen_date],
+        "Other Assets": fed_balance_sheet_dict["Other Assets"].loc[chosen_date],
 
-    liability_rows = [
-        "Currency in Circulation",
-        "Reverse Repurchase Agreements",
-        "  Foreign RRP",
-        "  Domestic RRP",
-        "Deposits with FRB Banks (ex. Reserves)",
-        "  TGA",
-        "  Foreign Official",
-        "  Other Deposits (GSE Cash)",
-        "Reserves Balances",
-        "Other Liabilities (incl. Tsy Remittances)",
-    ]
+        "Liabilities": ["Level", "1w", "4w", "6m", "12m"],
+        "Currency in Circulation": fed_balance_sheet_dict["Currency in Circulation"].loc[chosen_date],
+        "Reverse Repurchase Agreements": fed_balance_sheet_dict["Reverse Repurchase Agreements"].loc[chosen_date],
+        "Foreign RRP": fed_balance_sheet_dict["Foreign RRP"].loc[chosen_date],
+        "Domestic RRP": fed_balance_sheet_dict["Domestic RRP"].loc[chosen_date],
+        "Deposits with FRB Banks (ex. Reserves)": fed_balance_sheet_dict["Deposits with FRB Banks (ex. Reserves)"].loc[chosen_date],
+        "TGA": fed_balance_sheet_dict["TGA"].loc[chosen_date],
+        "Foreign Official": fed_balance_sheet_dict["Foreign Official"].loc[chosen_date],
+        "Other Deposits (GSE Cash)": fed_balance_sheet_dict["Other Deposits (GSE Cash)"].loc[chosen_date],
+        "Reserves Balances": fed_balance_sheet_dict["Reserves Balances"].loc[chosen_date],
+        "Other Liabilities (incl. Tsy Remittances)": fed_balance_sheet_dict["Other Liabilities (incl. Tsy Remittances)"].loc[chosen_date],
 
-    memo_rows = [
-        "Fed Custody Holdings",
-        "  Treasury",
-        "  MBS",
-        "  Other",
-    ]
+        "Memorandum": ["Level", "1w", "4w", "6m", "12m"],
+        "Fed Custody Holdings": fed_balance_sheet_dict["Fed Custody Holdings"].loc[chosen_date],
+        "Treasury": fed_balance_sheet_dict["Treasury"].loc[chosen_date],
+        "MBS": fed_balance_sheet_dict["MBS"].loc[chosen_date],
+        "Other": fed_balance_sheet_dict["Other"].loc[chosen_date],
+    }).T
 
-    # 3) Build numeric blocks for each section
-    def get_row(name):
-        key = name.lstrip()
-        return fed_balance_sheet_dict[key].loc[chosen_date]
+    df = fed_consolidated_balance_sheet.copy()
 
-    assets_block = pd.DataFrame([get_row(r) for r in asset_rows])
-    assets_block.index = asset_rows
-
-    liabs_block = pd.DataFrame([get_row(r) for r in liability_rows])
-    liabs_block.index = liability_rows
-
-    memo_block = pd.DataFrame([get_row(r) for r in memo_rows])
-    memo_block.index = memo_rows
-
+    # 3) Ensure canonical column order
     cols = ["Level", "1w", "4w", "6m", "12m"]
-    assets_block = assets_block[cols]
-    liabs_block = liabs_block[cols]
-    memo_block = memo_block[cols]
+    df = df[cols]
 
-    # 4) Insert section header rows (pure text)
-    def add_section_header(title, block_df):
-        header = pd.DataFrame([[None] * block_df.shape[1]], columns=block_df.columns)
-        header.index = [title]
-        return pd.concat([header, block_df], axis=0)
-
-    assets_block = add_section_header("Assets ($bn)", assets_block)
-    liabs_block = add_section_header("Liabilities", liabs_block)
-    memo_block = add_section_header("Memorandum", memo_block)
-
-    df = pd.concat([assets_block, liabs_block, memo_block], axis=0)
-
-    # 5) Create a unique index for styling, keep nice labels separately
-    display_labels = df.index.tolist()
-    df = df.copy()
-    df.index = pd.Index(range(len(df)))  # unique integer index for Styler
-
-    section_rows = {"Assets ($bn)", "Liabilities", "Memorandum"}
-    section_idx = {i for i, lbl in enumerate(display_labels) if lbl in section_rows}
+    # 4) Styling to match the Excel screenshot
+    section_rows = {"Assets", "Liabilities", "Memorandum"}
 
     def style_fed_table(df):
         styler = df.style
 
-        # Formatter: only numeric cells get formatted
+        # Only format numeric cells; leave strings as-is
         def numeric_formatter(x):
             if isinstance(x, (int, float)) and not pd.isna(x):
                 return f"{x:,.0f}"
@@ -225,9 +194,9 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
             ]
         )
 
-        # Section header band: use integer index in section_idx
+        # Section header band
         def section_style(row):
-            if row.name in section_idx:
+            if row.name in section_rows:
                 return [
                     "background-color: #002b55; color: white; "
                     "font-weight: bold; text-align:left;"
@@ -235,15 +204,6 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
             return [""] * len(row)
 
         styler = styler.apply(section_style, axis=1)
-
-        # Indent sub‑rows in the displayed index
-        pretty_index = []
-        for lbl in display_labels:
-            if lbl.startswith("  "):
-                pretty_index.append("\u00A0\u00A0" + lbl.lstrip())
-            else:
-                pretty_index.append(lbl)
-        styler.index = pd.Index(pretty_index, name="")
 
         # Color +/- changes, skipping non‑numeric values
         def color_changes(val):
@@ -262,8 +222,11 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
         return styler
 
     st.subheader("Fed Consolidated Balance Sheet (Wednesday Levels)")
-    styled = style_fed_table(df)
-    st.table(styled)
+    st.dataframe(
+        style_fed_table(df),
+        use_container_width=True,
+        hide_index=False,
+    )
 
 
 
