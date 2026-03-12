@@ -89,6 +89,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     ### ------------------------------ ALL ARE WEDNESDAY LEVELS NOT WEEKLY AVERAGES ------------------------------ ###
     ### ---------------------------------------------------------------------------------------------------------- ###
 
+
     chosen_date = '2026-02-18'
     fed_consolidated_balance_sheet = pd.DataFrame({
         'Assets': ['Level', '1w', '4w', '6m', '12m'],
