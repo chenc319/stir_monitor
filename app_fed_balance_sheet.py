@@ -212,7 +212,58 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                     "selector": "th.row_heading",
                     "props": [
                         ("text-align", "left"),
-                        ("border", "1px solid
+                        ("border", "1px solid #CCCCCC"),
+                    ],
+                },
+                {
+                    "selector": "td",
+                    "props": [
+                        ("border", "1px solid #CCCCCC"),
+                        ("text-align", "right"),
+                    ],
+                },
+            ]
+        )
+
+        # Section header band: use integer index in section_idx
+        def section_style(row):
+            if row.name in section_idx:
+                return [
+                    "background-color: #002b55; color: white; "
+                    "font-weight: bold; text-align:left;"
+                ] * len(row)
+            return [""] * len(row)
+
+        styler = styler.apply(section_style, axis=1)
+
+        # Indent sub‑rows in the displayed index
+        pretty_index = []
+        for lbl in display_labels:
+            if lbl.startswith("  "):
+                pretty_index.append("\u00A0\u00A0" + lbl.lstrip())
+            else:
+                pretty_index.append(lbl)
+        styler.index = pd.Index(pretty_index, name="")
+
+        # Color +/- changes, skipping non‑numeric values
+        def color_changes(val):
+            if pd.isna(val) or not isinstance(val, (int, float)):
+                return ""
+            if val > 0:
+                return "color: #008000; font-weight:bold;"   # green
+            if val < 0:
+                return "color: #CC0000; font-weight:bold;"   # red
+            return ""
+
+        for col in ["1w", "4w", "6m", "12m"]:
+            if col in df.columns:
+                styler = styler.applymap(color_changes, subset=pd.IndexSlice[:, col])
+
+        return styler
+
+    st.subheader("Fed Consolidated Balance Sheet (Wednesday Levels)")
+    styled = style_fed_table(df)
+    st.table(styled)
 
 
 
