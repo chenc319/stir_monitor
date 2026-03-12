@@ -148,8 +148,13 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     def style_fed_table(df):
         styler = df.style
 
-        # Number formatting
-        styler = styler.format("{:,.0f}", na_rep="")
+        # Only format numeric cells; leave strings as-is
+        def numeric_formatter(x):
+            if isinstance(x, (int, float)) and not pd.isna(x):
+                return f"{x:,.0f}"
+            return x
+
+        styler = styler.format(numeric_formatter, na_rep="")
 
         # Base table look
         styler = styler.set_table_styles(
@@ -202,7 +207,6 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         # Color +/- changes, skipping non‑numeric values
         def color_changes(val):
-            # skip NaN and non-numeric (strings like 'Level', '1w', etc.)
             if pd.isna(val) or not isinstance(val, (int, float)):
                 return ""
             if val > 0:
