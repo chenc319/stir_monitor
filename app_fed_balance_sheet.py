@@ -89,10 +89,15 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     ### ------------------------------ ALL ARE WEDNESDAY LEVELS NOT WEEKLY AVERAGES ------------------------------ ###
     ### ---------------------------------------------------------------------------------------------------------- ###
 
-    # 1) Let user pick any date in the available index
+    # 1) Collect common dates across all series in fed_balance_sheet_dict
     all_dates = None
     for s in fed_balance_sheet_dict.values():
-        all_dates = s.index if all_dates is None else all_dates.intersection(s.index)
+        idx = s.index
+        if all_dates is None:
+            all_dates = idx
+        else:
+            all_dates = all_dates.intersection(idx)
+
     all_dates = all_dates.sort_values()
 
     chosen_date = st.selectbox(
@@ -102,9 +107,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
         format_func=lambda d: d.strftime("%Y-%m-%d"),
     )
 
-    # 2) Build the consolidated snapshot for that date (rows = items, cols = Level/changes)
-    #    Every fed_balance_sheet_dict[...] is assumed to be a DataFrame/Series
-    #    with columns/index ["Level","1w","4w","6m","12m"] at chosen_date.
+    # 2) Build consolidated snapshot
     fed_consolidated_balance_sheet = pd.DataFrame({
         "Assets": ["Level", "1w", "4w", "6m", "12m"],
         "Reserve Bank Credit": fed_balance_sheet_dict["Reserve Bank Credit"].loc[chosen_date],
@@ -142,20 +145,17 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
     df = fed_consolidated_balance_sheet.copy()
 
-    # 3) Ensure canonical column order
+    # Ensure canonical column order
     cols = ["Level", "1w", "4w", "6m", "12m"]
     df = df[cols]
 
-    # 4) Styling to match the Excel screenshot
     section_rows = {"Assets", "Liabilities", "Memorandum"}
 
     def style_fed_table(df):
         styler = df.style
 
-        # Number formatting
         styler = styler.format("{:,.0f}", na_rep="")
 
-        # Base table look
         styler = styler.set_table_styles(
             [
                 {
@@ -193,7 +193,6 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
             ]
         )
 
-        # Section header rows: dark band
         def section_style(row):
             if row.name in section_rows:
                 return [
@@ -204,14 +203,13 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         styler = styler.apply(section_style, axis=1)
 
-        # Color +/- changes
         def color_changes(val):
             if pd.isna(val):
                 return ""
             if val > 0:
-                return "color: #008000; font-weight:bold;"   # green
+                return "color: #008000; font-weight:bold;"
             if val < 0:
-                return "color: #CC0000; font-weight:bold;"   # red
+                return "color: #CC0000; font-weight:bold;"
             return ""
 
         for col in ["1w", "4w", "6m", "12m"]:
