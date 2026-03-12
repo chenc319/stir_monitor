@@ -168,7 +168,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                         ("font-family", "Calibri, Arial, sans-serif"),
                         ("font-size", "14px"),
                         ("table-layout", "fixed"),
-                        ("width", "100%"),
+                        ("width", "150%"),
                     ],
                 },
                 {
