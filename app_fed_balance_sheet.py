@@ -251,8 +251,10 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
     st.subheader("Fed Consolidated Balance Sheet (Wednesday Levels)")
     styled = style_fed_table(df)
-    st.table(styled)
 
+    # render as HTML instead of st.table
+    html = styled.to_html()
+    st.markdown(html, unsafe_allow_html=True)
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
