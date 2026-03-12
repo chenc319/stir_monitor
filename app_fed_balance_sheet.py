@@ -200,9 +200,10 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         styler = styler.apply(section_style, axis=1)
 
-        # Color +/- changes
+        # Color +/- changes, skipping non‑numeric values
         def color_changes(val):
-            if pd.isna(val):
+            # skip NaN and non-numeric (strings like 'Level', '1w', etc.)
+            if pd.isna(val) or not isinstance(val, (int, float)):
                 return ""
             if val > 0:
                 return "color: #008000; font-weight:bold;"   # green
@@ -222,6 +223,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
         use_container_width=True,
         hide_index=False,
     )
+
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
