@@ -89,11 +89,13 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     base_series = fed_balance_sheet_dict["Reserve Bank Credit"]
     all_dates = base_series.index.sort_values()
 
-    # 2) Round all numeric data once
+    # 2) Round all numeric data once and remove -0
     for key, obj in fed_balance_sheet_dict.items():
         if isinstance(obj, (pd.DataFrame, pd.Series)):
             fed_balance_sheet_dict[key] = obj.round(0)
-            fed_balance_sheet_dict[key] = fed_balance_sheet_dict[key].where(fed_balance_sheet_dict[key] != 0, 0)
+            fed_balance_sheet_dict[key] = fed_balance_sheet_dict[key].where(
+                fed_balance_sheet_dict[key] != 0, 0
+            )
 
     chosen_date = st.selectbox(
         "Select H.4.1 date",
@@ -158,7 +160,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         styler = styler.format(numeric_formatter, na_rep="")
 
-        # Base table look + fixed row-name width + centered numbers
+        # Base table look + fixed row-name width
         styler = styler.set_table_styles(
             [
                 {
@@ -168,7 +170,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                         ("font-family", "Calibri, Arial, sans-serif"),
                         ("font-size", "14px"),
                         ("table-layout", "fixed"),
-                        ("width", "150%"),
+                        ("width", "100%"),
                     ],
                 },
                 {
@@ -210,19 +212,21 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                 **{"text-align": "center"},
             )
 
-        # Equal width for data columns (row-name column stays 300px)
+        # Make data columns reasonably wide (row-name stays 300px)
         if existing_cols:
+            data_share = 90  # % of table width for numeric cols
+            per_col = data_share / len(existing_cols)
             styler = styler.set_table_styles(
                 styler.table_styles
                 + [
                     {
                         "selector": "col",
-                        "props": [("width", f"{100 / (len(existing_cols) + 1):.2f}%")],
+                        "props": [("width", f"{per_col:.2f}%")],
                     }
                 ]
             )
 
-        # Section header band
+        # Section header band (and bold only section row names)
         def section_style(row):
             if row.name in section_rows:
                 return [
@@ -233,15 +237,29 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         styler = styler.apply(section_style, axis=1)
 
-        # Color +/- changes, skipping non‑numeric values and leaving zeros neutral
+        # Indent subsections once; sections not indented, not touched besides band
+        def index_style(idx_series):
+            styles = []
+            for label in idx_series:
+                if label in section_rows:
+                    # Section: no extra indent (just minimal padding)
+                    styles.append("padding-left: 4px;")
+                else:
+                    # Subsection: single tab
+                    styles.append("padding-left: 20px;")
+            return styles
+
+        styler = styler.apply_index(index_style, axis=0)
+
+        # Color +/- changes and bold all non-zero numbers in change columns
         def color_changes(val):
             if pd.isna(val) or not isinstance(val, (int, float)):
                 return ""
             if val > 0:
-                return "color: #008000; font-weight:bold;"   # green
+                return "color: #008000; font-weight:bold;"   # green + bold
             if val < 0:
-                return "color: #CC0000; font-weight:bold;"   # red
-            return ""  # zero
+                return "color: #CC0000; font-weight:bold;"   # red + bold
+            return ""  # zero: neutral
 
         for col in ["1w", "4w", "6m", "12m"]:
             if col in df.columns:
@@ -252,9 +270,10 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
     st.subheader("Fed Consolidated Balance Sheet (Wednesday Levels)")
     styled = style_fed_table(df)
 
-    # render as HTML instead of st.table
+    # Render as HTML so all CSS is respected
     html = styled.to_html()
     st.markdown(html, unsafe_allow_html=True)
+
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
