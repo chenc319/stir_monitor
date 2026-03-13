@@ -17,7 +17,7 @@ with open(Path(DATA_DIR) / 'pd_pos_dict.pkl', 'rb') as file:
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def primary_dealer_snapshot(start, end, **kwargs):
-    base_series = pd_pos_dict["Total"]
+    base_series = pd_pos_dict["All USTs"]
     all_dates = base_series.index.sort_values()
 
     for key, obj in pd_pos_dict.items():
