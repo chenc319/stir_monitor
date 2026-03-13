@@ -268,11 +268,20 @@ def get_boc_historical_timeseries(series_id,col_name):
     df.drop('date', axis=1, inplace=True)
     return df
 
-
-
-tables = pd.read_html(
-    "https://www.bankofcanada.ca/markets/market-operations-"
-    "liquidity-provision/market-operations-programs-and-facilities/"
-    "securities-lending-program/"
-)
-securities_lending_results = tables[1]
+def get_newyork_fed_data(mnemonic: str) -> pd.DataFrame:
+    """
+    Fetch NY Fed Primary Dealer time series for a given mnemonic.
+    Returns a DataFrame indexed by asofdate with one 'value' column.
+    """
+    url = f"https://markets.newyorkfed.org/api/pd/get/{mnemonic}.json"
+    resp = requests.get(url)
+    resp.raise_for_status()
+    ts = pd.DataFrame(resp.json()['pd']['timeseries'])
+    ts = ts.drop(columns=['keyid'], errors='ignore')
+    ts['value'] = pd.to_numeric(ts['value'], errors='coerce')
+    ts = ts.dropna(subset=['value'])
+    ts['asofdate'] = pd.to_datetime(ts['asofdate'])
+    ts = ts.set_index('asofdate').sort_index()
+    ts = ts[['value']]
+    ts.columns = [mnemonic]
+    return ts

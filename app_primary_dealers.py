@@ -2,23 +2,209 @@
 ### -------------------------------------------- PRIMARY DEALERS --------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-import pandas as pd
-import functools as ft
-import requests
-import streamlit as st
-import plotly.graph_objs as go
-from matplotlib import pyplot as plt
+### FUNCTIONS ###
+from Functions import *
 from pathlib import Path
 import os
-import pickle
 DATA_DIR = os.getenv('DATA_DIR', 'data')
 
-def merge_dfs(array_of_dfs):
-    return ft.reduce(lambda left,
-                            right: pd.merge(left, right,
-                                            left_index=True,
-                                            right_index=True,
-                                            how='outer'), array_of_dfs)
+### LOAD DATA ###
+with open(Path(DATA_DIR) / 'pd_pos_dict.pkl', 'rb') as file:
+    pd_pos_dict = pickle.load(file)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ----------------------------------- PRIMARY DEALER WAREHOUSE OVERVIEW ------------------------------------ ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def primary_dealer_snapshot(start, end, **kwargs):
+    base_series = pd_pos_dict["Total"]
+    all_dates = base_series.index.sort_values()
+
+    for key, obj in pd_pos_dict.items():
+        if isinstance(obj, (pd.DataFrame, pd.Series)):
+            pd_pos_dict[key] = obj.round(0)
+            pd_pos_dict[key] = pd_pos_dict[key].where(
+                pd_pos_dict[key] != 0, 0
+            )
+
+    chosen_date = st.selectbox(
+        "Select Holdings Snapshot Date",
+        options=all_dates,
+        index=len(all_dates) - 1,
+        format_func=lambda d: d.strftime("%Y-%m-%d"),
+    )
+
+    pd_pos_snapshot = {
+        'Total': ['Level', 'YTD chg', '1w chg', '4w chg', '6m chg', '12m chg', '5y min', '5y max', '5y avg'],
+        'All USTs': pd_pos_dict['All USTs'].loc[chosen_date],
+
+        'Coupons': ['Level', 'YTD chg', '1w chg', '4w chg', '6m chg', '12m chg', '5y min', '5y max', '5y avg'],
+        'All Coupons': pd_pos_dict['All Coupons'].loc[chosen_date],
+        'Coupons <2y': pd_pos_dict['Coupons <2y'].loc[chosen_date],
+        'Coupons 2-3y': pd_pos_dict['Coupons 2-3y'].loc[chosen_date],
+        'Coupons 3-6y': pd_pos_dict['Coupons 3-6y'].loc[chosen_date],
+        'Coupons 6-7y': pd_pos_dict['Coupons 6-7y'].loc[chosen_date],
+        'Coupons 7-11y': pd_pos_dict['Coupons 7-11y'].loc[chosen_date],
+        'Coupons 11-21y': pd_pos_dict['Coupons 11-21y'].loc[chosen_date],
+        'Coupons >21y': pd_pos_dict['Coupons >21y'].loc[chosen_date],
+
+        'TIPS': ['Level', 'YTD chg', '1w chg', '4w chg', '6m chg', '12m chg', '5y min', '5y max', '5y avg'],
+        'All TIPS': pd_pos_dict['All TIPS'].loc[chosen_date],
+        'TIPS <2y': pd_pos_dict['TIPS <2y'].loc[chosen_date],
+        'TIPS 2-6y': pd_pos_dict['TIPS 2-6y'].loc[chosen_date],
+        'TIPS 6-11y': pd_pos_dict['TIPS 6-11y'].loc[chosen_date],
+        'TIPS >11y': pd_pos_dict['TIPS >11y'].loc[chosen_date],
+
+        'Bills': ['Level', 'YTD chg', '1w chg', '4w chg', '6m chg', '12m chg', '5y min', '5y max', '5y avg'],
+        'All Bills': pd_pos_dict['All Bills'].loc[chosen_date],
+
+        'FRNs': ['Level', 'YTD chg', '1w chg', '4w chg', '6m chg', '12m chg', '5y min', '5y max', '5y avg'],
+        'All FRNs': pd_pos_dict['All FRNs'].loc[chosen_date],
+    }
+
+    df = pd_pos_snapshot.copy()
+    cols = ['Level', 'YTD chg', '1w chg', '4w chg', '6m chg', '12m chg', '5y min', '5y max', '5y avg']
+    df = df[cols]
+
+    # all headers (untabbed + bold)
+    section_rows = {
+        "Total",
+        "All USTs",
+        "Coupons",
+        "TIPS",
+        "Bills",
+        "FRNs",
+    }
+
+    # only these get the dark-blue band
+    dark_blue_rows = {
+        "Total",
+        "Coupons",
+        "Tips"
+        "Bills"
+        "FRNs"
+    }
+
+    def style_fed_table(df):
+        styler = df.style
+
+        def numeric_formatter(x):
+            if isinstance(x, (int, float)) and not pd.isna(x):
+                return f"{x:,.0f}"
+            return x
+
+        styler = styler.format(numeric_formatter, na_rep="")
+
+        styler = styler.set_table_styles(
+            [
+                {
+                    "selector": "table",
+                    "props": [
+                        ("border-collapse", "collapse"),
+                        ("font-family", "Calibri, Arial, sans-serif"),
+                        ("font-size", "14px"),
+                        ("table-layout", "fixed"),
+                        ("width", "100%"),
+                    ],
+                },
+                {
+                    "selector": "th.col_heading",
+                    "props": [
+                        ("background-color", "#005A9C"),
+                        ("color", "white"),
+                        ("text-align", "center"),
+                        ("border", "1px solid #CCCCCC"),
+                        ("font-weight", "bold"),
+                    ],
+                },
+                {
+                    "selector": "th.row_heading",
+                    "props": [
+                        ("text-align", "left"),
+                        ("border", "1px solid #CCCCCC"),
+                        ("white-space", "nowrap"),
+                        ("width", "300px"),
+                        ("max-width", "300px"),
+                    ],
+                },
+                {
+                    "selector": "td",
+                    "props": [
+                        ("border", "1px solid #CCCCCC"),
+                        ("text-align", "center"),
+                    ],
+                },
+            ]
+        )
+
+        numeric_cols = ['Level', 'YTD chg', '1w chg', '4w chg', '6m chg', '12m chg', '5y min', '5y max', '5y avg']
+        existing_cols = [c for c in numeric_cols if c in df.columns]
+        if existing_cols:
+            styler = styler.set_properties(
+                subset=pd.IndexSlice[:, existing_cols],
+                **{"text-align": "center"},
+            )
+            data_share = 90
+            per_col = data_share / len(existing_cols)
+            styler = styler.set_table_styles(
+                styler.table_styles
+                + [
+                    {
+                        "selector": "col",
+                        "props": [("width", f"{per_col:.2f}%")],
+                    }
+                ]
+            )
+
+        # row background:
+        # dark blue only for dark_blue_rows, otherwise white
+        def row_style(row):
+            if row.name in dark_blue_rows:
+                return [
+                    "background-color: #002b55; color: white; "
+                    "font-weight: bold; text-align:left;"
+                ] * len(row)
+            # keep other rows default background; bold handled via index
+            return [""] * len(row)
+
+        styler = styler.apply(row_style, axis=1)
+
+        # index (row label) styling:
+        # - any section_rows: bold + no indent
+        # - others: normal + single indent
+        def index_style(idx_series):
+            styles = []
+            for label in idx_series:
+                if label in section_rows:
+                    styles.append("padding-left: 4px; font-weight: bold;")
+                else:
+                    styles.append("padding-left: 20px; font-weight: normal;")
+            return styles
+
+        styler = styler.apply_index(index_style, axis=0)
+
+        # color and bold only non-zero numbers
+        def color_and_bold_nonzero(val):
+            if pd.isna(val) or not isinstance(val, (int, float)):
+                return ""
+            if val > 0:
+                return "color: #008000; font-weight:bold;"
+            if val < 0:
+                return "color: #CC0000; font-weight:bold;"
+            return ""  # zero
+
+        for col in ['Level', 'YTD chg', '1w chg', '4w chg', '6m chg', '12m chg', '5y min', '5y max', '5y avg']:
+            if col in df.columns:
+                styler = styler.applymap(
+                    color_and_bold_nonzero, subset=pd.IndexSlice[:, col]
+                )
+
+        return styler
+
+    st.subheader("Primary Dealer Warehouse Snapshot ($bn)")
+    styled = style_fed_table(df)
+    html = styled.to_html()
+    st.markdown(html, unsafe_allow_html=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ----------------------------------- SPONSORED VOLUMES - THE SOLUTION? ------------------------------------ ###
@@ -266,3 +452,7 @@ def plot_net_change_by_bond_tenor(start, end, **kwargs):
         hovermode='x unified'
     )
     st.plotly_chart(fig, use_container_width=True)
+
+
+
+

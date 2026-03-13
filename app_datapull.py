@@ -9,15 +9,6 @@ import os
 DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 ### FUNCTIONS ###
-def merge_dfs(array_of_dfs):
-    return ft.reduce(lambda left,
-                            right: pd.merge(left,
-                                            right,
-                                            left_index=True,
-                                            right_index=True,
-                                            how='outer'),
-                     array_of_dfs)
-
 def refresh_all_data():
     ### NEW DATES ###
     start = '1990-01-01'
@@ -542,6 +533,7 @@ def refresh_all_data():
         pickle.dump(fed_assets_total, file)
 
     ### ---------------------------------------------------------------------------------------------- ###
+    # https://www.finra.org/finra-data/browse-catalog/about-treasury
     client_id = '114c7cfb58ea47bfb358'
     client_secret = 'Porchlight319!'  # Replace with your real secret after a RESET
 
