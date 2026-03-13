@@ -252,7 +252,6 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
     all_ust = pd_pos_dict['All USTs'].loc[start_str:end_str]['Level']
 
     pd_perc_holdings_snapshot = pd.DataFrame({
-        'All Coupons':    (pd_pos_dict['All Coupons'].loc[start_str:end_str]['Level']    / all_ust) * 100,
         'Coupons <2y':    (pd_pos_dict['Coupons <2y'].loc[start_str:end_str]['Level']    / all_ust) * 100,
         'Coupons 2-3y':   (pd_pos_dict['Coupons 2-3y'].loc[start_str:end_str]['Level']   / all_ust) * 100,
         'Coupons 3-6y':   (pd_pos_dict['Coupons 3-6y'].loc[start_str:end_str]['Level']   / all_ust) * 100,
