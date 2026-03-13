@@ -325,6 +325,67 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
 
     st.pyplot(fig, use_container_width=True)
 
+    pd_perc_holdings_snapshot = pd.DataFrame({
+        'All Coupons': (pd_pos_dict['All Coupons'].loc[start_str:end_str]['Level'] / all_ust) * 100,
+        'All TIPS': (pd_pos_dict['All TIPS'].loc[start_str:end_str]['Level'] / all_ust) * 100,
+        'All Bills': (pd_pos_dict['All Bills'].loc[start_str:end_str]['Level'] / all_ust) * 100,
+        'All FRNs': (pd_pos_dict['All FRNs'].loc[start_str:end_str]['Level'] / all_ust) * 100,
+    }).T.round(2)
+
+    df_pct = pd_perc_holdings_snapshot.copy()
+    df_pct.columns = df_pct.columns.strftime("%m-%d-%y")  # pretty date labels
+
+    # ------------------------------------------------------------------ #
+    # Column‑wise normalization for colors (0–1 within each column)
+    # ------------------------------------------------------------------ #
+    df_norm = df_pct.copy()
+    col_min = df_norm.min(axis=0)
+    col_max = df_norm.max(axis=0)
+    denom = (col_max - col_min).replace(0, 1)  # avoid divide‑by‑zero
+    df_norm = (df_norm - col_min) / denom
+
+    # ------------------------------------------------------------------ #
+    # Plot heatmap (static)
+    # ------------------------------------------------------------------ #
+
+    plt.rcParams["figure.dpi"] = 200  # sharper rendering
+    fig, ax = plt.subplots(figsize=(14, 8))
+
+    vmin, vmax = 0, 1
+    cmap = sns.color_palette("RdYlBu_r", as_cmap=True)
+
+    sns.heatmap(
+        df_norm,
+        ax=ax,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        annot=df_pct,  # show actual % values
+        fmt=".2f",
+        annot_kws={"fontsize": 8},
+        cbar=False,
+        linewidths=0.5,
+        linecolor="white",
+    )
+
+    ax.set_ylabel("Nominals", fontsize=12)
+    ax.set_xlabel("Time", fontsize=12)
+
+    # colorbar on top
+    cax = fig.add_axes([0.1, 0.90, 0.8, 0.03])  # [left, bottom, width, height]
+    norm = plt.Normalize(vmin=vmin, vmax=vmax)
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+
+    cbar = fig.colorbar(sm, cax=cax, orientation="horizontal")
+    cbar.set_label("Relative level within each date (0 = column min, 1 = column max)", fontsize=11)
+    cbar.ax.xaxis.set_ticks_position("top")
+    cbar.ax.xaxis.set_label_position("top")
+
+    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
+
+    st.pyplot(fig, use_container_width=True)
+
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### --------------------------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP -------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###

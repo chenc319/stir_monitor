@@ -327,7 +327,6 @@ elif page == 'Primary Dealers':
     st.title("Primary Dealers")
     app_primary_dealers.primary_dealer_snapshot(start_date, end_date)
     app_primary_dealers.primary_dealer_nominal_holdings_heatmap(start_date, end_date)
-    app_primary_dealers.primary_dealer_total_holdings_heatmap(start_date, end_date)
     app_primary_dealers.plot_sponsored_volumes_solution(start_date, end_date)
     app_primary_dealers.plot_sponsored_volumes(start_date, end_date)
     app_primary_dealers.plot_pct_dvp_sponsored(start_date, end_date)
