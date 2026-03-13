@@ -208,17 +208,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
 ### --------------------------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP -------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-### ---------------------------------------------------------------------------------------------------------- ###
-### --------------------------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP -------------------------------- ###
-### ---------------------------------------------------------------------------------------------------------- ###
-
-### ---------------------------------------------------------------------------------------------------------- ###
-### ------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP (INTERACTIVE PLOTLY, FIXED) ------------------------ ###
-### ---------------------------------------------------------------------------------------------------------- ###
-
 def primary_dealer_holdings_heatmap(start, end, **kwargs):
-    import plotly.graph_objects as go
-
     base_series = pd_pos_dict["All USTs"]
     all_dates = base_series.index.sort_values()
 
@@ -239,14 +229,14 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
     col1, col2 = st.columns(2)
     with col1:
         chosen_start_date = st.selectbox(
-            "Select Start Snapshot Date (interactive)",
+            "Select Start Snapshot Date (static)",
             options=all_dates,
             index=start_idx_default,
             format_func=lambda d: d.strftime("%Y-%m-%d"),
         )
     with col2:
         chosen_end_date = st.selectbox(
-            "Select End Snapshot Date (interactive)",
+            "Select End Snapshot Date (static)",
             options=all_dates,
             index=last_idx,
             format_func=lambda d: d.strftime("%Y-%m-%d"),
@@ -262,6 +252,7 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
     all_ust = pd_pos_dict['All USTs'].loc[start_str:end_str]['Level']
 
     pd_perc_holdings_snapshot = pd.DataFrame({
+        'All Coupons':    (pd_pos_dict['All Coupons'].loc[start_str:end_str]['Level']    / all_ust) * 100,
         'Coupons <2y':    (pd_pos_dict['Coupons <2y'].loc[start_str:end_str]['Level']    / all_ust) * 100,
         'Coupons 2-3y':   (pd_pos_dict['Coupons 2-3y'].loc[start_str:end_str]['Level']   / all_ust) * 100,
         'Coupons 3-6y':   (pd_pos_dict['Coupons 3-6y'].loc[start_str:end_str]['Level']   / all_ust) * 100,
@@ -280,37 +271,60 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
         'All FRNs':       (pd_pos_dict['All FRNs'].loc[start_str:end_str]['Level']       / all_ust) * 100,
     }).T.round(2)
 
-    # ensure numeric and proper labels
     df_pct = pd_perc_holdings_snapshot.copy()
-    df_pct = df_pct.apply(pd.to_numeric, errors="coerce")
-    x_labels = df_pct.columns.strftime("%m-%d-%y")
-    y_labels = df_pct.index.astype(str)
+    df_pct.columns = df_pct.columns.strftime("%m-%d-%y")  # pretty date labels
 
-    z = df_pct.values
+    # ------------------------------------------------------------------ #
+    # Column‑wise normalization for colors (0–1 within each column)
+    # ------------------------------------------------------------------ #
+    df_norm = df_pct.copy()
+    col_min = df_norm.min(axis=0)
+    col_max = df_norm.max(axis=0)
+    denom = (col_max - col_min).replace(0, 1)  # avoid divide‑by‑zero
+    df_norm = (df_norm - col_min) / denom
 
-    st.subheader("Holdings as % of Total: Heatmap (Interactive)")
+    # ------------------------------------------------------------------ #
+    # Plot heatmap (static)
+    # ------------------------------------------------------------------ #
+    st.subheader("Holdings as % of Total: Heatmap (Static)")
 
-    fig = go.Figure(
-        data=go.Heatmap(
-            z=z,
-            x=x_labels,
-            y=y_labels,
-            colorscale="RdYlBu",
-            colorbar=dict(title="% of total"),
-            hovertemplate="Bucket: %{y}<br>Date: %{x}<br>% of total: %{z:.2f}<extra></extra>",
-            zmin=float(np.nanmin(z)),
-            zmax=float(np.nanmax(z)),
-        )
+    plt.rcParams["figure.dpi"] = 200  # sharper rendering
+    fig, ax = plt.subplots(figsize=(14, 8))
+
+    vmin, vmax = 0, 1
+    cmap = sns.color_palette("RdYlBu_r", as_cmap=True)
+
+    sns.heatmap(
+        df_norm,
+        ax=ax,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        annot=df_pct,          # show actual % values
+        fmt=".2f",
+        annot_kws={"fontsize": 8},
+        cbar=False,
+        linewidths=0.5,
+        linecolor="white",
     )
 
-    fig.update_layout(
-        xaxis_title="Time",
-        yaxis_title="Nominals",
-        margin=dict(l=80, r=40, t=40, b=60),
-        height=600,
-    )
+    ax.set_ylabel("Nominals", fontsize=12)
+    ax.set_xlabel("Time", fontsize=12)
 
-    st.plotly_chart(fig, use_container_width=True)
+    # colorbar on top
+    cax = fig.add_axes([0.1, 0.90, 0.8, 0.03])   # [left, bottom, width, height]
+    norm = plt.Normalize(vmin=vmin, vmax=vmax)
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+
+    cbar = fig.colorbar(sm, cax=cax, orientation="horizontal")
+    cbar.set_label("Relative level within each date (0 = column min, 1 = column max)", fontsize=11)
+    cbar.ax.xaxis.set_ticks_position("top")
+    cbar.ax.xaxis.set_label_position("top")
+
+    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
+
+    st.pyplot(fig, use_container_width=True)
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
