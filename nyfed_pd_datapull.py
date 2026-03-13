@@ -55,6 +55,7 @@ df = pd_array[0].copy()
 
 for df in pd_array:
     df.columns = ['Level']
+    df = df.dropna()
     year = df.index.year
     last_per_year = df.groupby(year)['Level'].last()
     prev_year_last = year.map(lambda y: last_per_year.get(y - 1))

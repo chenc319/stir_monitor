@@ -33,7 +33,6 @@ def primary_dealer_snapshot(start, end, **kwargs):
         index=len(all_dates) - 1,
         format_func=lambda d: d.strftime("%Y-%m-%d"),
     )
-
     pd_pos_snapshot = pd.DataFrame({
         'All USTs': pd_pos_dict['All USTs'].loc[chosen_date],
 
