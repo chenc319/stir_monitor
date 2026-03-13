@@ -213,11 +213,11 @@ def primary_dealer_snapshot(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP (INTERACTIVE PLOTLY, PER-COLUMN SCALED) ----------- ###
+### ------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP (INTERACTIVE PLOTLY, FIXED) ------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def primary_dealer_holdings_heatmap(start, end, **kwargs):
-    import plotly.express as px
+def primary_dealer_holdings_heatmap_plotly(start, end, **kwargs):
+    import plotly.graph_objects as go
 
     base_series = pd_pos_dict["All USTs"]
     all_dates = base_series.index.sort_values()
@@ -280,47 +280,32 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
         'All FRNs':       (pd_pos_dict['All FRNs'].loc[start_str:end_str]['Level']       / all_ust) * 100,
     }).T.round(2)
 
+    # ensure numeric and proper labels
     df_pct = pd_perc_holdings_snapshot.copy()
-    df_pct.columns = df_pct.columns.strftime("%m-%d-%y")  # pretty date labels
+    df_pct = df_pct.apply(pd.to_numeric, errors="coerce")
+    x_labels = df_pct.columns.strftime("%m-%d-%y")
+    y_labels = df_pct.index.astype(str)
 
-    # ------------------------------------------------------------------ #
-    # Column‑wise normalization for colors (0–1 within each column)
-    # ------------------------------------------------------------------ #
-    df_norm = df_pct.copy()
-    col_min = df_norm.min(axis=0)
-    col_max = df_norm.max(axis=0)
-    denom = (col_max - col_min).replace(0, 1)
-    df_norm = (df_norm - col_min) / denom
+    z = df_pct.values
 
-    # ------------------------------------------------------------------ #
-    # Plot interactive heatmap (Plotly)
-    # ------------------------------------------------------------------ #
     st.subheader("Holdings as % of Total: Heatmap (Interactive)")
 
-    fig = px.imshow(
-        df_norm,
-        x=df_norm.columns,
-        y=df_norm.index,
-        color_continuous_scale="RdYlBu_r",
-        origin="upper",
-        aspect="auto",
+    fig = go.Figure(
+        data=go.Heatmap(
+            z=z,
+            x=x_labels,
+            y=y_labels,
+            colorscale="RdYlBu",
+            colorbar=dict(title="% of total"),
+            hovertemplate="Bucket: %{y}<br>Date: %{x}<br>% of total: %{z:.2f}<extra></extra>",
+            zmin=float(np.nanmin(z)),
+            zmax=float(np.nanmax(z)),
+        )
     )
-
-    # show true % values as text and on hover
-    fig.update_traces(
-        customdata=df_pct.values,
-        text=df_pct.values,
-        texttemplate="%{text:.2f}",
-        hovertemplate="Bucket: %{y}<br>Date: %{x}<br>% of total: %{customdata:.2f}<extra></extra>",
-    )
-
-    fig.update_xaxes(title="Time", side="bottom")
-    fig.update_yaxes(title="Nominals")
 
     fig.update_layout(
-        coloraxis_colorbar=dict(
-            title="Relative level<br>(0 = column min, 1 = column max)"
-        ),
+        xaxis_title="Time",
+        yaxis_title="Nominals",
         margin=dict(l=80, r=40, t=40, b=60),
         height=600,
     )
