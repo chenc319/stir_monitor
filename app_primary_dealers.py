@@ -213,7 +213,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### --------------------------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP -------------------------------- ###
+### ----------------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP (PER-COLUMN SCALED) ---------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def primary_dealer_holdings_heatmap(start, end, **kwargs):
@@ -279,11 +279,19 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
     }).T.round(2)
 
     df_pct = pd_perc_holdings_snapshot.copy()
-    # columns are asofdate index; make nice labels
-    df_pct.columns = df_pct.columns.strftime("%m-%d-%y")
+    df_pct.columns = df_pct.columns.strftime("%m-%d-%y")  # pretty date labels
 
     # ------------------------------------------------------------------ #
-    # Plot heatmap: use df_pct (0–100) for both colors and annotations
+    # Column‑wise normalization for colors (0–1 within each column)
+    # ------------------------------------------------------------------ #
+    df_norm = df_pct.copy()
+    col_min = df_norm.min(axis=0)
+    col_max = df_norm.max(axis=0)
+    denom = (col_max - col_min).replace(0, 1)  # avoid divide‑by‑zero
+    df_norm = (df_norm - col_min) / denom
+
+    # ------------------------------------------------------------------ #
+    # Plot heatmap: df_norm for colors, df_pct for annotations
     # ------------------------------------------------------------------ #
     import matplotlib.pyplot as plt
     import seaborn as sns
@@ -293,17 +301,16 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
 
     fig, ax = plt.subplots(figsize=(14, 8))
 
-    # vmin/vmax now in PERCENT units
-    vmin, vmax = 0, 100
+    vmin, vmax = 0, 1  # because df_norm is 0–1 by construction
     cmap = sns.color_palette("RdYlBu_r", as_cmap=True)
 
     sns.heatmap(
-        df_pct,
+        df_norm,
         ax=ax,
         cmap=cmap,
         vmin=vmin,
         vmax=vmax,
-        annot=True,
+        annot=df_pct,          # show actual % values
         fmt=".2f",
         annot_kws={"fontsize": 8},
         cbar=False,
@@ -314,14 +321,14 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
     ax.set_ylabel("Nominals", fontsize=12)
     ax.set_xlabel("Time", fontsize=12)
 
-    # colorbar on top, 0–100%
+    # colorbar on top, showing 0–1 relative to each column's own min/max
     cax = fig.add_axes([0.1, 0.90, 0.8, 0.03])   # [left, bottom, width, height]
     norm = plt.Normalize(vmin=vmin, vmax=vmax)
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
 
     cbar = fig.colorbar(sm, cax=cax, orientation="horizontal")
-    cbar.set_label("Holdings as % of Total", fontsize=11)
+    cbar.set_label("Relative level within each date (0 = column min, 1 = column max)", fontsize=11)
     cbar.ax.xaxis.set_ticks_position("top")
     cbar.ax.xaxis.set_label_position("top")
 
