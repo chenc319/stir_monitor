@@ -9,25 +9,25 @@ import os
 DATA_DIR = os.getenv('DATA_DIR', 'data')
 
 ### ALL ###
-pd_total_masters = get_newyork_fed_data('PDPOSGST-TOT')
-pd_frns = get_newyork_fed_data('PDPOSGS-BFRN')
-pd_bills = get_newyork_fed_data('PDPOSGS-B')
+pd_total_masters = get_newyork_fed_data('PDPOSGST-TOT') / 1000
+pd_frns = get_newyork_fed_data('PDPOSGS-BFRN') / 1000
+pd_bills = get_newyork_fed_data('PDPOSGS-B') / 1000
 pd_coupons = pd.DataFrame(merge_dfs([pd_total_masters,(-1*pd_frns),(-1*pd_bills)]).sum(axis=1))
 
 ### COUPONS ###
-pd_coups_l2 = get_newyork_fed_data('PDPOSGSC-L2')
-pd_coups_23 = get_newyork_fed_data('PDPOSGSC-G2L3')
-pd_coups_36 = get_newyork_fed_data('PDPOSGSC-G3L6')
-pd_coups_67 = get_newyork_fed_data('PDPOSGSC-G6L7')
-pd_coups_711 = get_newyork_fed_data('PDPOSGSC-G7L11')
-pd_coups_1121 = get_newyork_fed_data('PDPOSGSC-G11L21')
-pd_coups_g21 = get_newyork_fed_data('PDPOSGSC-G21')
+pd_coups_l2 = get_newyork_fed_data('PDPOSGSC-L2') / 1000
+pd_coups_23 = get_newyork_fed_data('PDPOSGSC-G2L3') / 1000
+pd_coups_36 = get_newyork_fed_data('PDPOSGSC-G3L6') / 1000
+pd_coups_67 = get_newyork_fed_data('PDPOSGSC-G6L7') / 1000
+pd_coups_711 = get_newyork_fed_data('PDPOSGSC-G7L11') / 1000
+pd_coups_1121 = get_newyork_fed_data('PDPOSGSC-G11L21') / 1000
+pd_coups_g21 = get_newyork_fed_data('PDPOSGSC-G21') / 1000
 
 ### TIPS ###
-pd_tips_l2 = get_newyork_fed_data('PDPOSTIPS-L2')
-pd_tips_26 = get_newyork_fed_data('PDPOSTIPS-G2')
-pd_tips_611 = get_newyork_fed_data('PDPOSTIPS-G6L11')
-pd_tips_g11 = get_newyork_fed_data('PDPOSTIPS-G11')
+pd_tips_l2 = get_newyork_fed_data('PDPOSTIPS-L2') / 1000
+pd_tips_26 = get_newyork_fed_data('PDPOSTIPS-G2') / 1000
+pd_tips_611 = get_newyork_fed_data('PDPOSTIPS-G6L11') / 1000
+pd_tips_g11 = get_newyork_fed_data('PDPOSTIPS-G11') / 1000
 pd_tips_total = pd.DataFrame(merge_dfs([
     pd_tips_l2,pd_tips_26,pd_tips_611,pd_tips_g11
 ]).sum(axis=1))
