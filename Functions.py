@@ -11,13 +11,13 @@ import requests, zipfile, io
 import functools as ft
 import pickle
 import pandas_datareader as pdr
-import numpy as np
 from plotly.subplots import make_subplots
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 from io import StringIO
-from pandas_datareader import data as pdr
 import base64
+import seaborn as sns
+import numpy as np
 from fredapi import Fred
 fred = Fred(api_key="6905137c26f03db5c8c09f70b7839150")
 
