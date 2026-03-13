@@ -212,6 +212,10 @@ def primary_dealer_snapshot(start, end, **kwargs):
 ### --------------------------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP -------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
+### ---------------------------------------------------------------------------------------------------------- ###
+### --------------------------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP -------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
 def primary_dealer_holdings_heatmap(start, end, **kwargs):
     base_series = pd_pos_dict["All USTs"]
     all_dates = base_series.index.sort_values()
@@ -279,11 +283,8 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
     # columns are asofdate index; make nice labels
     df_pct.columns = df_pct.columns.strftime("%m-%d-%y")
 
-    # for color scale (0–1), but annotations stay as true percent values
-    df_plot = df_pct / 100.0
-
     # ------------------------------------------------------------------ #
-    # Plot heatmap
+    # Plot heatmap: use df_pct (0–100) for both colors and annotations
     # ------------------------------------------------------------------ #
     import matplotlib.pyplot as plt
     import seaborn as sns
@@ -293,16 +294,17 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
 
     fig, ax = plt.subplots(figsize=(14, 8))
 
-    vmin, vmax = 0.2, 0.8   # adjust as desired
+    # vmin/vmax now in PERCENT units
+    vmin, vmax = 0, 100
     cmap = sns.color_palette("RdYlBu_r", as_cmap=True)
 
     sns.heatmap(
-        df_plot,
+        df_pct,
         ax=ax,
         cmap=cmap,
         vmin=vmin,
         vmax=vmax,
-        annot=df_pct,          # show actual % values (already *100 and rounded)
+        annot=True,
         fmt=".2f",
         annot_kws={"fontsize": 8},
         cbar=False,
@@ -313,20 +315,21 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
     ax.set_ylabel("Nominals", fontsize=12)
     ax.set_xlabel("Time", fontsize=12)
 
-    # colorbar on top, labelled in 0–1 terms (fraction of total)
+    # colorbar on top, 0–100%
     cax = fig.add_axes([0.1, 0.90, 0.8, 0.03])   # [left, bottom, width, height]
     norm = plt.Normalize(vmin=vmin, vmax=vmax)
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
 
     cbar = fig.colorbar(sm, cax=cax, orientation="horizontal")
-    cbar.set_label("Holdings as % of Total (fraction)", fontsize=11)
+    cbar.set_label("Holdings as % of Total", fontsize=11)
     cbar.ax.xaxis.set_ticks_position("top")
     cbar.ax.xaxis.set_label_position("top")
 
     plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
 
     st.pyplot(fig)
+
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ----------------------------------- SPONSORED VOLUMES - THE SOLUTION? ------------------------------------ ###
