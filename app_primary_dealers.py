@@ -205,6 +205,134 @@ def primary_dealer_snapshot(start, end, **kwargs):
     st.markdown(html, unsafe_allow_html=True)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
+### ----------------------------------- PRIMARY DEALER WAREHOUSE OVERVIEW ------------------------------------ ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def primary_dealer_heatmap(start, end, **kwargs):
+    base_series = pd_pos_dict["All USTs"]
+    all_dates = base_series.index.sort_values()
+
+    for key, obj in pd_pos_dict.items():
+        if isinstance(obj, (pd.DataFrame, pd.Series)):
+            pd_pos_dict[key] = obj.round(1)
+            pd_pos_dict[key] = pd_pos_dict[key].where(
+                pd_pos_dict[key] != 0, 0
+            )
+
+
+    chosen_start_date = st.selectbox(
+        "Select Start Snapshot Date",
+        options=all_dates,
+        index=len(all_dates) - 1,
+        format_func=lambda d: d.strftime("%Y-%m-%d"),
+    )
+
+    chosen_end_date = st.selectbox(
+        "Select End Snapshot Date",
+        options=all_dates,
+        index=len(all_dates) - 1,
+        format_func=lambda d: d.strftime("%Y-%m-%d"),
+    )
+
+    chosen_start_date = '2026-01-21'
+    chosen_end_date = '2026-02-25'
+
+
+
+    pd_perc_holdings_snapshot = pd.DataFrame({
+        'All Coupons': round((pd_pos_dict['All Coupons'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+        'Coupons <2y': round((pd_pos_dict['Coupons <2y'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+        'Coupons 2-3y': round((pd_pos_dict['Coupons 2-3y'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+        'Coupons 3-6y': round((pd_pos_dict['Coupons 3-6y'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+        'Coupons 6-7y': round((pd_pos_dict['Coupons 6-7y'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+        'Coupons 7-11y': round((pd_pos_dict['Coupons 7-11y'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+        'Coupons 11-21y': round((pd_pos_dict['Coupons 11-21y'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+        'Coupons >21y': round((pd_pos_dict['All Coupons'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['Coupons >21y'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+
+        'All TIPS': round((pd_pos_dict['All TIPS'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+        'TIPS <2y': round((pd_pos_dict['TIPS <2y'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+        'TIPS 2-6y': round((pd_pos_dict['TIPS 2-6y'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+        'TIPS 6-11y': round((pd_pos_dict['TIPS 6-11y'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+        'TIPS >11y': round((pd_pos_dict['TIPS >11y'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+
+        'All Bills': round((pd_pos_dict['All Bills'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+
+        'All FRNs': round((pd_pos_dict['All FRNs'][chosen_start_date:chosen_end_date]['Level'] /
+                              pd_pos_dict['All USTs'][chosen_start_date:chosen_end_date]['Level']) * 100,2),
+    }).T
+
+    df_pct = pd_perc_holdings_snapshot.copy()
+    df_pct.columns = df_pct.columns.strftime("%m-%d-%y")  # nicer labels if datetime
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import numpy as np
+    import streamlit as st
+
+    def plot_holdings_heatmap(df_pct):
+        # configure figure
+        fig, ax = plt.subplots(figsize=(14, 8))
+
+        vmin, vmax = 0.2, 0.8  # to match your color scale
+        cmap = sns.color_palette("RdYlBu_r", as_cmap=True)
+
+        # heatmap with annotations
+        sns.heatmap(
+            df_pct,
+            ax=ax,
+            cmap=cmap,
+            vmin=vmin,
+            vmax=vmax,
+            annot=True,
+            fmt=".2f",
+            annot_kws={"fontsize": 8},
+            cbar=False,
+            linewidths=0.5,
+            linecolor="white",
+        )
+
+        # y-axis label
+        ax.set_ylabel("Nominals", fontsize=12)
+        ax.set_xlabel("Time", fontsize=12)
+
+        # put colorbar on top
+        cax = fig.add_axes([0.1, 0.90, 0.8, 0.03])  # [left, bottom, width, height]
+        norm = plt.Normalize(vmin=vmin, vmax=vmax)
+        sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+        sm.set_array([])
+
+        cbar = fig.colorbar(
+            sm,
+            cax=cax,
+            orientation="horizontal",
+        )
+        cbar.set_label("Holdings as % of Total", fontsize=11)
+        cbar.ax.xaxis.set_ticks_position("top")
+        cbar.ax.xaxis.set_label_position("top")
+
+        plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])  # leave space for colorbar
+
+        return fig
+
+    fig = plot_holdings_heatmap(df_pct)
+    st.pyplot(fig)
+
+
+### ---------------------------------------------------------------------------------------------------------- ###
 ### ----------------------------------- SPONSORED VOLUMES - THE SOLUTION? ------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
