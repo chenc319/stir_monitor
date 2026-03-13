@@ -209,6 +209,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def primary_dealer_holdings_heatmap(start, end, **kwargs):
+    st.subheader("Holdings as % of Total: Heatmap")
     base_series = pd_pos_dict["All USTs"]
     all_dates = base_series.index.sort_values()
 
@@ -285,7 +286,6 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
     # ------------------------------------------------------------------ #
     # Plot heatmap (static)
     # ------------------------------------------------------------------ #
-    st.subheader("Holdings as % of Total: Heatmap (Static)")
 
     plt.rcParams["figure.dpi"] = 200  # sharper rendering
     fig, ax = plt.subplots(figsize=(14, 8))

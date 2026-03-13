@@ -85,6 +85,7 @@ liab_colors = {
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
+    st.subheader("Wednesday Levels & Changes ($bn)")
     base_series = fed_balance_sheet_dict["Reserve Bank Credit"]
     all_dates = base_series.index.sort_values()
 
@@ -275,7 +276,6 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         return styler
 
-    st.subheader("Wednesday Levels & Changes ($bn)")
     styled = style_fed_table(df)
     html = styled.to_html()
     st.markdown(html, unsafe_allow_html=True)
