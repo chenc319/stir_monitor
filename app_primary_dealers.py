@@ -35,7 +35,6 @@ def primary_dealer_snapshot(start, end, **kwargs):
     )
 
     pd_pos_snapshot = pd.DataFrame({
-        'Total': ['Level', 'YTD chg', '1w chg', '4w chg', '6m chg', '12m chg', '5y min', '5y max', '5y avg'],
         'All USTs': pd_pos_dict['All USTs'].loc[chosen_date],
 
         'Coupons': ['Level', 'YTD chg', '1w chg', '4w chg', '6m chg', '12m chg', '5y min', '5y max', '5y avg'],
@@ -123,8 +122,8 @@ def primary_dealer_snapshot(start, end, **kwargs):
                         ("text-align", "left"),
                         ("border", "1px solid #CCCCCC"),
                         ("white-space", "nowrap"),
-                        ("width", "300px"),
-                        ("max-width", "300px"),
+                        ("width", "200px"),
+                        ("max-width", "200px"),
                     ],
                 },
                 {
