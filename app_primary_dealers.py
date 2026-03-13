@@ -323,7 +323,7 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
 
     plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
 
-    st.pyplot(fig, use_container_width=True)
+    st.pyplot(fig)
 
     st.subheader("Holdings as % of All Coupons")
     all_coupons = pd_pos_dict['All Coupons'].loc[start_str:end_str]['Level']
@@ -389,7 +389,7 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
 
     plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
 
-    st.pyplot(fig, use_container_width=True)
+    st.pyplot(fig)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ----------------------------------- SPONSORED VOLUMES - THE SOLUTION? ------------------------------------ ###
@@ -429,7 +429,7 @@ def plot_sponsored_volumes_solution(start, end, path_to_csv="data/SponsoredVolum
         yaxis_title="Dollars",
         hovermode='x unified'
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------------------- SPONSORED VOLUMES -------------------------------------------- ###
@@ -467,7 +467,7 @@ def plot_sponsored_volumes(start, end, **kwargs):
         yaxis_title="Dollars",
         hovermode='x unified'
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ----------------------------------- % OF DVP VOLUME THAT IS SPONSORED ------------------------------------ ###
@@ -509,7 +509,7 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
         yaxis_title="%",
         hovermode='x unified'
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------ PRIMARY DEALERS NET POSITIONS BILLS VS BONDS ------------------------------ ###
@@ -546,7 +546,7 @@ def plot_net_positions_bills_vs_bonds(start, end, **kwargs):
         yaxis_title="Dollars",
         hovermode='x unified'
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ------------------------------- PRIMARY DEALERS NET POSITIONS BY BOND TENOR ------------------------------ ###
@@ -591,7 +591,7 @@ def plot_net_positions_by_bond_tenor(start, end, **kwargs):
         yaxis_title="Dollars",
         hovermode='x unified'
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### -------------------------------- PRIMARY DEALERS BOND NET POSITION CHANGE -------------------------------- ###
@@ -636,7 +636,7 @@ def plot_net_change_by_bond_tenor(start, end, **kwargs):
         yaxis_title="Dollars",
         hovermode='x unified'
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
 
 
 
