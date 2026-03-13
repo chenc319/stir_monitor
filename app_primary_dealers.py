@@ -78,7 +78,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
     dark_blue_rows = {
         "Total",
         "Coupons",
-        "Tips",
+        "TIPS",
         "Bills",
         "FRNs"
     }
