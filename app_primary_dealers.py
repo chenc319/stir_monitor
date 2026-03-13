@@ -209,6 +209,9 @@ def primary_dealer_snapshot(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
     st.subheader("Nominal Holdings Heatmaps")
 
     base_series = pd_pos_dict["All USTs"]
@@ -248,9 +251,7 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
     start_str = pd.to_datetime(chosen_start_date).strftime("%Y-%m-%d")
     end_str = pd.to_datetime(chosen_end_date).strftime("%Y-%m-%d")
 
-    # ------------------------------------------------------------------ #
-    # First heatmap: % of total USTs
-    # ------------------------------------------------------------------ #
+    # ===== 1) % of total USTs =====
     all_ust = pd_pos_dict['All USTs'].loc[start_str:end_str]['Level']
 
     pd_perc_total = pd.DataFrame({
@@ -281,12 +282,10 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
     denom = (col_max - col_min).replace(0, 1)
     df_norm_total = (df_norm_total - col_min) / denom
 
-    # ------------------------------------------------------------------ #
-    # Second heatmap: % of all coupons
-    # ------------------------------------------------------------------ #
+    # ===== 2) % of all coupons =====
     all_coupons = pd_pos_dict['All Coupons'].loc[start_str:end_str]['Level']
 
-    pd_perc_coupons = pd.DataFrame({
+    pd_perc_cpn = pd.DataFrame({
         'Coupons <2y':    (pd_pos_dict['Coupons <2y'].loc[start_str:end_str]['Level']    / all_coupons) * 100,
         'Coupons 2-3y':   (pd_pos_dict['Coupons 2-3y'].loc[start_str:end_str]['Level']   / all_coupons) * 100,
         'Coupons 3-6y':   (pd_pos_dict['Coupons 3-6y'].loc[start_str:end_str]['Level']   / all_coupons) * 100,
@@ -296,7 +295,7 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
         'Coupons >21y':   (pd_pos_dict['Coupons >21y'].loc[start_str:end_str]['Level']   / all_coupons) * 100,
     }).T.round(2)
 
-    df_pct_cpn = pd_perc_coupons.copy()
+    df_pct_cpn = pd_perc_cpn.copy()
     df_pct_cpn.columns = df_pct_cpn.columns.strftime("%m-%d-%y")
 
     df_norm_cpn = df_pct_cpn.copy()
@@ -305,21 +304,17 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
     denom = (col_max - col_min).replace(0, 1)
     df_norm_cpn = (df_norm_cpn - col_min) / denom
 
-    # ------------------------------------------------------------------ #
-    # Plot two heatmaps SIDE BY SIDE
-    # ------------------------------------------------------------------ #
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-
+    # ===== Plot side by side with original size (14x8 each) =====
     plt.rcParams["figure.dpi"] = 200
     vmin, vmax = 0, 1
     cmap = sns.color_palette("RdYlBu_r", as_cmap=True)
 
-    col_left, col_right = st.columns(2)
+    # one wide row with two columns; widths set so each figure keeps its own width
+    col_left, col_right = st.columns([1, 1])
 
     with col_left:
         st.markdown("**Holdings as % of Total USTs**")
-        fig1, ax1 = plt.subplots(figsize=(8, 6))
+        fig1, ax1 = plt.subplots(figsize=(14, 8))
         sns.heatmap(
             df_norm_total,
             ax=ax1,
@@ -328,27 +323,27 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
             vmax=vmax,
             annot=df_pct_total,
             fmt=".2f",
-            annot_kws={"fontsize": 7},
+            annot_kws={"fontsize": 8},
             cbar=False,
             linewidths=0.5,
             linecolor="white",
         )
-        ax1.set_ylabel("Nominals", fontsize=11)
-        ax1.set_xlabel("Time", fontsize=11)
+        ax1.set_ylabel("Nominals", fontsize=12)
+        ax1.set_xlabel("Time", fontsize=12)
         cax1 = fig1.add_axes([0.10, 0.90, 0.80, 0.03])
         norm1 = plt.Normalize(vmin=vmin, vmax=vmax)
         sm1 = plt.cm.ScalarMappable(cmap=cmap, norm=norm1)
         sm1.set_array([])
         cbar1 = fig1.colorbar(sm1, cax=cax1, orientation="horizontal")
-        cbar1.set_label("Relative level (per column)", fontsize=10)
+        cbar1.set_label("Relative level (per column)", fontsize=11)
         cbar1.ax.xaxis.set_ticks_position("top")
         cbar1.ax.xaxis.set_label_position("top")
         plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
-        st.pyplot(fig1)
+        st.pyplot(fig1)   # no use_container_width
 
     with col_right:
         st.markdown("**Holdings as % of All Coupons**")
-        fig2, ax2 = plt.subplots(figsize=(8, 6))
+        fig2, ax2 = plt.subplots(figsize=(14, 8))
         sns.heatmap(
             df_norm_cpn,
             ax=ax2,
@@ -357,23 +352,23 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
             vmax=vmax,
             annot=df_pct_cpn,
             fmt=".2f",
-            annot_kws={"fontsize": 7},
+            annot_kws={"fontsize": 8},
             cbar=False,
             linewidths=0.5,
             linecolor="white",
         )
-        ax2.set_ylabel("Nominals", fontsize=11)
-        ax2.set_xlabel("Time", fontsize=11)
+        ax2.set_ylabel("Nominals", fontsize=12)
+        ax2.set_xlabel("Time", fontsize=12)
         cax2 = fig2.add_axes([0.10, 0.90, 0.80, 0.03])
         norm2 = plt.Normalize(vmin=vmin, vmax=vmax)
         sm2 = plt.cm.ScalarMappable(cmap=cmap, norm=norm2)
         sm2.set_array([])
         cbar2 = fig2.colorbar(sm2, cax=cax2, orientation="horizontal")
-        cbar2.set_label("Relative level (per column)", fontsize=10)
+        cbar2.set_label("Relative level (per column)", fontsize=11)
         cbar2.ax.xaxis.set_ticks_position("top")
         cbar2.ax.xaxis.set_label_position("top")
         plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
-        st.pyplot(fig2)
+        st.pyplot(fig2)   # no use_container_width
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
