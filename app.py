@@ -68,6 +68,69 @@ st.set_page_config(
 #     st.stop()
 
 
+# st.markdown("""
+#     <style>
+#     .header-container {
+#         position: fixed;
+#         top: 0;
+#         left: 0;
+#         right: 0;
+#         padding: 8px;
+#         background-color: white;
+#         z-index: 999;
+#         border-bottom: 1px solid #f0f2f6;
+#         font-size: 14px;
+#     }
+#     .main {
+#         margin-top: 60px;
+#     }
+#     .stMetric {
+#         background-color: #ffffff;
+#         padding: 4px 8px;
+#         border-radius: 4px;
+#         display: inline-block;
+#         margin-right: 10px;
+#     }
+#
+#     /* ----- Mistral sidebar theming ----- */
+#
+#     /* Sidebar background */
+#     [data-testid="stSidebar"] {
+#         background-color: #0F3B2E;  /* Mistral green */
+#     }
+#
+#     /* Sidebar headings and labels */
+#     [data-testid="stSidebar"] h1,
+#     [data-testid="stSidebar"] h2,
+#     [data-testid="stSidebar"] h3,
+#     [data-testid="stSidebar"] label {
+#         color: #FFFFFF !important;
+#     }
+#
+#     /* Selectbox + other inputs: white box, dark text (placeholder + value) */
+#     [data-testid="stSidebar"] div[data-baseweb="select"] > div {
+#         background-color: #FFFFFF !important;
+#         color: #000000 !important;
+#     }
+#
+#     [data-testid="stSidebar"] div[data-baseweb="select"] span {
+#         color: #000000 !important;
+#     }
+#
+#     [data-testid="stSidebar"] .stDateInput input,
+#     [data-testid="stSidebar"] input,
+#     [data-testid="stSidebar"] textarea {
+#         background-color: #FFFFFF !important;
+#         color: #000000 !important;
+#     }
+#
+#     /* Dropdown menu options */
+#     div[role="listbox"] * {
+#         color: #000000 !important;
+#     }
+#     </style>
+# """, unsafe_allow_html=True)
+
 st.markdown("""
     <style>
     .header-container {
@@ -128,8 +191,32 @@ st.markdown("""
     div[role="listbox"] * {
         color: #000000 !important;
     }
+
+    /* -------- Allow horizontal scrolling instead of auto-scaling -------- */
+
+    /* Make main content horizontally scrollable */
+    .main .block-container {
+        overflow-x: auto;
+        padding-right: 0.5rem;
+    }
+
+    /* Do not force charts/images to shrink to container width */
+    .main .block-container img,
+    .main .block-container canvas,
+    .main .block-container svg,
+    .main .block-container [data-testid="stPlotlyChart"] {
+        max-width: none !important;
+        width: auto !important;
+    }
+
+    /* Optional: ensure plots can extend beyond viewport width */
+    .main .block-container [data-testid="stPlotlyChart"],
+    .main .block-container [data-testid="stImage"] {
+        min-width: 1200px;  /* tweak this based on desired plot width */
+    }
     </style>
 """, unsafe_allow_html=True)
+
 
 ### SIDEBAR ###
 st.sidebar.title("Mistral STIR Monitor")
