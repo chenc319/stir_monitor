@@ -213,10 +213,14 @@ def primary_dealer_snapshot(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ----------------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP (PER-COLUMN SCALED) ---------------------- ###
+### --------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP (STATIC, PER-COLUMN SCALED, HIGH-DPI) ------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def primary_dealer_holdings_heatmap(start, end, **kwargs):
+def primary_dealer_holdings_heatmap_static(start, end, **kwargs):
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import numpy as np
+
     base_series = pd_pos_dict["All USTs"]
     all_dates = base_series.index.sort_values()
 
@@ -237,14 +241,14 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
     col1, col2 = st.columns(2)
     with col1:
         chosen_start_date = st.selectbox(
-            "Select Start Snapshot Date",
+            "Select Start Snapshot Date (static)",
             options=all_dates,
             index=start_idx_default,
             format_func=lambda d: d.strftime("%Y-%m-%d"),
         )
     with col2:
         chosen_end_date = st.selectbox(
-            "Select End Snapshot Date",
+            "Select End Snapshot Date (static)",
             options=all_dates,
             index=last_idx,
             format_func=lambda d: d.strftime("%Y-%m-%d"),
@@ -291,17 +295,14 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
     df_norm = (df_norm - col_min) / denom
 
     # ------------------------------------------------------------------ #
-    # Plot heatmap: df_norm for colors, df_pct for annotations
+    # Plot heatmap (static)
     # ------------------------------------------------------------------ #
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import numpy as np
+    st.subheader("Holdings as % of Total: Heatmap (Static)")
 
-    st.subheader("Holdings as % of Total: Heatmap")
-
+    plt.rcParams["figure.dpi"] = 200  # sharper rendering
     fig, ax = plt.subplots(figsize=(14, 8))
 
-    vmin, vmax = 0, 1  # because df_norm is 0–1 by construction
+    vmin, vmax = 0, 1
     cmap = sns.color_palette("RdYlBu_r", as_cmap=True)
 
     sns.heatmap(
@@ -321,7 +322,7 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
     ax.set_ylabel("Nominals", fontsize=12)
     ax.set_xlabel("Time", fontsize=12)
 
-    # colorbar on top, showing 0–1 relative to each column's own min/max
+    # colorbar on top
     cax = fig.add_axes([0.1, 0.90, 0.8, 0.03])   # [left, bottom, width, height]
     norm = plt.Normalize(vmin=vmin, vmax=vmax)
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
@@ -334,7 +335,7 @@ def primary_dealer_holdings_heatmap(start, end, **kwargs):
 
     plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
 
-    st.pyplot(fig)
+    st.pyplot(fig, use_container_width=True)
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
