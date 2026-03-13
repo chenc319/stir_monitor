@@ -89,7 +89,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
 
         def numeric_formatter(x):
             if isinstance(x, (int, float)) and not pd.isna(x):
-                return f"{x:,.0f}"
+                return f"{x:,.1f}"
             return x
 
         styler = styler.format(numeric_formatter, na_rep="")
