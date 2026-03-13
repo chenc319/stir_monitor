@@ -216,7 +216,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
 ### ------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP (INTERACTIVE PLOTLY, FIXED) ------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def primary_dealer_holdings_heatmap_plotly(start, end, **kwargs):
+def primary_dealer_holdings_heatmap(start, end, **kwargs):
     import plotly.graph_objects as go
 
     base_series = pd_pos_dict["All USTs"]
