@@ -213,13 +213,11 @@ def primary_dealer_snapshot(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### --------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP (STATIC, PER-COLUMN SCALED, HIGH-DPI) ------------ ###
+### ------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP (INTERACTIVE PLOTLY, PER-COLUMN SCALED) ----------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def primary_dealer_holdings_heatmap_static(start, end, **kwargs):
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import numpy as np
+def primary_dealer_holdings_heatmap(start, end, **kwargs):
+    import plotly.express as px
 
     base_series = pd_pos_dict["All USTs"]
     all_dates = base_series.index.sort_values()
@@ -241,14 +239,14 @@ def primary_dealer_holdings_heatmap_static(start, end, **kwargs):
     col1, col2 = st.columns(2)
     with col1:
         chosen_start_date = st.selectbox(
-            "Select Start Snapshot Date (static)",
+            "Select Start Snapshot Date (interactive)",
             options=all_dates,
             index=start_idx_default,
             format_func=lambda d: d.strftime("%Y-%m-%d"),
         )
     with col2:
         chosen_end_date = st.selectbox(
-            "Select End Snapshot Date (static)",
+            "Select End Snapshot Date (interactive)",
             options=all_dates,
             index=last_idx,
             format_func=lambda d: d.strftime("%Y-%m-%d"),
@@ -291,51 +289,43 @@ def primary_dealer_holdings_heatmap_static(start, end, **kwargs):
     df_norm = df_pct.copy()
     col_min = df_norm.min(axis=0)
     col_max = df_norm.max(axis=0)
-    denom = (col_max - col_min).replace(0, 1)  # avoid divide‑by‑zero
+    denom = (col_max - col_min).replace(0, 1)
     df_norm = (df_norm - col_min) / denom
 
     # ------------------------------------------------------------------ #
-    # Plot heatmap (static)
+    # Plot interactive heatmap (Plotly)
     # ------------------------------------------------------------------ #
-    st.subheader("Holdings as % of Total: Heatmap (Static)")
+    st.subheader("Holdings as % of Total: Heatmap (Interactive)")
 
-    plt.rcParams["figure.dpi"] = 200  # sharper rendering
-    fig, ax = plt.subplots(figsize=(14, 8))
-
-    vmin, vmax = 0, 1
-    cmap = sns.color_palette("RdYlBu_r", as_cmap=True)
-
-    sns.heatmap(
+    fig = px.imshow(
         df_norm,
-        ax=ax,
-        cmap=cmap,
-        vmin=vmin,
-        vmax=vmax,
-        annot=df_pct,          # show actual % values
-        fmt=".2f",
-        annot_kws={"fontsize": 8},
-        cbar=False,
-        linewidths=0.5,
-        linecolor="white",
+        x=df_norm.columns,
+        y=df_norm.index,
+        color_continuous_scale="RdYlBu_r",
+        origin="upper",
+        aspect="auto",
     )
 
-    ax.set_ylabel("Nominals", fontsize=12)
-    ax.set_xlabel("Time", fontsize=12)
+    # show true % values as text and on hover
+    fig.update_traces(
+        customdata=df_pct.values,
+        text=df_pct.values,
+        texttemplate="%{text:.2f}",
+        hovertemplate="Bucket: %{y}<br>Date: %{x}<br>% of total: %{customdata:.2f}<extra></extra>",
+    )
 
-    # colorbar on top
-    cax = fig.add_axes([0.1, 0.90, 0.8, 0.03])   # [left, bottom, width, height]
-    norm = plt.Normalize(vmin=vmin, vmax=vmax)
-    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-    sm.set_array([])
+    fig.update_xaxes(title="Time", side="bottom")
+    fig.update_yaxes(title="Nominals")
 
-    cbar = fig.colorbar(sm, cax=cax, orientation="horizontal")
-    cbar.set_label("Relative level within each date (0 = column min, 1 = column max)", fontsize=11)
-    cbar.ax.xaxis.set_ticks_position("top")
-    cbar.ax.xaxis.set_label_position("top")
+    fig.update_layout(
+        coloraxis_colorbar=dict(
+            title="Relative level<br>(0 = column min, 1 = column max)"
+        ),
+        margin=dict(l=80, r=40, t=40, b=60),
+        height=600,
+    )
 
-    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
-
-    st.pyplot(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
