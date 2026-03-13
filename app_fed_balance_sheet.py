@@ -96,12 +96,14 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
                 fed_balance_sheet_dict[key] != 0, 0
             )
 
-    chosen_date = st.selectbox(
-        "Select H.4.1 date",
-        options=all_dates,
-        index=len(all_dates) - 1,
-        format_func=lambda d: d.strftime("%Y-%m-%d"),
-    )
+    col1 = st.columns(1)
+    with col1:
+        chosen_date = st.selectbox(
+            "Select H.4.1 date",
+            options=all_dates,
+            index=len(all_dates) - 1,
+            format_func=lambda d: d.strftime("%Y-%m-%d"),
+        )
 
     fed_consolidated_balance_sheet = pd.DataFrame({
         "Assets": ["Level", "1w", "4w", "6m", "12m"],
