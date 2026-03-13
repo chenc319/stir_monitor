@@ -17,6 +17,7 @@ with open(Path(DATA_DIR) / 'pd_pos_dict.pkl', 'rb') as file:
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def primary_dealer_snapshot(start, end, **kwargs):
+    st.subheader("Primary Dealer Warehouse Snapshot ($bn)")
     base_series = pd_pos_dict["All USTs"]
     all_dates = base_series.index.sort_values()
 
@@ -199,7 +200,6 @@ def primary_dealer_snapshot(start, end, **kwargs):
 
         return styler
 
-    st.subheader("Primary Dealer Warehouse Snapshot ($bn)")
     styled = style_fed_table(df)
     html = styled.to_html()
     st.markdown(html, unsafe_allow_html=True)

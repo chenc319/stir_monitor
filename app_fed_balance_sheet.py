@@ -85,7 +85,7 @@ liab_colors = {
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
-    st.subheader("Primary Dealer Warehouse Snapshot ($bn)")
+    st.subheader("Fed Balance Sheet Snapshot ($bn)")
     base_series = fed_balance_sheet_dict["Reserve Bank Credit"]
     all_dates = base_series.index.sort_values()
 
