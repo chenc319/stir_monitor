@@ -22,7 +22,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
 
     for key, obj in pd_pos_dict.items():
         if isinstance(obj, (pd.DataFrame, pd.Series)):
-            pd_pos_dict[key] = obj.round(0)
+            pd_pos_dict[key] = obj.round(1)
             pd_pos_dict[key] = pd_pos_dict[key].where(
                 pd_pos_dict[key] != 0, 0
             )
@@ -103,7 +103,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
                         ("font-family", "Calibri, Arial, sans-serif"),
                         ("font-size", "14px"),
                         ("table-layout", "fixed"),
-                        ("width", "150%"),
+                        ("width", "300c%"),
                     ],
                 },
                 {
