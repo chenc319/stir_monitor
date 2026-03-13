@@ -211,6 +211,8 @@ def primary_dealer_snapshot(start, end, **kwargs):
 def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
     import matplotlib.pyplot as plt
     import seaborn as sns
+    from io import BytesIO
+    import base64
 
     st.subheader("Nominal Holdings Heatmaps")
 
@@ -247,7 +249,6 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
             format_func=lambda d: d.strftime("%Y-%m-%d"),
         )
 
-    # slice to chosen window
     start_str = pd.to_datetime(chosen_start_date).strftime("%Y-%m-%d")
     end_str = pd.to_datetime(chosen_end_date).strftime("%Y-%m-%d")
 
@@ -304,71 +305,87 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
     denom = (col_max - col_min).replace(0, 1)
     df_norm_cpn = (df_norm_cpn - col_min) / denom
 
-    # ===== Plot side by side with original size (14x8 each) =====
+    # ===== Render each heatmap to PNG (14x8) =====
     plt.rcParams["figure.dpi"] = 200
     vmin, vmax = 0, 1
     cmap = sns.color_palette("RdYlBu_r", as_cmap=True)
 
-    # one wide row with two columns; widths set so each figure keeps its own width
-    col_left, col_right = st.columns([1, 1])
+    def fig_to_base64(fig):
+        buf = BytesIO()
+        fig.savefig(buf, format="png", bbox_inches="tight")
+        buf.seek(0)
+        encoded = base64.b64encode(buf.read()).decode("utf-8")
+        plt.close(fig)
+        return encoded
 
-    with col_left:
-        st.markdown("**Holdings as % of Total USTs**")
-        fig1, ax1 = plt.subplots(figsize=(14, 8))
-        sns.heatmap(
-            df_norm_total,
-            ax=ax1,
-            cmap=cmap,
-            vmin=vmin,
-            vmax=vmax,
-            annot=df_pct_total,
-            fmt=".2f",
-            annot_kws={"fontsize": 8},
-            cbar=False,
-            linewidths=0.5,
-            linecolor="white",
-        )
-        ax1.set_ylabel("Nominals", fontsize=12)
-        ax1.set_xlabel("Time", fontsize=12)
-        cax1 = fig1.add_axes([0.10, 0.90, 0.80, 0.03])
-        norm1 = plt.Normalize(vmin=vmin, vmax=vmax)
-        sm1 = plt.cm.ScalarMappable(cmap=cmap, norm=norm1)
-        sm1.set_array([])
-        cbar1 = fig1.colorbar(sm1, cax=cax1, orientation="horizontal")
-        cbar1.set_label("Relative level (per column)", fontsize=11)
-        cbar1.ax.xaxis.set_ticks_position("top")
-        cbar1.ax.xaxis.set_label_position("top")
-        plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
-        st.pyplot(fig1)   # no use_container_width
+    # First figure
+    fig1, ax1 = plt.subplots(figsize=(14, 8))
+    sns.heatmap(
+        df_norm_total,
+        ax=ax1,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        annot=df_pct_total,
+        fmt=".2f",
+        annot_kws={"fontsize": 8},
+        cbar=False,
+        linewidths=0.5,
+        linecolor="white",
+    )
+    ax1.set_title("Holdings as % of Total USTs", fontsize=14, pad=20)
+    ax1.set_ylabel("Nominals", fontsize=12)
+    ax1.set_xlabel("Time", fontsize=12)
+    cax1 = fig1.add_axes([0.10, 0.90, 0.80, 0.03])
+    norm1 = plt.Normalize(vmin=vmin, vmax=vmax)
+    sm1 = plt.cm.ScalarMappable(cmap=cmap, norm=norm1)
+    sm1.set_array([])
+    cbar1 = fig1.colorbar(sm1, cax=cax1, orientation="horizontal")
+    cbar1.set_label("Relative level (per column)", fontsize=11)
+    cbar1.ax.xaxis.set_ticks_position("top")
+    cbar1.ax.xaxis.set_label_position("top")
+    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
+    img1_b64 = fig_to_base64(fig1)
 
-    with col_right:
-        st.markdown("**Holdings as % of All Coupons**")
-        fig2, ax2 = plt.subplots(figsize=(14, 8))
-        sns.heatmap(
-            df_norm_cpn,
-            ax=ax2,
-            cmap=cmap,
-            vmin=vmin,
-            vmax=vmax,
-            annot=df_pct_cpn,
-            fmt=".2f",
-            annot_kws={"fontsize": 8},
-            cbar=False,
-            linewidths=0.5,
-            linecolor="white",
-        )
-        ax2.set_ylabel("Nominals", fontsize=12)
-        ax2.set_xlabel("Time", fontsize=12)
-        cax2 = fig2.add_axes([0.10, 0.90, 0.80, 0.03])
-        norm2 = plt.Normalize(vmin=vmin, vmax=vmax)
-        sm2 = plt.cm.ScalarMappable(cmap=cmap, norm=norm2)
-        sm2.set_array([])
-        cbar2 = fig2.colorbar(sm2, cax=cax2, orientation="horizontal")
-        cbar2.set_label("Relative level (per column)", fontsize=11)
-        cbar2.ax.xaxis.set_ticks_position("top")
-        cbar2.ax.xaxis.set_label_position("top")
-        plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
-        st.pyplot(fig2)   # no use_container_width
+    # Second figure
+    fig2, ax2 = plt.subplots(figsize=(14, 8))
+    sns.heatmap(
+        df_norm_cpn,
+        ax=ax2,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        annot=df_pct_cpn,
+        fmt=".2f",
+        annot_kws={"fontsize": 8},
+        cbar=False,
+        linewidths=0.5,
+        linecolor="white",
+    )
+    ax2.set_title("Holdings as % of All Coupons", fontsize=14, pad=20)
+    ax2.set_ylabel("Nominals", fontsize=12)
+    ax2.set_xlabel("Time", fontsize=12)
+    cax2 = fig2.add_axes([0.10, 0.90, 0.80, 0.03])
+    norm2 = plt.Normalize(vmin=vmin, vmax=vmax)
+    sm2 = plt.cm.ScalarMappable(cmap=cmap, norm=norm2)
+    sm2.set_array([])
+    cbar2 = fig2.colorbar(sm2, cax=cax2, orientation="horizontal")
+    cbar2.set_label("Relative level (per column)", fontsize=11)
+    cbar2.ax.xaxis.set_ticks_position("top")
+    cbar2.ax.xaxis.set_label_position("top")
+    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
+    img2_b64 = fig_to_base64(fig2)
+
+    # ===== Show both images in a horizontally scrollable flex container =====
+    html = f"""
+    <div style="width: 100%; overflow-x: auto;">
+        <div style="display: flex; flex-wrap: nowrap;">
+            <img src="data:image/png;base64,{img1_b64}" style="margin-right: 24px;" />
+            <img src="data:image/png;base64,{img2_b64}" />
+        </div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
 
 
 ### ---------------------------------------------------------------------------------------------------------- ###
