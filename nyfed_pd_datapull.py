@@ -51,11 +51,10 @@ pd_array = [
     pd_tips_g11,
 ]
 
-df = pd_array[0].copy()
+df = pd_coups_g21.copy()
 
 for df in pd_array:
     df.columns = ['Level']
-    df = df.dropna()
     year = df.index.year
     last_per_year = df.groupby(year)['Level'].last()
     prev_year_last = year.map(lambda y: last_per_year.get(y - 1))
@@ -65,9 +64,26 @@ for df in pd_array:
     df['4w chg'] = df.iloc[:,0].diff(4)
     df['6m chg'] = df.iloc[:,0].diff(26)
     df['12m chg'] = df.iloc[:,0].diff(52)
-    df['5y min'] = df.iloc[:, 0].rolling(window=260, min_periods=1).min()
-    df['5y max'] = df.iloc[:, 0].rolling(window=260, min_periods=1).max()
-    df['5y avg'] = df.iloc[:, 0].rolling(window=260).mean()
+
+    s = df.iloc[:, 0]
+    min_periods = 260
+    count = s.expanding().count()
+
+    # 5y min
+    exp_min = s.expanding(min_periods=1).min()
+    roll_min = s.rolling(window=min_periods, min_periods=min_periods).min()
+    df['5y min'] = exp_min.where(count < min_periods, roll_min)
+
+    # 5y max
+    exp_max = s.expanding(min_periods=1).max()
+    roll_max = s.rolling(window=min_periods, min_periods=min_periods).max()
+    df['5y max'] = exp_max.where(count < min_periods, roll_max)
+
+    # 5y avg
+    exp_mean = s.expanding(min_periods=1).mean()
+    roll_mean = s.rolling(window=min_periods, min_periods=min_periods).mean()
+    df['5y avg'] = exp_mean.where(count < min_periods, roll_mean)
+
     df = df.dropna()
 
 pd_pos_dict = {
