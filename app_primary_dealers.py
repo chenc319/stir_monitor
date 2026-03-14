@@ -653,25 +653,12 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
 ### ---------------------------------- PRIMARY DEALERS BOND FRONT END CURVE ---------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def primary_dealer_bonds_curve(start,end,**kwargs):
+def primary_dealer_front_end(start,end,**kwargs):
     front_df = pd.DataFrame({
         'All Coupons': pd_pos_dict['All Coupons']['Level'],
         'Coupons <2y': pd_pos_dict['Coupons <2y']['Level'],
         'All Bills': pd_pos_dict['All Bills']['Level'],
     })
-    belly_df = pd.DataFrame({
-        'All Coupons': pd_pos_dict['All Coupons']['Level'],
-        'Coupons 2-3y': pd_pos_dict['Coupons 2-3y']['Level'],
-        'Coupons 3-6y': pd_pos_dict['Coupons 3-6y']['Level'],
-        'Coupons 6-7y': pd_pos_dict['Coupons 6-7y']['Level'],
-    })
-    back_df = pd.DataFrame({
-        'All Coupons': pd_pos_dict['All Coupons']['Level'],
-        'Coupons 7-11y': pd_pos_dict['Coupons 7-11y']['Level'],
-        'Coupons 11-21y': pd_pos_dict['Coupons 11-21y']['Level'],
-        'Coupons >21y': pd_pos_dict['Coupons >21y']['Level'],
-    })
-
     streamlit_plot(
         front_df*1e9,
         ['Coupons <2y', 'All Bills'],
@@ -682,6 +669,44 @@ def primary_dealer_bonds_curve(start,end,**kwargs):
         "US Primary Dealer Holdings (Net Position) | Front-End",
         ""
     )
+    front_df['Coupons <2y z'] = ((front_df['Coupons <2y'] -
+                                 front_df['Coupons <2y'].rolling(156).mean()) /
+                                 front_df['Coupons <2y'].rolling(156).std())
+    front_df['All Bills z'] = ((front_df['All Bills'] -
+                                 front_df['All Bills'].rolling(156).mean()) /
+                                 front_df['All Bills'].rolling(156).std())
+    streamlit_plot(
+        front_df,
+        ['Coupons <2y z', 'All Bills z'],
+        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
+        [
+            'Coupons <2y',
+            'All Bills'],
+        "US Primary Dealer Holdings (Net Positions 3yr Z-Score) | Front-End",
+        ""
+    )
+    front_df['Coupons <2y %'] = (front_df['Coupons <2y'] / front_df['All Coupons']) * 100
+    front_df['All Bills %'] = (front_df['All Bills'] / front_df['All Coupons']) * 100
+    streamlit_plot(
+        front_df,
+        ['Coupons <2y %', 'All Bills %'],
+        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
+        [
+            'Coupons <2y',
+            'All Bills'],
+        "US Primary Dealer Holdings (% of Net Positions) | Front-End",
+        ""
+    )
+
+
+
+def primary_dealer_belly(start,end,**kwargs):
+    belly_df = pd.DataFrame({
+        'All Coupons': pd_pos_dict['All Coupons']['Level'],
+        'Coupons 2-3y': pd_pos_dict['Coupons 2-3y']['Level'],
+        'Coupons 3-6y': pd_pos_dict['Coupons 3-6y']['Level'],
+        'Coupons 6-7y': pd_pos_dict['Coupons 6-7y']['Level'],
+    })
     streamlit_plot(
         belly_df*1e9,
         ['Coupons 2-3y', 'Coupons 3-6y','Coupons 6-7y'],
@@ -693,6 +718,14 @@ def primary_dealer_bonds_curve(start,end,**kwargs):
         "US Primary Dealer Holdings (Net Position) | Belly",
         ""
     )
+
+def primary_dealer_back_end(start,end,**kwargs):
+    back_df = pd.DataFrame({
+        'All Coupons': pd_pos_dict['All Coupons']['Level'],
+        'Coupons 7-11y': pd_pos_dict['Coupons 7-11y']['Level'],
+        'Coupons 11-21y': pd_pos_dict['Coupons 11-21y']['Level'],
+        'Coupons >21y': pd_pos_dict['Coupons >21y']['Level'],
+    })
     streamlit_plot(
         back_df * 1e9,
         ['Coupons 7-11y', 'Coupons 11-21y','Coupons >21y'],
