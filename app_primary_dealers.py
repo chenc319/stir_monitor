@@ -656,7 +656,7 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
 def primary_dealer_front_end(start, end, **kwargs):
     st.subheader('Primary Dealer Front End')
     front_df = pd.DataFrame({
-        'All Coupons': pd_pos_dict['All Coupons']['Level'],
+        'All Front': pd_pos_dict['Coupons <2y']['Level'] + pd_pos_dict['All Bills']['Level'],
         'Coupons <2y': pd_pos_dict['Coupons <2y']['Level'],
         'All Bills': pd_pos_dict['All Bills']['Level'],
     })
@@ -690,11 +690,11 @@ def primary_dealer_front_end(start, end, **kwargs):
             'Coupons <2y',
             'All Bills'
         ],
-        "US Primary Dealer Holdings (Net Positions 3yr Z-Score) | Front-End",
+        "US Primary Dealer Holdings (Net Positions 3y Z-Score) | Front-End",
         ""
     )
-    front_df['Coupons <2y %'] = (front_df['Coupons <2y'] / front_df['All Coupons']) * 100
-    front_df['All Bills %'] = (front_df['All Bills'] / front_df['All Coupons']) * 100
+    front_df['Coupons <2y %'] = (front_df['Coupons <2y'] / front_df['All Front']) * 100
+    front_df['All Bills %'] = (front_df['All Bills'] / front_df['All Front']) * 100
     streamlit_plot(
         front_df.dropna(),
         ['Coupons <2y %', 'All Bills %'],
@@ -703,7 +703,7 @@ def primary_dealer_front_end(start, end, **kwargs):
             'Coupons <2y',
             'All Bills'
         ],
-        "US Primary Dealer Holdings (% of Net Positions Z-Score) | Front-End",
+        "US Primary Dealer Holdings (% of Net Positions) | Front-End",
         ""
     )
     front_df['Coupons <2y % z'] = (
@@ -724,7 +724,7 @@ def primary_dealer_front_end(start, end, **kwargs):
             'Coupons <2y',
             'All Bills'
         ],
-        "US Primary Dealer Holdings (% of Net Positions Z-Score) | Front-End",
+        "US Primary Dealer Holdings (% of Net Positions 3y Z-Score) | Front-End",
         ""
     )
 
