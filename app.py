@@ -170,7 +170,7 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* Selectbox + other inputs: white box, dark text (placeholder + value) */
+    /* Selectbox + other inputs: white box, dark text */
     [data-testid="stSidebar"] div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
         color: #000000 !important;
@@ -192,7 +192,7 @@ st.markdown("""
         color: #000000 !important;
     }
 
-    /* -------- Allow horizontal scrolling instead of auto-scaling -------- */
+    /* -------- Global horizontal scrolling behaviour -------- */
 
     /* Make main content horizontally scrollable */
     .main .block-container {
@@ -209,13 +209,34 @@ st.markdown("""
         width: auto !important;
     }
 
-    /* Optional: ensure plots can extend beyond viewport width */
+    /* Default minimum width for plots/images so they can overflow */
     .main .block-container [data-testid="stPlotlyChart"],
     .main .block-container [data-testid="stImage"] {
-        min-width: 1200px;  /* tweak this based on desired plot width */
+        min-width: 1200px;
+    }
+
+    /* -------- Reusable scrollable row for multiple charts -------- */
+
+    .scroll-row {
+        width: 100%;
+        overflow-x: auto;
+    }
+    .scroll-row-inner {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+    .scroll-item {
+        min-width: 1200px;      /* width of each chart */
+        margin-right: 24px;
+    }
+    /* prevent extra shrinking inside scroll-item */
+    .scroll-item [data-testid="stPlotlyChart"] {
+        max-width: none !important;
+        width: auto !important;
     }
     </style>
 """, unsafe_allow_html=True)
+
 
 
 ### SIDEBAR ###
