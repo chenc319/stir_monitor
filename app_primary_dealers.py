@@ -314,23 +314,23 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
             pd_pos_12m_chg_z_dict[key] = chg_12m_df_z.dropna()
 
     pd_holdings_levels_z = pd.DataFrame({
-        'All Coupons': (pd_pos_levels_z_dict['All Coupons'].loc[start_str:end_str]),
-        'Coupons <2y': (pd_pos_levels_z_dict['Coupons <2y'].loc[start_str:end_str]),
-        'Coupons 2-3y': (pd_pos_levels_z_dict['Coupons 2-3y'].loc[start_str:end_str]),
-        'Coupons 3-6y': (pd_pos_levels_z_dict['Coupons 3-6y'].loc[start_str:end_str]),
-        'Coupons 6-7y': (pd_pos_levels_z_dict['Coupons 6-7y'].loc[start_str:end_str]),
-        'Coupons 7-11y': (pd_pos_levels_z_dict['Coupons 7-11y'].loc[start_str:end_str]),
-        'Coupons 11-21y': (pd_pos_levels_z_dict['Coupons 11-21y'].loc[start_str:end_str]),
-        'Coupons >21y': (pd_pos_levels_z_dict['Coupons >21y'].loc[start_str:end_str]),
+        'All Coupons': (pd_pos_levels_z_dict['All Coupons'].loc[start_str:end_str])['Level'],
+        'Coupons <2y': (pd_pos_levels_z_dict['Coupons <2y'].loc[start_str:end_str])['Level'],
+        'Coupons 2-3y': (pd_pos_levels_z_dict['Coupons 2-3y'].loc[start_str:end_str])['Level'],
+        'Coupons 3-6y': (pd_pos_levels_z_dict['Coupons 3-6y'].loc[start_str:end_str])['Level'],
+        'Coupons 6-7y': (pd_pos_levels_z_dict['Coupons 6-7y'].loc[start_str:end_str])['Level'],
+        'Coupons 7-11y': (pd_pos_levels_z_dict['Coupons 7-11y'].loc[start_str:end_str])['Level'],
+        'Coupons 11-21y': (pd_pos_levels_z_dict['Coupons 11-21y'].loc[start_str:end_str])['Level'],
+        'Coupons >21y': (pd_pos_levels_z_dict['Coupons >21y'].loc[start_str:end_str])['Level'],
 
-        'All TIPS': (pd_pos_levels_z_dict['All TIPS'].loc[start_str:end_str]),
-        'TIPS <2y': (pd_pos_levels_z_dict['TIPS <2y'].loc[start_str:end_str]),
-        'TIPS 2-6y': (pd_pos_levels_z_dict['TIPS 2-6y'].loc[start_str:end_str]),
-        'TIPS 6-11y': (pd_pos_levels_z_dict['TIPS 6-11y'].loc[start_str:end_str]),
-        'TIPS >11y': (pd_pos_levels_z_dict['TIPS >11y'].loc[start_str:end_str]),
+        'All TIPS': (pd_pos_levels_z_dict['All TIPS'].loc[start_str:end_str])['Level'],
+        'TIPS <2y': (pd_pos_levels_z_dict['TIPS <2y'].loc[start_str:end_str])['Level'],
+        'TIPS 2-6y': (pd_pos_levels_z_dict['TIPS 2-6y'].loc[start_str:end_str])['Level'],
+        'TIPS 6-11y': (pd_pos_levels_z_dict['TIPS 6-11y'].loc[start_str:end_str])['Level'],
+        'TIPS >11y': (pd_pos_levels_z_dict['TIPS >11y'].loc[start_str:end_str])['Level'],
 
-        'All Bills': (pd_pos_levels_z_dict['All Bills'].loc[start_str:end_str]),
-        'All FRNs': (pd_pos_levels_z_dict['All FRNs'].loc[start_str:end_str]),
+        'All Bills': (pd_pos_levels_z_dict['All Bills'].loc[start_str:end_str])['Level'],
+        'All FRNs': (pd_pos_levels_z_dict['All FRNs'].loc[start_str:end_str])['Level'],
     }).T.round(2)
     df_levels_z = pd_holdings_levels_z.copy()
     df_levels_z.columns = df_levels_z.columns.strftime("%m-%d-%y")
@@ -342,23 +342,23 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
 
     ### ---------------------------------- FOURTH HEATMAP ---------------------------------- ###
     pd_holdings_chg_z = pd.DataFrame({
-        'All Coupons': (pd_pos_12m_chg_z_dict['All Coupons'].loc[start_str:end_str]),
-        'Coupons <2y': (pd_pos_12m_chg_z_dict['Coupons <2y'].loc[start_str:end_str]),
-        'Coupons 2-3y': (pd_pos_12m_chg_z_dict['Coupons 2-3y'].loc[start_str:end_str]),
-        'Coupons 3-6y': (pd_pos_12m_chg_z_dict['Coupons 3-6y'].loc[start_str:end_str]),
-        'Coupons 6-7y': (pd_pos_12m_chg_z_dict['Coupons 6-7y'].loc[start_str:end_str]),
-        'Coupons 7-11y': (pd_pos_12m_chg_z_dict['Coupons 7-11y'].loc[start_str:end_str]),
-        'Coupons 11-21y': (pd_pos_12m_chg_z_dict['Coupons 11-21y'].loc[start_str:end_str]),
-        'Coupons >21y': (pd_pos_12m_chg_z_dict['Coupons >21y'].loc[start_str:end_str]),
+        'All Coupons': (pd_pos_12m_chg_z_dict['All Coupons'].loc[start_str:end_str])['12m chg'],
+        'Coupons <2y': (pd_pos_12m_chg_z_dict['Coupons <2y'].loc[start_str:end_str])['12m chg'],
+        'Coupons 2-3y': (pd_pos_12m_chg_z_dict['Coupons 2-3y'].loc[start_str:end_str])['12m chg'],
+        'Coupons 3-6y': (pd_pos_12m_chg_z_dict['Coupons 3-6y'].loc[start_str:end_str])['12m chg'],
+        'Coupons 6-7y': (pd_pos_12m_chg_z_dict['Coupons 6-7y'].loc[start_str:end_str])['12m chg'],
+        'Coupons 7-11y': (pd_pos_12m_chg_z_dict['Coupons 7-11y'].loc[start_str:end_str])['12m chg'],
+        'Coupons 11-21y': (pd_pos_12m_chg_z_dict['Coupons 11-21y'].loc[start_str:end_str])['12m chg'],
+        'Coupons >21y': (pd_pos_12m_chg_z_dict['Coupons >21y'].loc[start_str:end_str])['12m chg'],
 
-        'All TIPS': (pd_pos_12m_chg_z_dict['All TIPS'].loc[start_str:end_str]),
-        'TIPS <2y': (pd_pos_12m_chg_z_dict['TIPS <2y'].loc[start_str:end_str]),
-        'TIPS 2-6y': (pd_pos_12m_chg_z_dict['TIPS 2-6y'].loc[start_str:end_str]),
-        'TIPS 6-11y': (pd_pos_12m_chg_z_dict['TIPS 6-11y'].loc[start_str:end_str]),
-        'TIPS >11y': (pd_pos_12m_chg_z_dict['TIPS >11y'].loc[start_str:end_str]),
+        'All TIPS': (pd_pos_12m_chg_z_dict['All TIPS'].loc[start_str:end_str])['12m chg'],
+        'TIPS <2y': (pd_pos_12m_chg_z_dict['TIPS <2y'].loc[start_str:end_str])['12m chg'],
+        'TIPS 2-6y': (pd_pos_12m_chg_z_dict['TIPS 2-6y'].loc[start_str:end_str])['12m chg'],
+        'TIPS 6-11y': (pd_pos_12m_chg_z_dict['TIPS 6-11y'].loc[start_str:end_str])['12m chg'],
+        'TIPS >11y': (pd_pos_12m_chg_z_dict['TIPS >11y'].loc[start_str:end_str])['12m chg'],
 
-        'All Bills': (pd_pos_12m_chg_z_dict['All Bills'].loc[start_str:end_str]),
-        'All FRNs': (pd_pos_12m_chg_z_dict['All FRNs'].loc[start_str:end_str]),
+        'All Bills': (pd_pos_12m_chg_z_dict['All Bills'].loc[start_str:end_str])['12m chg'],
+        'All FRNs': (pd_pos_12m_chg_z_dict['All FRNs'].loc[start_str:end_str])['12m chg'],
     }).T.round(2)
     df_chg_z = pd_holdings_chg_z.copy()
     df_chg_z.columns = df_chg_z.columns.strftime("%m-%d-%y")
