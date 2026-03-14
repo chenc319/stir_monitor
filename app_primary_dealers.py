@@ -329,22 +329,24 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
         annot=df_pct_total,
         fmt=".2f",
         annot_kws={"fontsize": 8},
-        cbar=False,
+        cbar=True,
+        cbar_kws={
+            "orientation": "horizontal",
+            "pad": 0.08,
+            "fraction": 0.046,
+            "aspect": 40,
+        },
         linewidths=0.5,
         linecolor="white",
     )
     ax1.set_title("Holdings as % of Total USTs", fontsize=14, pad=20)
     ax1.set_ylabel("Nominals", fontsize=12)
     ax1.set_xlabel("Time", fontsize=12)
-    cax1 = fig1.add_axes([0.10, 0.90, 0.80, 0.03])
-    norm1 = plt.Normalize(vmin=vmin, vmax=vmax)
-    sm1 = plt.cm.ScalarMappable(cmap=cmap, norm=norm1)
-    sm1.set_array([])
-    cbar1 = fig1.colorbar(sm1, cax=cax1, orientation="horizontal")
+    cbar1 = ax1.collections[0].colorbar
     cbar1.set_label("Relative level (per column)", fontsize=11)
     cbar1.ax.xaxis.set_ticks_position("top")
     cbar1.ax.xaxis.set_label_position("top")
-    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
+    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.92])
     img1_b64 = fig_to_base64(fig1)
 
     # Second figure
@@ -358,22 +360,24 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
         annot=df_pct_cpn,
         fmt=".2f",
         annot_kws={"fontsize": 8},
-        cbar=False,
+        cbar=True,
+        cbar_kws={
+            "orientation": "horizontal",
+            "pad": 0.08,
+            "fraction": 0.046,
+            "aspect": 40,
+        },
         linewidths=0.5,
         linecolor="white",
     )
     ax2.set_title("Holdings as % of All Coupons", fontsize=14, pad=20)
     ax2.set_ylabel("Nominals", fontsize=12)
     ax2.set_xlabel("Time", fontsize=12)
-    cax2 = fig2.add_axes([0.10, 0.90, 0.80, 0.03])
-    norm2 = plt.Normalize(vmin=vmin, vmax=vmax)
-    sm2 = plt.cm.ScalarMappable(cmap=cmap, norm=norm2)
-    sm2.set_array([])
-    cbar2 = fig2.colorbar(sm2, cax=cax2, orientation="horizontal")
+    cbar2 = ax2.collections[0].colorbar
     cbar2.set_label("Relative level (per column)", fontsize=11)
     cbar2.ax.xaxis.set_ticks_position("top")
     cbar2.ax.xaxis.set_label_position("top")
-    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.88])
+    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.92])
     img2_b64 = fig_to_base64(fig2)
 
     # ===== Show both images in a horizontally scrollable flex container =====
