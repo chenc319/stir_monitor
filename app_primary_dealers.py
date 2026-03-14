@@ -654,56 +654,55 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def primary_dealer_front_end(start, end, **kwargs):
-    import matplotlib.pyplot as plt
-    from io import BytesIO
+    import plotly.graph_objects as go
+    from io import StringIO
     import base64
+    import json
 
-    def fig_to_base64(fig):
-        buf = BytesIO()
-        fig.savefig(buf, format="png", bbox_inches="tight")
-        buf.seek(0)
-        encoded = base64.b64encode(buf.read()).decode("utf-8")
-        plt.close(fig)
-        return encoded
+    # Helper to serialize Plotly fig to JSON and embed as <iframe>-like object
+    # but we will instead use Plotly's to_html and embed as <div>.
+    def fig_to_html_div(fig):
+        # Minimal HTML div without full HTML/HEAD wrapper
+        return fig.to_html(include_plotlyjs='cdn', full_html=False)
 
-    # ------------------------- build data ------------------------- #
     front_df = pd.DataFrame({
         'All Coupons': pd_pos_dict['All Coupons']['Level'],
         'Coupons <2y': pd_pos_dict['Coupons <2y']['Level'],
         'All Bills': pd_pos_dict['All Bills']['Level'],
     })
 
-    # Optional: respect start/end if passed in as dates
+    # Optional: respect start/end if dates passed
     if start is not None and end is not None:
         front_df = front_df.loc[pd.to_datetime(start):pd.to_datetime(end)]
 
-    plt.rcParams["figure.dpi"] = 200
-
-    # ======================= 1) Net positions (levels) ======================= #
-    df1 = (front_df.dropna() * 1e9).copy()
-
-    fig1, ax1 = plt.subplots(figsize=(14, 6))
-    ax1.plot(
-        df1.index,
-        df1['Coupons <2y'],
-        color=pd_colors_dict['Coupons <2y'],
-        label='Coupons <2y',
+    # ------------------ 1) Net positions (levels) ------------------ #
+    df1 = front_df.dropna().copy()
+    fig1 = go.Figure()
+    fig1.add_trace(go.Scatter(
+        x=df1.index,
+        y=df1['Coupons <2y'] * 1e9,
+        mode='lines',
+        name='Coupons <2y',
+        line=dict(color=pd_colors_dict['Coupons <2y'])
+    ))
+    fig1.add_trace(go.Scatter(
+        x=df1.index,
+        y=df1['All Bills'] * 1e9,
+        mode='lines',
+        name='All Bills',
+        line=dict(color=pd_colors_dict['All Bills'])
+    ))
+    fig1.update_layout(
+        title="US Primary Dealer Holdings (Net Position) | Front-End",
+        xaxis_title="Date",
+        yaxis_title="Notional",
+        height=500,
+        width=1200,  # wider than laptop viewport -> horizontal scroll
+        margin=dict(l=60, r=40, t=60, b=60),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0)
     )
-    ax1.plot(
-        df1.index,
-        df1['All Bills'],
-        color=pd_colors_dict['All Bills'],
-        label='All Bills',
-    )
-    ax1.set_title("US Primary Dealer Holdings (Net Position) | Front-End", fontsize=14)
-    ax1.set_xlabel("Date", fontsize=12)
-    ax1.set_ylabel("Notional", fontsize=12)
-    ax1.legend(loc="best", fontsize=9)
-    ax1.grid(True, linewidth=0.3, alpha=0.4)
-    fig1.autofmt_xdate()
-    img1_b64 = fig_to_base64(fig1)
 
-    # ======================= 2) 3yr Z-scores ======================= #
+    # ------------------ 2) 3yr Z-scores ------------------ #
     front_df['Coupons <2y z'] = (
         (front_df['Coupons <2y'] - front_df['Coupons <2y'].rolling(156).mean())
         / front_df['Coupons <2y'].rolling(156).std()
@@ -712,63 +711,76 @@ def primary_dealer_front_end(start, end, **kwargs):
         (front_df['All Bills'] - front_df['All Bills'].rolling(156).mean())
         / front_df['All Bills'].rolling(156).std()
     )
-    df2 = front_df.dropna(subset=['Coupons <2y z', 'All Bills z'])
+    df2 = front_df.dropna(subset=['Coupons <2y z', 'All Bills z']).copy()
 
-    fig2, ax2 = plt.subplots(figsize=(14, 6))
-    ax2.plot(
-        df2.index,
-        df2['Coupons <2y z'],
-        color=pd_colors_dict['Coupons <2y'],
-        label='Coupons <2y',
+    fig2 = go.Figure()
+    fig2.add_trace(go.Scatter(
+        x=df2.index,
+        y=df2['Coupons <2y z'],
+        mode='lines',
+        name='Coupons <2y',
+        line=dict(color=pd_colors_dict['Coupons <2y'])
+    ))
+    fig2.add_trace(go.Scatter(
+        x=df2.index,
+        y=df2['All Bills z'],
+        mode='lines',
+        name='All Bills',
+        line=dict(color=pd_colors_dict['All Bills'])
+    ))
+    fig2.add_hline(y=0, line_width=1, line_color="black", opacity=0.5)
+    fig2.update_layout(
+        title="US Primary Dealer Holdings (Net Positions 3yr Z-Score) | Front-End",
+        xaxis_title="Date",
+        yaxis_title="Z-score",
+        height=500,
+        width=1200,
+        margin=dict(l=60, r=40, t=60, b=60),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0)
     )
-    ax2.plot(
-        df2.index,
-        df2['All Bills z'],
-        color=pd_colors_dict['All Bills'],
-        label='All Bills',
-    )
-    ax2.axhline(0, color="black", linewidth=0.5)
-    ax2.set_title("US Primary Dealer Holdings (Net Positions 3yr Z-Score) | Front-End", fontsize=14)
-    ax2.set_xlabel("Date", fontsize=12)
-    ax2.set_ylabel("Z-score", fontsize=12)
-    ax2.legend(loc="best", fontsize=9)
-    ax2.grid(True, linewidth=0.3, alpha=0.4)
-    fig2.autofmt_xdate()
-    img2_b64 = fig_to_base64(fig2)
 
-    # ======================= 3) % of All Coupons ======================= #
+    # ------------------ 3) % of All Coupons ------------------ #
     front_df['Coupons <2y %'] = (front_df['Coupons <2y'] / front_df['All Coupons']) * 100
     front_df['All Bills %'] = (front_df['All Bills'] / front_df['All Coupons']) * 100
-    df3 = front_df.dropna(subset=['Coupons <2y %', 'All Bills %'])
+    df3 = front_df.dropna(subset=['Coupons <2y %', 'All Bills %']).copy()
 
-    fig3, ax3 = plt.subplots(figsize=(14, 6))
-    ax3.plot(
-        df3.index,
-        df3['Coupons <2y %'],
-        color=pd_colors_dict['Coupons <2y'],
-        label='Coupons <2y',
+    fig3 = go.Figure()
+    fig3.add_trace(go.Scatter(
+        x=df3.index,
+        y=df3['Coupons <2y %'],
+        mode='lines',
+        name='Coupons <2y',
+        line=dict(color=pd_colors_dict['Coupons <2y'])
+    ))
+    fig3.add_trace(go.Scatter(
+        x=df3.index,
+        y=df3['All Bills %'],
+        mode='lines',
+        name='All Bills',
+        line=dict(color=pd_colors_dict['All Bills'])
+    ))
+    fig3.update_layout(
+        title="US Primary Dealer Holdings (% of Net Positions) | Front-End",
+        xaxis_title="Date",
+        yaxis_title="% of All Coupons",
+        height=500,
+        width=1200,
+        margin=dict(l=60, r=40, t=60, b=60),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0)
     )
-    ax3.plot(
-        df3.index,
-        df3['All Bills %'],
-        color=pd_colors_dict['All Bills'],
-        label='All Bills',
-    )
-    ax3.set_title("US Primary Dealer Holdings (% of Net Positions) | Front-End", fontsize=14)
-    ax3.set_xlabel("Date", fontsize=12)
-    ax3.set_ylabel("% of All Coupons", fontsize=12)
-    ax3.legend(loc="best", fontsize=9)
-    ax3.grid(True, linewidth=0.3, alpha=0.4)
-    fig3.autofmt_xdate()
-    img3_b64 = fig_to_base64(fig3)
 
-    # ======================= horizontally scrollable row ======================= #
+    # Convert figs to HTML divs
+    div1 = fig_to_html_div(fig1)
+    div2 = fig_to_html_div(fig2)
+    div3 = fig_to_html_div(fig3)
+
+    # Put three Plotly divs in a horizontally scrollable flex row
     html = f"""
     <div style="width: 100%; overflow-x: auto;">
         <div style="display: flex; flex-wrap: nowrap;">
-            <img src="data:image/png;base64,{img1_b64}" style="margin-right: 24px;" />
-            <img src="data:image/png;base64,{img2_b64}" style="margin-right: 24px;" />
-            <img src="data:image/png;base64,{img3_b64}" />
+            <div style="min-width: 1200px; margin-right: 24px;">{div1}</div>
+            <div style="min-width: 1200px; margin-right: 24px;">{div2}</div>
+            <div style="min-width: 1200px;">{div3}</div>
         </div>
     </div>
     """
