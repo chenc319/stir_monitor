@@ -938,4 +938,186 @@ def primary_dealer_back_end(start, end, **kwargs):
 
     streamlit_plot_subplot_layout(subplots_array, 2, 2)
 
+def primary_dealer_tips_front(start, end, **kwargs):
+    st.subheader("Primary Dealer TIPS Front End")
+
+    tips_front_df = pd.DataFrame({
+        "All TIPS Front": (
+            abs(pd_pos_dict["TIPS <2y"]["Level"])
+            + abs(pd_pos_dict["TIPS 2-6y"]["Level"])
+        ),
+        "TIPS <2y":  pd_pos_dict["TIPS <2y"]["Level"],
+        "TIPS 2-6y": pd_pos_dict["TIPS 2-6y"]["Level"],
+    })
+
+    # Z-scores on levels (3y ~ 156 weeks)
+    tips_front_df["TIPS <2y z"] = (
+        (tips_front_df["TIPS <2y"] - tips_front_df["TIPS <2y"].rolling(156).mean())
+        / tips_front_df["TIPS <2y"].rolling(156).std()
+    )
+    tips_front_df["TIPS 2-6y z"] = (
+        (tips_front_df["TIPS 2-6y"] - tips_front_df["TIPS 2-6y"].rolling(156).mean())
+        / tips_front_df["TIPS 2-6y"].rolling(156).std()
+    )
+
+    # % of TIPS front
+    tips_front_df["TIPS <2y %"] = (tips_front_df["TIPS <2y"] / tips_front_df["All TIPS Front"]) * 100
+    tips_front_df["TIPS 2-6y %"] = (tips_front_df["TIPS 2-6y"] / tips_front_df["All TIPS Front"]) * 100
+
+    # Z-scores on %
+    tips_front_df["TIPS <2y % z"] = (
+        (tips_front_df["TIPS <2y %"] - tips_front_df["TIPS <2y %"].rolling(156).mean())
+        / tips_front_df["TIPS <2y %"].rolling(156).std()
+    )
+    tips_front_df["TIPS 2-6y % z"] = (
+        (tips_front_df["TIPS 2-6y %"] - tips_front_df["TIPS 2-6y %"].rolling(156).mean())
+        / tips_front_df["TIPS 2-6y %"].rolling(156).std()
+    )
+
+    tips_front_df = tips_front_df.dropna()
+
+    subplots_array = [
+        # 1) Net positions (levels)
+        lambda: streamlit_plot(
+            tips_front_df * 1e9,
+            ["TIPS <2y", "TIPS 2-6y"],
+            [
+                pd_colors_dict["TIPS <2y"],
+                pd_colors_dict["TIPS 2-6y"],
+            ],
+            ["TIPS <2y", "TIPS 2-6y"],
+            "US Primary Dealer Holdings (Net Position) | TIPS Front End",
+            "",
+        ),
+        # 2) Net positions Z-scores
+        lambda: streamlit_plot(
+            tips_front_df,
+            ["TIPS <2y z", "TIPS 2-6y z"],
+            [
+                pd_colors_dict["TIPS <2y"],
+                pd_colors_dict["TIPS 2-6y"],
+            ],
+            ["TIPS <2y", "TIPS 2-6y"],
+            "US Primary Dealer Holdings (Net Positions 3y Z-Score) | TIPS Front End",
+            "",
+        ),
+        # 3) % of TIPS front
+        lambda: streamlit_plot(
+            tips_front_df,
+            ["TIPS <2y %", "TIPS 2-6y %"],
+            [
+                pd_colors_dict["TIPS <2y"],
+                pd_colors_dict["TIPS 2-6y"],
+            ],
+            ["TIPS <2y", "TIPS 2-6y"],
+            "US Primary Dealer Holdings (% of Net Positions) | TIPS Front End",
+            "",
+        ),
+        # 4) % of TIPS front Z-scores
+        lambda: streamlit_plot(
+            tips_front_df,
+            ["TIPS <2y % z", "TIPS 2-6y % z"],
+            [
+                pd_colors_dict["TIPS <2y"],
+                pd_colors_dict["TIPS 2-6y"],
+            ],
+            ["TIPS <2y", "TIPS 2-6y"],
+            "US Primary Dealer Holdings (% of Net Positions 3y Z-Score) | TIPS Front End",
+            "",
+        ),
+    ]
+
+    streamlit_plot_subplot_layout(subplots_array, 2, 2)
+
+def primary_dealer_tips_back(start, end, **kwargs):
+    st.subheader("Primary Dealer TIPS Back End")
+
+    tips_back_df = pd.DataFrame({
+        "All TIPS Back": (
+            abs(pd_pos_dict["TIPS 6-11y"]["Level"])
+            + abs(pd_pos_dict["TIPS >11y"]["Level"])
+        ),
+        "TIPS 6-11y": pd_pos_dict["TIPS 6-11y"]["Level"],
+        "TIPS >11y":  pd_pos_dict["TIPS >11y"]["Level"],
+    })
+
+    # Z-scores on levels (3y ~ 156 weeks)
+    tips_back_df["TIPS 6-11y z"] = (
+        (tips_back_df["TIPS 6-11y"] - tips_back_df["TIPS 6-11y"].rolling(156).mean())
+        / tips_back_df["TIPS 6-11y"].rolling(156).std()
+    )
+    tips_back_df["TIPS >11y z"] = (
+        (tips_back_df["TIPS >11y"] - tips_back_df["TIPS >11y"].rolling(156).mean())
+        / tips_back_df["TIPS >11y"].rolling(156).std()
+    )
+
+    # % of TIPS back
+    tips_back_df["TIPS 6-11y %"] = (tips_back_df["TIPS 6-11y"] / tips_back_df["All TIPS Back"]) * 100
+    tips_back_df["TIPS >11y %"] = (tips_back_df["TIPS >11y"] / tips_back_df["All TIPS Back"]) * 100
+
+    # Z-scores on %
+    tips_back_df["TIPS 6-11y % z"] = (
+        (tips_back_df["TIPS 6-11y %"] - tips_back_df["TIPS 6-11y %"].rolling(156).mean())
+        / tips_back_df["TIPS 6-11y %"].rolling(156).std()
+    )
+    tips_back_df["TIPS >11y % z"] = (
+        (tips_back_df["TIPS >11y %"] - tips_back_df["TIPS >11y %"].rolling(156).mean())
+        / tips_back_df["TIPS >11y %"].rolling(156).std()
+    )
+
+    tips_back_df = tips_back_df.dropna()
+
+    subplots_array = [
+        # 1) Net positions (levels)
+        lambda: streamlit_plot(
+            tips_back_df * 1e9,
+            ["TIPS 6-11y", "TIPS >11y"],
+            [
+                pd_colors_dict["TIPS 6-11y"],
+                pd_colors_dict["TIPS >11y"],
+            ],
+            ["TIPS 6-11y", "TIPS >11y"],
+            "US Primary Dealer Holdings (Net Position) | TIPS Back End",
+            "",
+        ),
+        # 2) Net positions Z-scores
+        lambda: streamlit_plot(
+            tips_back_df,
+            ["TIPS 6-11y z", "TIPS >11y z"],
+            [
+                pd_colors_dict["TIPS 6-11y"],
+                pd_colors_dict["TIPS >11y"],
+            ],
+            ["TIPS 6-11y", "TIPS >11y"],
+            "US Primary Dealer Holdings (Net Positions 3y Z-Score) | TIPS Back End",
+            "",
+        ),
+        # 3) % of TIPS back
+        lambda: streamlit_plot(
+            tips_back_df,
+            ["TIPS 6-11y %", "TIPS >11y %"],
+            [
+                pd_colors_dict["TIPS 6-11y"],
+                pd_colors_dict["TIPS >11y"],
+            ],
+            ["TIPS 6-11y", "TIPS >11y"],
+            "US Primary Dealer Holdings (% of Net Positions) | TIPS Back End",
+            "",
+        ),
+        # 4) % of TIPS back Z-scores
+        lambda: streamlit_plot(
+            tips_back_df,
+            ["TIPS 6-11y % z", "TIPS >11y % z"],
+            [
+                pd_colors_dict["TIPS 6-11y"],
+                pd_colors_dict["TIPS >11y"],
+            ],
+            ["TIPS 6-11y", "TIPS >11y"],
+            "US Primary Dealer Holdings (% of Net Positions 3y Z-Score) | TIPS Back End",
+            "",
+        ),
+    ]
+
+    streamlit_plot_subplot_layout(subplots_array, 2, 2)
+
 
