@@ -658,13 +658,12 @@ def primary_dealer_front_end(start, end, **kwargs):
     from io import BytesIO
     import base64
 
-    # helper to grab the PNG that streamlit_plot rendered from the last figure
-    def current_fig_to_base64():
+    def fig_to_base64(fig):
         buf = BytesIO()
-        plt.gcf().savefig(buf, format="png", bbox_inches="tight")
+        fig.savefig(buf, format="png", bbox_inches="tight")
         buf.seek(0)
         encoded = base64.b64encode(buf.read()).decode("utf-8")
-        plt.close(plt.gcf())
+        plt.close(fig)
         return encoded
 
     # ------------------------- build data ------------------------- #
@@ -674,18 +673,37 @@ def primary_dealer_front_end(start, end, **kwargs):
         'All Bills': pd_pos_dict['All Bills']['Level'],
     })
 
-    # 1) original first chart (levels)
-    streamlit_plot(
-        front_df.dropna() * 1e9,
-        ['Coupons <2y', 'All Bills'],
-        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        ['Coupons <2y', 'All Bills'],
-        "US Primary Dealer Holdings (Net Position) | Front-End",
-        ""
-    )
-    img1_b64 = current_fig_to_base64()
+    # Optional: respect start/end if passed in as dates
+    if start is not None and end is not None:
+        front_df = front_df.loc[pd.to_datetime(start):pd.to_datetime(end)]
 
-    # 2) original second chart (3yr Z-scores)
+    plt.rcParams["figure.dpi"] = 200
+
+    # ======================= 1) Net positions (levels) ======================= #
+    df1 = (front_df.dropna() * 1e9).copy()
+
+    fig1, ax1 = plt.subplots(figsize=(14, 6))
+    ax1.plot(
+        df1.index,
+        df1['Coupons <2y'],
+        color=pd_colors_dict['Coupons <2y'],
+        label='Coupons <2y',
+    )
+    ax1.plot(
+        df1.index,
+        df1['All Bills'],
+        color=pd_colors_dict['All Bills'],
+        label='All Bills',
+    )
+    ax1.set_title("US Primary Dealer Holdings (Net Position) | Front-End", fontsize=14)
+    ax1.set_xlabel("Date", fontsize=12)
+    ax1.set_ylabel("Notional", fontsize=12)
+    ax1.legend(loc="best", fontsize=9)
+    ax1.grid(True, linewidth=0.3, alpha=0.4)
+    fig1.autofmt_xdate()
+    img1_b64 = fig_to_base64(fig1)
+
+    # ======================= 2) 3yr Z-scores ======================= #
     front_df['Coupons <2y z'] = (
         (front_df['Coupons <2y'] - front_df['Coupons <2y'].rolling(156).mean())
         / front_df['Coupons <2y'].rolling(156).std()
@@ -694,30 +712,57 @@ def primary_dealer_front_end(start, end, **kwargs):
         (front_df['All Bills'] - front_df['All Bills'].rolling(156).mean())
         / front_df['All Bills'].rolling(156).std()
     )
-    streamlit_plot(
-        front_df.dropna(),
-        ['Coupons <2y z', 'All Bills z'],
-        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        ['Coupons <2y', 'All Bills'],
-        "US Primary Dealer Holdings (Net Positions 3yr Z-Score) | Front-End",
-        ""
-    )
-    img2_b64 = current_fig_to_base64()
+    df2 = front_df.dropna(subset=['Coupons <2y z', 'All Bills z'])
 
-    # 3) original third chart (% of All Coupons)
+    fig2, ax2 = plt.subplots(figsize=(14, 6))
+    ax2.plot(
+        df2.index,
+        df2['Coupons <2y z'],
+        color=pd_colors_dict['Coupons <2y'],
+        label='Coupons <2y',
+    )
+    ax2.plot(
+        df2.index,
+        df2['All Bills z'],
+        color=pd_colors_dict['All Bills'],
+        label='All Bills',
+    )
+    ax2.axhline(0, color="black", linewidth=0.5)
+    ax2.set_title("US Primary Dealer Holdings (Net Positions 3yr Z-Score) | Front-End", fontsize=14)
+    ax2.set_xlabel("Date", fontsize=12)
+    ax2.set_ylabel("Z-score", fontsize=12)
+    ax2.legend(loc="best", fontsize=9)
+    ax2.grid(True, linewidth=0.3, alpha=0.4)
+    fig2.autofmt_xdate()
+    img2_b64 = fig_to_base64(fig2)
+
+    # ======================= 3) % of All Coupons ======================= #
     front_df['Coupons <2y %'] = (front_df['Coupons <2y'] / front_df['All Coupons']) * 100
     front_df['All Bills %'] = (front_df['All Bills'] / front_df['All Coupons']) * 100
-    streamlit_plot(
-        front_df.dropna(),
-        ['Coupons <2y %', 'All Bills %'],
-        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        ['Coupons <2y', 'All Bills'],
-        "US Primary Dealer Holdings (% of Net Positions) | Front-End",
-        ""
-    )
-    img3_b64 = current_fig_to_base64()
+    df3 = front_df.dropna(subset=['Coupons <2y %', 'All Bills %'])
 
-    # -------------------- horizontally scrollable row -------------------- #
+    fig3, ax3 = plt.subplots(figsize=(14, 6))
+    ax3.plot(
+        df3.index,
+        df3['Coupons <2y %'],
+        color=pd_colors_dict['Coupons <2y'],
+        label='Coupons <2y',
+    )
+    ax3.plot(
+        df3.index,
+        df3['All Bills %'],
+        color=pd_colors_dict['All Bills'],
+        label='All Bills',
+    )
+    ax3.set_title("US Primary Dealer Holdings (% of Net Positions) | Front-End", fontsize=14)
+    ax3.set_xlabel("Date", fontsize=12)
+    ax3.set_ylabel("% of All Coupons", fontsize=12)
+    ax3.legend(loc="best", fontsize=9)
+    ax3.grid(True, linewidth=0.3, alpha=0.4)
+    fig3.autofmt_xdate()
+    img3_b64 = fig_to_base64(fig3)
+
+    # ======================= horizontally scrollable row ======================= #
     html = f"""
     <div style="width: 100%; overflow-x: auto;">
         <div style="display: flex; flex-wrap: nowrap;">
