@@ -19,6 +19,7 @@ import base64
 import seaborn as sns
 import numpy as np
 from fredapi import Fred
+from io import BytesIO
 fred = Fred(api_key="6905137c26f03db5c8c09f70b7839150")
 
 def get_fred_series(series_id, start, end):

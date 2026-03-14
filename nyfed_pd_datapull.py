@@ -85,6 +85,7 @@ for df in pd_array:
     df['5y avg'] = exp_mean.where(count < min_periods, roll_mean)
 
     df = df.dropna()
+    df.index = df.index.values
 
 pd_pos_dict = {
     'Total': ['Level','YTD chg','1w chg','4w chg','6m chg','12m chg','5y min','5y max','5y avg'],
