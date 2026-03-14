@@ -660,10 +660,10 @@ def primary_dealer_front_end(start, end, **kwargs):
         'All Bills': pd_pos_dict['All Bills']['Level'],
     })
 
-    # chart 1 data
+    # 1) levels
     df1 = front_df.dropna() * 1e9
 
-    # chart 2 data (z-scores)
+    # 2) z-scores
     front_df['Coupons <2y z'] = (
         (front_df['Coupons <2y'] - front_df['Coupons <2y'].rolling(156).mean()) /
         front_df['Coupons <2y'].rolling(156).std()
@@ -674,57 +674,52 @@ def primary_dealer_front_end(start, end, **kwargs):
     )
     df2 = front_df.dropna()
 
-    # chart 3 data (% of all coupons)
+    # 3) % of all coupons
     front_df['Coupons <2y %'] = (front_df['Coupons <2y'] / front_df['All Coupons']) * 100
     front_df['All Bills %'] = (front_df['All Bills'] / front_df['All Coupons']) * 100
     df3 = front_df.dropna()
 
-    # --------- render 3 interactive charts in a scrollable row --------- #
-    # outer wrapper
-    scroll_container = st.container()
-    with scroll_container:
-        st.markdown('<div class="scroll-row"><div class="scroll-row-inner">', unsafe_allow_html=True)
+    # start scroll row
+    st.markdown('<div class="scroll-row"><div class="scroll-row-inner">', unsafe_allow_html=True)
 
-        # item 1
-        with st.container():
-            st.markdown('<div class="scroll-item">', unsafe_allow_html=True)
-            streamlit_plot(
-                df1,
-                ['Coupons <2y', 'All Bills'],
-                [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-                ['Coupons <2y', 'All Bills'],
-                "US Primary Dealer Holdings (Net Position) | Front-End",
-                ""
-            )
-            st.markdown('</div>', unsafe_allow_html=True)
+    # item 1
+    st.markdown('<div class="scroll-item">', unsafe_allow_html=True)
+    streamlit_plot(
+        df1,
+        ['Coupons <2y', 'All Bills'],
+        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
+        ['Coupons <2y', 'All Bills'],
+        "US Primary Dealer Holdings (Net Position) | Front-End",
+        ""
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
-        # item 2
-        with st.container():
-            st.markdown('<div class="scroll-item">', unsafe_allow_html=True)
-            streamlit_plot(
-                df2,
-                ['Coupons <2y z', 'All Bills z'],
-                [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-                ['Coupons <2y', 'All Bills'],
-                "US Primary Dealer Holdings (Net Positions 3yr Z-Score) | Front-End",
-                ""
-            )
-            st.markdown('</div>', unsafe_allow_html=True)
+    # item 2
+    st.markdown('<div class="scroll-item">', unsafe_allow_html=True)
+    streamlit_plot(
+        df2,
+        ['Coupons <2y z', 'All Bills z'],
+        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
+        ['Coupons <2y', 'All Bills'],
+        "US Primary Dealer Holdings (Net Positions 3yr Z-Score) | Front-End",
+        ""
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
-        # item 3
-        with st.container():
-            st.markdown('<div class="scroll-item">', unsafe_allow_html=True)
-            streamlit_plot(
-                df3,
-                ['Coupons <2y %', 'All Bills %'],
-                [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-                ['Coupons <2y', 'All Bills'],
-                "US Primary Dealer Holdings (% of Net Positions) | Front-End",
-                ""
-            )
-            st.markdown('</div>', unsafe_allow_html=True)
+    # item 3
+    st.markdown('<div class="scroll-item">', unsafe_allow_html=True)
+    streamlit_plot(
+        df3,
+        ['Coupons <2y %', 'All Bills %'],
+        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
+        ['Coupons <2y', 'All Bills'],
+        "US Primary Dealer Holdings (% of Net Positions) | Front-End",
+        ""
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown('</div></div>', unsafe_allow_html=True)
+    # close scroll row
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
 
 

@@ -157,65 +157,33 @@ st.markdown("""
 
     /* ----- Mistral sidebar theming ----- */
 
-    /* Sidebar background */
     [data-testid="stSidebar"] {
-        background-color: #0F3B2E;  /* Mistral green */
+        background-color: #0F3B2E;
     }
-
-    /* Sidebar headings and labels */
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3,
     [data-testid="stSidebar"] label {
         color: #FFFFFF !important;
     }
-
-    /* Selectbox + other inputs: white box, dark text */
     [data-testid="stSidebar"] div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
         color: #000000 !important;
     }
-
     [data-testid="stSidebar"] div[data-baseweb="select"] span {
         color: #000000 !important;
     }
-
     [data-testid="stSidebar"] .stDateInput input,
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea {
         background-color: #FFFFFF !important;
         color: #000000 !important;
     }
-
-    /* Dropdown menu options */
     div[role="listbox"] * {
         color: #000000 !important;
     }
 
-    /* -------- Global horizontal scrolling behaviour -------- */
-
-    /* Make main content horizontally scrollable */
-    .main .block-container {
-        overflow-x: auto;
-        padding-right: 0.5rem;
-    }
-
-    /* Do not force charts/images to shrink to container width */
-    .main .block-container img,
-    .main .block-container canvas,
-    .main .block-container svg,
-    .main .block-container [data-testid="stPlotlyChart"] {
-        max-width: none !important;
-        width: auto !important;
-    }
-
-    /* Default minimum width for plots/images so they can overflow */
-    .main .block-container [data-testid="stPlotlyChart"],
-    .main .block-container [data-testid="stImage"] {
-        min-width: 1200px;
-    }
-
-    /* -------- Reusable scrollable row for multiple charts -------- */
+    /* -------- Scrollable rows for charts only -------- */
 
     .scroll-row {
         width: 100%;
@@ -226,13 +194,12 @@ st.markdown("""
         flex-wrap: nowrap;
     }
     .scroll-item {
-        min-width: 1200px;      /* width of each chart */
+        min-width: 1200px;       /* width of each chart panel */
         margin-right: 24px;
     }
-    /* prevent extra shrinking inside scroll-item */
     .scroll-item [data-testid="stPlotlyChart"] {
         max-width: none !important;
-        width: auto !important;
+        width: 1200px !important;
     }
     </style>
 """, unsafe_allow_html=True)
