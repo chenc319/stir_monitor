@@ -332,7 +332,7 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
         cbar=True,
         cbar_kws={
             "orientation": "horizontal",
-            "pad": 0.25,          # more space above plot
+            "pad": 0.23,          # more space above plot
             "fraction": 0.04,
             "aspect": 40,
         },
@@ -361,7 +361,7 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
         cbar=True,
         cbar_kws={
             "orientation": "horizontal",
-            "pad": 0.25,
+            "pad": 0.23,
             "fraction": 0.04,
             "aspect": 40,
         },
