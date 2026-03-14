@@ -660,17 +660,6 @@ def primary_dealer_front_end(start, end, **kwargs):
         'Coupons <2y': pd_pos_dict['Coupons <2y']['Level'],
         'All Bills': pd_pos_dict['All Bills']['Level'],
     })
-    streamlit_plot(
-        front_df.dropna() * 1e9,
-        ['Coupons <2y', 'All Bills'],
-        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        [
-            'Coupons <2y',
-            'All Bills'
-        ],
-        "US Primary Dealer Holdings (Net Position) | Front-End",
-        ""
-    )
 
     front_df['Coupons <2y z'] = (
         (front_df['Coupons <2y'] -
@@ -682,30 +671,10 @@ def primary_dealer_front_end(start, end, **kwargs):
          front_df['All Bills'].rolling(156).mean()) /
         front_df['All Bills'].rolling(156).std()
     )
-    streamlit_plot(
-        front_df.dropna(),
-        ['Coupons <2y z', 'All Bills z'],
-        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        [
-            'Coupons <2y',
-            'All Bills'
-        ],
-        "US Primary Dealer Holdings (Net Positions 3y Z-Score) | Front-End",
-        ""
-    )
+
     front_df['Coupons <2y %'] = (front_df['Coupons <2y'] / front_df['All Front']) * 100
     front_df['All Bills %'] = (front_df['All Bills'] / front_df['All Front']) * 100
-    streamlit_plot(
-        front_df.dropna(),
-        ['Coupons <2y %', 'All Bills %'],
-        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        [
-            'Coupons <2y',
-            'All Bills'
-        ],
-        "US Primary Dealer Holdings (% of Net Positions) | Front-End",
-        ""
-    )
+
     front_df['Coupons <2y % z'] = (
             (front_df['Coupons <2y %'] -
              front_df['Coupons <2y %'].rolling(156).mean()) /
@@ -716,17 +685,42 @@ def primary_dealer_front_end(start, end, **kwargs):
              front_df['All Bills %'].rolling(156).mean()) /
             front_df['All Bills %'].rolling(156).std()
     )
-    streamlit_plot(
-        front_df.dropna(),
-        ['Coupons <2y % z', 'All Bills % z'],
-        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        [
-            'Coupons <2y',
-            'All Bills'
-        ],
-        "US Primary Dealer Holdings (% of Net Positions 3y Z-Score) | Front-End",
-        ""
-    )
+
+    subplots_array = [
+        lambda: streamlit_plot(
+            front_df,
+            ['Coupons <2y', 'All Bills'],
+            [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
+            ['Coupons <2y', 'All Bills'],
+            "US Primary Dealer Holdings (Net Position) | Front-End",
+            ""
+        ),
+        lambda: streamlit_plot(
+            front_df,
+            ['Coupons <2y z', 'All Bills z'],
+            [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
+            ['Coupons <2y', 'All Bills'],
+            "US Primary Dealer Holdings (Net Positions 3y Z-Score) | Front-End",
+            ""
+        ),
+        lambda: streamlit_plot(
+            front_df,
+            ['Coupons <2y %', 'All Bills %'],
+            [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
+            ['Coupons <2y', 'All Bills'],
+            "US Primary Dealer Holdings (% of Net Positions) | Front-End",
+            ""
+        ),
+        lambda: streamlit_plot(
+            front_df,
+            ['Coupons <2y % z', 'All Bills % z'],
+            [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
+            ['Coupons <2y', 'All Bills'],
+            "US Primary Dealer Holdings (% of Net Positions 3y Z-Score) | Front-End",
+            ""
+        ),
+    ]
+    streamlit_plot_subplot_layout(subplots_array,2,2)
 
 
 

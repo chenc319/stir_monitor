@@ -286,3 +286,30 @@ def get_newyork_fed_data(mnemonic: str) -> pd.DataFrame:
     ts = ts[['value']]
     ts.columns = [mnemonic]
     return ts
+
+def streamlit_plot_subplot_layout(plot_funcs, n_rows: int, n_cols: int):
+    """
+    Arrange multiple streamlit_plot calls in an n_rows x n_cols grid.
+
+    Parameters
+    ----------
+    plot_funcs : list[callable]
+        Each element is a zero-arg function that, when called,
+        executes one streamlit_plot (or any Streamlit chart).
+    n_rows : int
+        Number of rows in the grid.
+    n_cols : int
+        Number of columns per row.
+    """
+    total = len(plot_funcs)
+    idx = 0
+    for _ in range(n_rows):
+        if idx >= total:
+            break
+        cols = st.columns(n_cols)
+        for c in range(n_cols):
+            if idx >= total:
+                break
+            with cols[c]:
+                plot_funcs[idx]()  # call the plotting function
+            idx += 1
