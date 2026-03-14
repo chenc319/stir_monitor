@@ -17,6 +17,8 @@ with open(Path(DATA_DIR) / 'pd_pos_dict.pkl', 'rb') as file:
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def primary_dealer_snapshot(start, end, **kwargs):
+    import pandas as pd
+
     st.subheader("Primary Dealer Warehouse Snapshot ($bn)")
     base_series = pd_pos_dict["All USTs"]
     all_dates = base_series.index.sort_values()
@@ -34,6 +36,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
         index=len(all_dates) - 1,
         format_func=lambda d: d.strftime("%Y-%m-%d"),
     )
+
     pd_pos_snapshot = pd.DataFrame({
         'All USTs': pd_pos_dict['All USTs'].loc[chosen_date],
 
@@ -84,7 +87,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
         "FRNs"
     }
 
-    def style_fed_table(df):
+    def style_fed_table(df: pd.DataFrame):
         styler = df.style
 
         def numeric_formatter(x):
@@ -103,7 +106,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
                         ("font-family", "Calibri, Arial, sans-serif"),
                         ("font-size", "14px"),
                         ("table-layout", "fixed"),
-                        ("width", "100%"),
+                        ("width", "100%"),  # fill available width
                     ],
                 },
                 {
@@ -114,6 +117,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
                         ("text-align", "center"),
                         ("border", "1px solid #CCCCCC"),
                         ("font-weight", "bold"),
+                        ("padding", "6px 4px"),
                     ],
                 },
                 {
@@ -122,8 +126,9 @@ def primary_dealer_snapshot(start, end, **kwargs):
                         ("text-align", "left"),
                         ("border", "1px solid #CCCCCC"),
                         ("white-space", "nowrap"),
-                        ("width", "200px"),
-                        ("max-width", "200px"),
+                        ("width", "220px"),
+                        ("max-width", "220px"),
+                        ("padding", "4px 6px"),
                     ],
                 },
                 {
@@ -131,6 +136,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
                     "props": [
                         ("border", "1px solid #CCCCCC"),
                         ("text-align", "center"),
+                        ("padding", "4px 6px"),
                     ],
                 },
             ]
@@ -138,39 +144,41 @@ def primary_dealer_snapshot(start, end, **kwargs):
 
         numeric_cols = ['Level', 'YTD chg', '1w chg', '4w chg', '6m chg', '12m chg', '5y min', '5y max', '5y avg']
         existing_cols = [c for c in numeric_cols if c in df.columns]
+
         if existing_cols:
+            # equal width for all numeric columns so table fills page
+            per_col =  (100 - 18) / len(existing_cols)  # ~18% left for index column
+            col_width_css = f"width: {per_col:.2f}%; max-width: {per_col:.2f}%;"
+
+            # apply width to header + data cells of numeric columns
             styler = styler.set_properties(
                 subset=pd.IndexSlice[:, existing_cols],
-                **{"text-align": "center"},
+                **{"text-align": "center", "width": f"{per_col:.2f}%", "max-width": f"{per_col:.2f}%"},
             )
-            data_share = 90
-            per_col = data_share / len(existing_cols)
+
             styler = styler.set_table_styles(
                 styler.table_styles
                 + [
                     {
-                        "selector": "col",
-                        "props": [("width", f"{per_col:.2f}%")],
+                        "selector": f'th.col_heading.level{level}',
+                        "props": [( "width", f"{per_col:.2f}%" ), ("max-width", f"{per_col:.2f}%")],
                     }
+                    for level in range(len(existing_cols))
                 ]
             )
 
         # row background:
-        # dark blue only for dark_blue_rows, otherwise white
         def row_style(row):
             if row.name in dark_blue_rows:
                 return [
                     "background-color: #002b55; color: white; "
                     "font-weight: bold; text-align:left;"
                 ] * len(row)
-            # keep other rows default background; bold handled via index
             return [""] * len(row)
 
         styler = styler.apply(row_style, axis=1)
 
-        # index (row label) styling:
-        # - any section_rows: bold + no indent
-        # - others: normal + single indent
+        # index styling
         def index_style(idx_series):
             styles = []
             for label in idx_series:
@@ -190,9 +198,9 @@ def primary_dealer_snapshot(start, end, **kwargs):
                 return "color: #008000; font-weight:bold;"
             if val < 0:
                 return "color: #CC0000; font-weight:bold;"
-            return ""  # zero
+            return ""
 
-        for col in ['Level', 'YTD chg', '1w chg', '4w chg', '6m chg', '12m chg', '5y min', '5y max', '5y avg']:
+        for col in numeric_cols:
             if col in df.columns:
                 styler = styler.applymap(
                     color_and_bold_nonzero, subset=pd.IndexSlice[:, col]
@@ -203,6 +211,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
     styled = style_fed_table(df)
     html = styled.to_html()
     st.markdown(html, unsafe_allow_html=True)
+
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### --------------------------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP -------------------------------- ###
