@@ -417,9 +417,7 @@ elif page == 'Primary Dealers':
     app_primary_dealers.plot_sponsored_volumes_solution(start_date, end_date)
     app_primary_dealers.plot_sponsored_volumes(start_date, end_date)
     app_primary_dealers.plot_pct_dvp_sponsored(start_date, end_date)
-    app_primary_dealers.plot_net_positions_bills_vs_bonds(start_date, end_date)
-    app_primary_dealers.plot_net_positions_by_bond_tenor(start_date, end_date)
-    app_primary_dealers.plot_net_change_by_bond_tenor(start_date, end_date)
+    app_primary_dealers.primary_dealer_bonds_curve(start_date, end_date)
 
 ### ---------------------------------------------------------------------------------------- ###
 ### ------------------------------------ BOND POSITIONING ---------------------------------- ###

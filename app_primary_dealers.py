@@ -12,13 +12,31 @@ DATA_DIR = os.getenv('DATA_DIR', 'data')
 with open(Path(DATA_DIR) / 'pd_pos_dict.pkl', 'rb') as file:
     pd_pos_dict = pickle.load(file)
 
+### COLOR ARRAY ###
+pd_colors_dict = {
+    'Coupons <2y':    '#1f77b4',  # deep blue
+    'Coupons 2-3y':   '#2ca02c',  # green
+    'Coupons 3-6y':   '#17becf',  # teal
+    'Coupons 6-7y':   '#ff7f0e',  # orange
+    'Coupons 7-11y':  '#1f77b4',  # deep blue (longer tenors)
+    'Coupons 11-21y': '#d62728',  # red
+    'Coupons >21y':   '#9467bd',  # purple
+
+    'All TIPS':       '#8c564b',  # brown
+    'TIPS <2y':       '#bcbd22',  # olive
+    'TIPS 2-6y':      '#17becf',  # teal
+    'TIPS 6-11y':     '#e377c2',  # pink
+    'TIPS >11y':      '#7f7f7f',  # gray
+
+    'All Bills':      '#aec7e8',  # light blue
+    'All FRNs':       '#98df8a',  # light green
+}
+
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ----------------------------------- PRIMARY DEALER WAREHOUSE OVERVIEW ------------------------------------ ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def primary_dealer_snapshot(start, end, **kwargs):
-    import pandas as pd
-
     st.subheader("Primary Dealer Warehouse Snapshot ($bn)")
     base_series = pd_pos_dict["All USTs"]
     all_dates = base_series.index.sort_values()
@@ -632,132 +650,59 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
     st.plotly_chart(fig)
 
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------ PRIMARY DEALERS NET POSITIONS BILLS VS BONDS ------------------------------ ###
+### ---------------------------------- PRIMARY DEALERS BOND FRONT END CURVE ---------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def plot_net_positions_bills_vs_bonds(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'all_pd_bills_bonds_positions.pkl', 'rb') as file:
-        all_pd_bills_bonds_positions = pickle.load(file)
-    all_pd_bills_bonds_positions = all_pd_bills_bonds_positions[start:end]
+def primary_dealer_bonds_curve(start,end,**kwargs):
+    front_df = pd.DataFrame({
+        'All Coupons': pd_pos_dict['All Coupons']['Level'],
+        'Coupons <2y': pd_pos_dict['Coupons <2y']['Level'],
+        'All Bills': pd_pos_dict['All Bills']['Level'],
+    })
+    belly_df = pd.DataFrame({
+        'All Coupons': pd_pos_dict['All Coupons']['Level'],
+        'Coupons 2-3y': pd_pos_dict['Coupons 2-3y']['Level'],
+        'Coupons 3-6y': pd_pos_dict['Coupons 3-6y']['Level'],
+        'Coupons 6-7y': pd_pos_dict['Coupons 6-7y']['Level'],
+    })
+    back_df = pd.DataFrame({
+        'All Coupons': pd_pos_dict['All Coupons']['Level'],
+        'Coupons 7-11y': pd_pos_dict['Coupons 7-11y']['Level'],
+        'Coupons 11-21y': pd_pos_dict['Coupons 11-21y']['Level'],
+        'Coupons >21y': pd_pos_dict['Coupons >21y']['Level'],
+    })
 
-    # ### PLOT ###
-    # plt.figure(figsize=(13, 7))
-    # plt.plot(all_pd.index, all_pd['bills'],
-    #          label='Bills', color='#43c4e6', linewidth=2)
-    # plt.plot(all_pd.index, all_pd['net_nominal_bonds'],
-    #          label='Net Nominal Bonds', color='#262e39', linewidth=2)
-    # plt.title("Primary Dealers Net Positions Bills VS Bonds", fontsize=20, fontweight="bold")
-    # plt.ylabel("Billions")
-    # plt.xlabel("")
-    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
-    # plt.grid(True, which='major', linestyle='-', color='grey', alpha=0.3)
-    # plt.tight_layout()
-    # plt.show()
-
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=all_pd_bills_bonds_positions.index,
-                             y=all_pd_bills_bonds_positions['bills'], name="Bills",
-                             line=dict(color='#43c4e6', width=2)))
-    fig.add_trace(go.Scatter(x=all_pd_bills_bonds_positions.index,
-                             y=all_pd_bills_bonds_positions['net_nominal_bonds'], name="Net Nominal Bonds",
-                             line=dict(color='#262e39', width=2)))
-    fig.update_layout(
-        title="Primary Dealers Net Positions Bills VS Bonds",
-        yaxis_title="Dollars",
-        hovermode='x unified'
+    streamlit_plot(
+        front_df*1e9,
+        ['Coupons <2y', 'All Bills'],
+        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
+        [
+            'Coupons <2y',
+            'All Bills'],
+        "US Primary Dealer Holdings (Net Position) | Front-End",
+        ""
     )
-    st.plotly_chart(fig)
-
-### ---------------------------------------------------------------------------------------------------------- ###
-### ------------------------------- PRIMARY DEALERS NET POSITIONS BY BOND TENOR ------------------------------ ###
-### ---------------------------------------------------------------------------------------------------------- ###
-
-def plot_net_positions_by_bond_tenor(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'all_pd_bills_bonds_positions.pkl', 'rb') as file:
-        all_pd_bills_bonds_positions = pickle.load(file)
-    all_pd_bills_bonds_positions = all_pd_bills_bonds_positions[start:end]
-
-    # ### PLOT ###
-    # plt.figure(figsize=(12, 7))
-    # plt.plot(all_pd.index, all_pd['l2'],
-    #          label='Bond <2Y', color='#9DDCF9')
-    # plt.plot(all_pd.index, all_pd['g2l3'],
-    #          label='Bond 2-3Y', color='#4CD0E9')
-    # plt.plot(all_pd.index, all_pd['g3l6'],
-    #          label='Bond 3-6Y', color='#233852')
-    # plt.plot(all_pd.index, all_pd['g6l7'],
-    #          label='Bond 6-7Y', color='#F5B820', linewidth=2)
-    # plt.plot(all_pd.index, all_pd['g7l11'],
-    #          label='Bond 7-10Y', color='#E69B93')
-    # plt.ylabel("Billions")
-    # plt.title("Primary Dealers Net Positions By Bond Tenor", fontsize=20, fontweight='bold')
-    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
-    # plt.tight_layout()
-    # plt.show()
-
-    fig = go.Figure()
-    tenors = [
-        ('l2', 'Bond <2Y', '#9DDCF9'),
-        ('g2l3', 'Bond 2-3Y', '#4CD0E9'),
-        ('g3l6', 'Bond 3-6Y', '#233852'),
-        ('g6l7', 'Bond 6-7Y', '#F5B820'),
-        ('g7l11', 'Bond 7-10Y', '#E69B93'),
-    ]
-    for k, name, color in tenors:
-        fig.add_trace(go.Scatter(x=all_pd_bills_bonds_positions.index,
-                                 y=all_pd_bills_bonds_positions[k], name=name, line=dict(color=color, width=2)))
-    fig.update_layout(
-        title="Primary Dealers Net Positions By Bond Tenor",
-        yaxis_title="Dollars",
-        hovermode='x unified'
+    streamlit_plot(
+        belly_df*1e9,
+        ['Coupons 2-3y', 'Coupons 3-6y','Coupons 6-7y'],
+        [
+            pd_colors_dict['Coupons 2-3y'],
+            pd_colors_dict['Coupons 3-6y'],
+            pd_colors_dict['Coupons 6-7y']],
+        ['Coupons 2-3y', 'Coupons 3-6y','Coupons 6-7y'],
+        "US Primary Dealer Holdings (Net Position) | Belly",
+        ""
     )
-    st.plotly_chart(fig)
-
-### ---------------------------------------------------------------------------------------------------------- ###
-### -------------------------------- PRIMARY DEALERS BOND NET POSITION CHANGE -------------------------------- ###
-### ---------------------------------------------------------------------------------------------------------- ###
-
-def plot_net_change_by_bond_tenor(start, end, **kwargs):
-    with open(Path(DATA_DIR) / 'all_pd_bills_bonds_net_changes.pkl', 'rb') as file:
-        all_pd_bills_bonds_net_changes = pickle.load(file)
-    all_pd_bills_bonds_net_changes = all_pd_bills_bonds_net_changes[start:end]
-
-    # ### PLOT ###
-    # plt.figure(figsize=(12, 7))
-    # plt.plot(all_pd_change.index, all_pd_change['l2'],
-    #          label='Bond <2Y', color='#9DDCF9')
-    # plt.plot(all_pd_change.index, all_pd_change['g2l3'],
-    #          label='Bond 2-3Y', color='#4CD0E9')
-    # plt.plot(all_pd_change.index, all_pd_change['g3l6'],
-    #          label='Bond 3-6Y', color='#233852')
-    # plt.plot(all_pd_change.index, all_pd_change['g6l7'],
-    #          label='Bond 6-7Y', color='#F5B820', linewidth=2)
-    # plt.plot(all_pd_change.index, all_pd_change['g7l11'],
-    #          label='Bond 7-10Y', color='#E69B93')
-    # plt.ylabel("Billions")
-    # plt.title("Primary Dealers Net Position Change By Bond Tenor", fontsize=20, fontweight='bold')
-    # plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=6)
-    # plt.tight_layout()
-    # plt.show()
-
-    fig = go.Figure()
-    tenors = [
-        ('l2', 'Bond <2Y', '#9DDCF9'),
-        ('g2l3', 'Bond 2-3Y', '#4CD0E9'),
-        ('g3l6', 'Bond 3-6Y', '#233852'),
-        ('g6l7', 'Bond 6-7Y', '#F5B820'),
-        ('g7l11', 'Bond 7-10Y', '#E69B93'),
-    ]
-    for k, name, color in tenors:
-        fig.add_trace(go.Scatter(x=all_pd_bills_bonds_net_changes.index,
-                                 y=all_pd_bills_bonds_net_changes[k], name=name, line=dict(color=color, width=2)))
-    fig.update_layout(
-        title="Primary Dealers Net Position Change By Bond Tenor",
-        yaxis_title="Dollars",
-        hovermode='x unified'
+    streamlit_plot(
+        back_df * 1e9,
+        ['Coupons 7-11y', 'Coupons 11-21y','Coupons >21y'],
+        [
+            pd_colors_dict['Coupons 7-11y'],
+            pd_colors_dict['Coupons 11-21y'],
+            pd_colors_dict['Coupons >21y']],
+        ['Coupons 7-11y', 'Coupons 11-21y','Coupons >21y'],
+        "US Primary Dealer Holdings (Net Position) | Back-End",
+        ""
     )
-    st.plotly_chart(fig)
-
-
 
 
