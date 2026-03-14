@@ -686,6 +686,8 @@ def primary_dealer_front_end(start, end, **kwargs):
             front_df['All Bills %'].rolling(156).std()
     )
 
+    front_df = front_df.dropna()
+
     subplots_array = [
         lambda: streamlit_plot(
             front_df,
@@ -721,28 +723,6 @@ def primary_dealer_front_end(start, end, **kwargs):
         ),
     ]
     streamlit_plot_subplot_layout(subplots_array,2,2)
-
-
-
-
-def primary_dealer_belly(start,end,**kwargs):
-    belly_df = pd.DataFrame({
-        'All Belly': pd_pos_dict['Coupons 2-3y']['Level'] + pd_pos_dict['Coupons 3-6y']['Level'] + pd_pos_dict['Coupons 6-7y']['Level'],
-        'Coupons 2-3y': pd_pos_dict['Coupons 2-3y']['Level'],
-        'Coupons 3-6y': pd_pos_dict['Coupons 3-6y']['Level'],
-        'Coupons 6-7y': pd_pos_dict['Coupons 6-7y']['Level'],
-    })
-    streamlit_plot(
-        belly_df*1e9,
-        ['Coupons 2-3y', 'Coupons 3-6y','Coupons 6-7y'],
-        [
-            pd_colors_dict['Coupons 2-3y'],
-            pd_colors_dict['Coupons 3-6y'],
-            pd_colors_dict['Coupons 6-7y']],
-        ['Coupons 2-3y', 'Coupons 3-6y','Coupons 6-7y'],
-        "US Primary Dealer Holdings (Net Position) | Belly",
-        ""
-    )
 
 def primary_dealer_belly(start, end, **kwargs):
     st.subheader("Primary Dealer Belly")
@@ -792,6 +772,8 @@ def primary_dealer_belly(start, end, **kwargs):
         (belly_df["Coupons 6-7y %"] - belly_df["Coupons 6-7y %"].rolling(156).mean())
         / belly_df["Coupons 6-7y %"].rolling(156).std()
     )
+
+    belly_df = belly_df.dropna()
 
     subplots_array = [
         # 1) Net positions (levels)
@@ -850,5 +832,110 @@ def primary_dealer_belly(start, end, **kwargs):
 
     streamlit_plot_subplot_layout(subplots_array, 2, 2)
 
+def primary_dealer_back_end(start, end, **kwargs):
+    st.subheader("Primary Dealer Back End")
+
+    back_df = pd.DataFrame({
+        "All Back": (
+            abs(pd_pos_dict["Coupons 7-11y"]["Level"])
+            + abs(pd_pos_dict["Coupons 11-21y"]["Level"])
+            + abs(pd_pos_dict["Coupons >21y"]["Level"])
+        ),
+        "Coupons 7-11y":  pd_pos_dict["Coupons 7-11y"]["Level"],
+        "Coupons 11-21y": pd_pos_dict["Coupons 11-21y"]["Level"],
+        "Coupons >21y":   pd_pos_dict["Coupons >21y"]["Level"],
+    })
+
+    # Z-scores on levels (3y ~ 156 weeks)
+    back_df["Coupons 7-11y z"] = (
+        (back_df["Coupons 7-11y"] - back_df["Coupons 7-11y"].rolling(156).mean())
+        / back_df["Coupons 7-11y"].rolling(156).std()
+    )
+    back_df["Coupons 11-21y z"] = (
+        (back_df["Coupons 11-21y"] - back_df["Coupons 11-21y"].rolling(156).mean())
+        / back_df["Coupons 11-21y"].rolling(156).std()
+    )
+    back_df["Coupons >21y z"] = (
+        (back_df["Coupons >21y"] - back_df["Coupons >21y"].rolling(156).mean())
+        / back_df["Coupons >21y"].rolling(156).std()
+    )
+
+    # % of back (All Back)
+    back_df["Coupons 7-11y %"] =  (back_df["Coupons 7-11y"]  / back_df["All Back"]) * 100
+    back_df["Coupons 11-21y %"] = (back_df["Coupons 11-21y"] / back_df["All Back"]) * 100
+    back_df["Coupons >21y %"] =  (back_df["Coupons >21y"]   / back_df["All Back"]) * 100
+
+    # Z-scores on %
+    back_df["Coupons 7-11y % z"] = (
+        (back_df["Coupons 7-11y %"] - back_df["Coupons 7-11y %"].rolling(156).mean())
+        / back_df["Coupons 7-11y %"].rolling(156).std()
+    )
+    back_df["Coupons 11-21y % z"] = (
+        (back_df["Coupons 11-21y %"] - back_df["Coupons 11-21y %"].rolling(156).mean())
+        / back_df["Coupons 11-21y %"].rolling(156).std()
+    )
+    back_df["Coupons >21y % z"] = (
+        (back_df["Coupons >21y %"] - back_df["Coupons >21y %"].rolling(156).mean())
+        / back_df["Coupons >21y %"].rolling(156).std()
+    )
+
+    back_df = back_df.dropna()
+
+    subplots_array = [
+        # 1) Net positions (levels)
+        lambda: streamlit_plot(
+            back_df * 1e9,
+            ["Coupons 7-11y", "Coupons 11-21y", "Coupons >21y"],
+            [
+                pd_colors_dict["Coupons 7-11y"],
+                pd_colors_dict["Coupons 11-21y"],
+                pd_colors_dict["Coupons >21y"],
+            ],
+            ["Coupons 7-11y", "Coupons 11-21y", "Coupons >21y"],
+            "US Primary Dealer Holdings (Net Position) | Back End",
+            "",
+        ),
+        # 2) Net positions Z-scores
+        lambda: streamlit_plot(
+            back_df,
+            ["Coupons 7-11y z", "Coupons 11-21y z", "Coupons >21y z"],
+            [
+                pd_colors_dict["Coupons 7-11y"],
+                pd_colors_dict["Coupons 11-21y"],
+                pd_colors_dict["Coupons >21y"],
+            ],
+            ["Coupons 7-11y", "Coupons 11-21y", "Coupons >21y"],
+            "US Primary Dealer Holdings (Net Positions 3y Z-Score) | Back End",
+            "",
+        ),
+        # 3) % of back
+        lambda: streamlit_plot(
+            back_df,
+            ["Coupons 7-11y %", "Coupons 11-21y %", "Coupons >21y %"],
+            [
+                pd_colors_dict["Coupons 7-11y"],
+                pd_colors_dict["Coupons 11-21y"],
+                pd_colors_dict["Coupons >21y"],
+            ],
+            ["Coupons 7-11y", "Coupons 11-21y", "Coupons >21y"],
+            "US Primary Dealer Holdings (% of Net Positions) | Back End",
+            "",
+        ),
+        # 4) % of back Z-scores
+        lambda: streamlit_plot(
+            back_df,
+            ["Coupons 7-11y % z", "Coupons 11-21y % z", "Coupons >21y % z"],
+            [
+                pd_colors_dict["Coupons 7-11y"],
+                pd_colors_dict["Coupons 11-21y"],
+                pd_colors_dict["Coupons >21y"],
+            ],
+            ["Coupons 7-11y", "Coupons 11-21y", "Coupons >21y"],
+            "US Primary Dealer Holdings (% of Net Positions 3y Z-Score) | Back End",
+            "",
+        ),
+    ]
+
+    streamlit_plot_subplot_layout(subplots_array, 2, 2)
 
 

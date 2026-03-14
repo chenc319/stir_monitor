@@ -417,6 +417,7 @@ elif page == 'Primary Dealers':
 
     app_primary_dealers.primary_dealer_front_end(start_date, end_date)
     app_primary_dealers.primary_dealer_belly(start_date, end_date)
+    app_primary_dealers.primary_dealer_back_end(start_date, end_date)
 
     app_primary_dealers.plot_sponsored_volumes_solution(start_date, end_date)
     app_primary_dealers.plot_sponsored_volumes(start_date, end_date)
