@@ -673,7 +673,7 @@ def primary_dealer_front_end(start, end, **kwargs):
     )
 
     front_df['Coupons <2y %'] = (front_df['Coupons <2y'] / front_df['All Front']) * 100
-    front_df['All Bills %'] = (front_df['All Bills'] / front_df['All Front']) * 100
+    front_df['All Bills %'] = (abs(front_df['All Bills']) / abs(front_df['All Front'])) * 100
 
     front_df['Coupons <2y % z'] = (
             (front_df['Coupons <2y %'] -
@@ -727,7 +727,7 @@ def primary_dealer_front_end(start, end, **kwargs):
 
 def primary_dealer_belly(start,end,**kwargs):
     belly_df = pd.DataFrame({
-        'All Coupons': pd_pos_dict['All Coupons']['Level'],
+        'All Belly': pd_pos_dict['Coupons 2-3y']['Level'] + pd_pos_dict['Coupons 3-6y']['Level'] + pd_pos_dict['Coupons 6-7y']['Level'],
         'Coupons 2-3y': pd_pos_dict['Coupons 2-3y']['Level'],
         'Coupons 3-6y': pd_pos_dict['Coupons 3-6y']['Level'],
         'Coupons 6-7y': pd_pos_dict['Coupons 6-7y']['Level'],
@@ -749,9 +749,9 @@ def primary_dealer_belly(start, end, **kwargs):
 
     belly_df = pd.DataFrame({
         "All Belly": (
-            pd_pos_dict["Coupons 2-3y"]["Level"]
-            + pd_pos_dict["Coupons 3-6y"]["Level"]
-            + pd_pos_dict["Coupons 6-7y"]["Level"]
+            abs(pd_pos_dict["Coupons 2-3y"]["Level"])
+            + abs(pd_pos_dict["Coupons 3-6y"]["Level"])
+            + abs(pd_pos_dict["Coupons 6-7y"]["Level"])
         ),
         "Coupons 2-3y": pd_pos_dict["Coupons 2-3y"]["Level"],
         "Coupons 3-6y": pd_pos_dict["Coupons 3-6y"]["Level"],
