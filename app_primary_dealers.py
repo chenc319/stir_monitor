@@ -340,8 +340,6 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
         linecolor="white",
     )
     ax1.set_title("Holdings as % of Total USTs", fontsize=14, pad=30)
-    ax1.set_ylabel("Nominals", fontsize=12)
-    ax1.set_xlabel("Time", fontsize=12)
     cbar1 = ax1.collections[0].colorbar
     cbar1.set_label("Relative level (per column)", fontsize=11)
     cbar1.ax.xaxis.set_ticks_position("top")
@@ -371,8 +369,6 @@ def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
         linecolor="white",
     )
     ax2.set_title("Holdings as % of All Coupons", fontsize=14, pad=30)
-    ax2.set_ylabel("Nominals", fontsize=12)
-    ax2.set_xlabel("Time", fontsize=12)
     cbar2 = ax2.collections[0].colorbar
     cbar2.set_label("Relative level (per column)", fontsize=11)
     cbar2.ax.xaxis.set_ticks_position("top")
