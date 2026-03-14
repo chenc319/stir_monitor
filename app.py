@@ -157,53 +157,65 @@ st.markdown("""
 
     /* ----- Mistral sidebar theming ----- */
 
+    /* Sidebar background */
     [data-testid="stSidebar"] {
-        background-color: #0F3B2E;
+        background-color: #0F3B2E;  /* Mistral green */
     }
+
+    /* Sidebar headings and labels */
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3,
     [data-testid="stSidebar"] label {
         color: #FFFFFF !important;
     }
+
+    /* Selectbox + other inputs: white box, dark text (placeholder + value) */
     [data-testid="stSidebar"] div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
         color: #000000 !important;
     }
+
     [data-testid="stSidebar"] div[data-baseweb="select"] span {
         color: #000000 !important;
     }
+
     [data-testid="stSidebar"] .stDateInput input,
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea {
         background-color: #FFFFFF !important;
         color: #000000 !important;
     }
+
+    /* Dropdown menu options */
     div[role="listbox"] * {
         color: #000000 !important;
     }
 
-    /* -------- Scrollable rows for charts only -------- */
+    /* -------- Allow horizontal scrolling instead of auto-scaling -------- */
 
-    .scroll-row {
-        width: 100%;
+    /* Make main content horizontally scrollable */
+    .main .block-container {
         overflow-x: auto;
+        padding-right: 0.5rem;
     }
-    .scroll-row-inner {
-        display: flex;
-        flex-wrap: nowrap;
-    }
-    .scroll-item {
-        min-width: 1200px;       /* width of each chart panel */
-        margin-right: 24px;
-    }
-    .scroll-item [data-testid="stPlotlyChart"] {
+
+    /* Do not force charts/images to shrink to container width */
+    .main .block-container img,
+    .main .block-container canvas,
+    .main .block-container svg,
+    .main .block-container [data-testid="stPlotlyChart"] {
         max-width: none !important;
-        width: 1200px !important;
+        width: auto !important;
+    }
+
+    /* Optional: ensure plots can extend beyond viewport width */
+    .main .block-container [data-testid="stPlotlyChart"],
+    .main .block-container [data-testid="stImage"] {
+        min-width: 1200px;  /* tweak this based on desired plot width */
     }
     </style>
 """, unsafe_allow_html=True)
-
 
 
 ### SIDEBAR ###

@@ -654,72 +654,152 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def primary_dealer_front_end(start, end, **kwargs):
+    import matplotlib.pyplot as plt
+    from io import BytesIO
+    import base64
+
+    def fig_to_base64(fig):
+        buf = BytesIO()
+        fig.savefig(buf, format="png", bbox_inches="tight")
+        buf.seek(0)
+        encoded = base64.b64encode(buf.read()).decode("utf-8")
+        plt.close(fig)
+        return encoded
+
+    # ------------------------- build base data ------------------------- #
+    base_series = pd_pos_dict["All Coupons"]
+    all_dates = base_series.index.sort_values()
+
     front_df = pd.DataFrame({
         'All Coupons': pd_pos_dict['All Coupons']['Level'],
         'Coupons <2y': pd_pos_dict['Coupons <2y']['Level'],
         'All Bills': pd_pos_dict['All Bills']['Level'],
     })
 
-    # 1) levels
-    df1 = front_df.dropna() * 1e9
+    # ------------------------- date selectors ------------------------- #
+    last_idx = len(all_dates) - 1
+    start_idx_default = max(0, last_idx - 252)  # e.g. ~1y default window
 
-    # 2) z-scores
-    front_df['Coupons <2y z'] = (
-        (front_df['Coupons <2y'] - front_df['Coupons <2y'].rolling(156).mean()) /
-        front_df['Coupons <2y'].rolling(156).std()
+    col1, col2 = st.columns(2)
+    with col1:
+        chosen_start_date = st.selectbox(
+            "Select Start Date (Front-End)",
+            options=all_dates,
+            index=start_idx_default,
+            format_func=lambda d: d.strftime("%Y-%m-%d"),
+        )
+    with col2:
+        chosen_end_date = st.selectbox(
+            "Select End Date (Front-End)",
+            options=all_dates,
+            index=last_idx,
+            format_func=lambda d: d.strftime("%Y-%m-%d"),
+        )
+
+    start_str = pd.to_datetime(chosen_start_date)
+    end_str = pd.to_datetime(chosen_end_date)
+
+    # restrict to chosen window
+    front_df = front_df.loc[start_str:end_str]
+
+    plt.rcParams["figure.dpi"] = 200
+
+    # ======================= 1) Net positions (levels) ======================= #
+    df1 = (front_df.dropna()[['Coupons <2y', 'All Bills']] * 1e9).copy()
+
+    fig1, ax1 = plt.subplots(figsize=(14, 6))
+    ax1.plot(
+        df1.index,
+        df1['Coupons <2y'],
+        color=pd_colors_dict['Coupons <2y'],
+        label='Coupons <2y',
     )
-    front_df['All Bills z'] = (
-        (front_df['All Bills'] - front_df['All Bills'].rolling(156).mean()) /
-        front_df['All Bills'].rolling(156).std()
+    ax1.plot(
+        df1.index,
+        df1['All Bills'],
+        color=pd_colors_dict['All Bills'],
+        label='All Bills',
     )
-    df2 = front_df.dropna()
+    ax1.set_title("US Primary Dealer Holdings (Net Position) | Front-End", fontsize=14)
+    ax1.set_xlabel("Date", fontsize=12)
+    ax1.set_ylabel("Notional", fontsize=12)
+    ax1.legend(loc="best", fontsize=9)
+    ax1.grid(True, linewidth=0.3, alpha=0.4)
+    fig1.autofmt_xdate()
+    img1_b64 = fig_to_base64(fig1)
 
-    # 3) % of all coupons
-    front_df['Coupons <2y %'] = (front_df['Coupons <2y'] / front_df['All Coupons']) * 100
-    front_df['All Bills %'] = (front_df['All Bills'] / front_df['All Coupons']) * 100
-    df3 = front_df.dropna()
-
-    # start scroll row
-    st.markdown('<div class="scroll-row"><div class="scroll-row-inner">', unsafe_allow_html=True)
-
-    # item 1
-    st.markdown('<div class="scroll-item">', unsafe_allow_html=True)
-    streamlit_plot(
-        df1,
-        ['Coupons <2y', 'All Bills'],
-        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        ['Coupons <2y', 'All Bills'],
-        "US Primary Dealer Holdings (Net Position) | Front-End",
-        ""
+    # ======================= 2) 3yr Z-scores ======================= #
+    z_df = front_df.copy()
+    z_df['Coupons <2y z'] = (
+        (z_df['Coupons <2y'] - z_df['Coupons <2y'].rolling(156).mean())
+        / z_df['Coupons <2y'].rolling(156).std()
     )
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # item 2
-    st.markdown('<div class="scroll-item">', unsafe_allow_html=True)
-    streamlit_plot(
-        df2,
-        ['Coupons <2y z', 'All Bills z'],
-        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        ['Coupons <2y', 'All Bills'],
-        "US Primary Dealer Holdings (Net Positions 3yr Z-Score) | Front-End",
-        ""
+    z_df['All Bills z'] = (
+        (z_df['All Bills'] - z_df['All Bills'].rolling(156).mean())
+        / z_df['All Bills'].rolling(156).std()
     )
-    st.markdown('</div>', unsafe_allow_html=True)
+    df2 = z_df.dropna(subset=['Coupons <2y z', 'All Bills z'])
 
-    # item 3
-    st.markdown('<div class="scroll-item">', unsafe_allow_html=True)
-    streamlit_plot(
-        df3,
-        ['Coupons <2y %', 'All Bills %'],
-        [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        ['Coupons <2y', 'All Bills'],
-        "US Primary Dealer Holdings (% of Net Positions) | Front-End",
-        ""
+    fig2, ax2 = plt.subplots(figsize=(14, 6))
+    ax2.plot(
+        df2.index,
+        df2['Coupons <2y z'],
+        color=pd_colors_dict['Coupons <2y'],
+        label='Coupons <2y',
     )
-    st.markdown('</div>', unsafe_allow_html=True)
+    ax2.plot(
+        df2.index,
+        df2['All Bills z'],
+        color=pd_colors_dict['All Bills'],
+        label='All Bills',
+    )
+    ax2.axhline(0, color="black", linewidth=0.5)
+    ax2.set_title("US Primary Dealer Holdings (Net Positions 3yr Z-Score) | Front-End", fontsize=14)
+    ax2.set_xlabel("Date", fontsize=12)
+    ax2.set_ylabel("Z-score", fontsize=12)
+    ax2.legend(loc="best", fontsize=9)
+    ax2.grid(True, linewidth=0.3, alpha=0.4)
+    fig2.autofmt_xdate()
+    img2_b64 = fig_to_base64(fig2)
 
-    # close scroll row
-    st.markdown('</div></div>', unsafe_allow_html=True)
+    # ======================= 3) % of All Coupons ======================= #
+    pct_df = front_df.copy()
+    pct_df['Coupons <2y %'] = (pct_df['Coupons <2y'] / pct_df['All Coupons']) * 100
+    pct_df['All Bills %'] = (pct_df['All Bills'] / pct_df['All Coupons']) * 100
+    df3 = pct_df.dropna(subset=['Coupons <2y %', 'All Bills %'])
+
+    fig3, ax3 = plt.subplots(figsize=(14, 6))
+    ax3.plot(
+        df3.index,
+        df3['Coupons <2y %'],
+        color=pd_colors_dict['Coupons <2y'],
+        label='Coupons <2y',
+    )
+    ax3.plot(
+        df3.index,
+        df3['All Bills %'],
+        color=pd_colors_dict['All Bills'],
+        label='All Bills',
+    )
+    ax3.set_title("US Primary Dealer Holdings (% of Net Positions) | Front-End", fontsize=14)
+    ax3.set_xlabel("Date", fontsize=12)
+    ax3.set_ylabel("% of All Coupons", fontsize=12)
+    ax3.legend(loc="best", fontsize=9)
+    ax3.grid(True, linewidth=0.3, alpha=0.4)
+    fig3.autofmt_xdate()
+    img3_b64 = fig_to_base64(fig3)
+
+    # ======================= horizontally scrollable row ======================= #
+    html = f"""
+    <div style="width: 100%; overflow-x: auto;">
+        <div style="display: flex; flex-wrap: nowrap;">
+            <img src="data:image/png;base64,{img1_b64}" style="margin-right: 24px;" />
+            <img src="data:image/png;base64,{img2_b64}" style="margin-right: 24px;" />
+            <img src="data:image/png;base64,{img3_b64}" />
+        </div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
 
 
 
