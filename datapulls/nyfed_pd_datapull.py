@@ -6,7 +6,7 @@
 from Functions import *
 from pathlib import Path
 import os
-DATA_DIR = os.getenv('DATA_DIR', 'data')
+DATA_DIR = os.getenv('DATA_DIR', '../data')
 
 ### ALL ###
 pd_total_masters = get_newyork_fed_data('PDPOSGST-TOT') / 1000

@@ -6,7 +6,7 @@
 from Functions import *
 from pathlib import Path
 import os
-DATA_DIR = os.getenv('DATA_DIR', 'data')
+DATA_DIR = os.getenv('DATA_DIR', '../data')
 
 ### FUNCTIONS ###
 def refresh_all_data():
