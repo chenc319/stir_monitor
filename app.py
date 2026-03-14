@@ -415,10 +415,12 @@ elif page == 'Primary Dealers':
     app_primary_dealers.primary_dealer_snapshot(start_date, end_date)
     app_primary_dealers.primary_dealer_nominal_holdings_heatmap(start_date, end_date)
 
+    st.header('Bonds')
     app_primary_dealers.primary_dealer_front_end(start_date, end_date)
     app_primary_dealers.primary_dealer_belly(start_date, end_date)
     app_primary_dealers.primary_dealer_back_end(start_date, end_date)
 
+    st.header('TIPS')
     app_primary_dealers.primary_dealer_tips_front(start_date, end_date)
     app_primary_dealers.primary_dealer_tips_back(start_date, end_date)
 
