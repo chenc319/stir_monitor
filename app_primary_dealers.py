@@ -235,11 +235,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
 ### --------------------------- PRIMARY DEALER HOLDINGS AS % OF TOTAL HEATMAP -------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def primary_dealer_front_end(start, end, **kwargs):
-    import matplotlib.pyplot as plt
-    from io import BytesIO
-    import base64
-
+def primary_dealer_nominal_holdings_heatmap(start, end, **kwargs):
     def fig_to_base64(fig):
         buf = BytesIO()
         fig.savefig(buf, format="png", bbox_inches="tight")
@@ -247,123 +243,291 @@ def primary_dealer_front_end(start, end, **kwargs):
         encoded = base64.b64encode(buf.read()).decode("utf-8")
         plt.close(fig)
         return encoded
+    st.subheader("Primary Dealer Holdings Heatmaps")
+    base_series = pd_pos_dict["All USTs"]
+    all_dates = base_series.index.sort_values()
+    for key, obj in pd_pos_dict.items():
+        if isinstance(obj, (pd.DataFrame, pd.Series)):
+            pd_pos_dict[key] = obj.round(2)
+            pd_pos_dict[key] = pd_pos_dict[key].where(
+                pd_pos_dict[key] != 0, 0
+            )
+    # ------------------------------------------------------------------ #
+    # Default window: last date and 21 rows before that
+    # ------------------------------------------------------------------ #
+    last_idx = len(all_dates) - 1
+    start_idx_default = max(0, last_idx - 21)
+    col_dates_1, col_dates_2 = st.columns(2)
+    with col_dates_1:
+        chosen_start_date = st.selectbox(
+            "Select Start Snapshot Date",
+            options=all_dates,
+            index=start_idx_default,
+            format_func=lambda d: d.strftime("%Y-%m-%d"),
+        )
+    with col_dates_2:
+        chosen_end_date = st.selectbox(
+            "Select End Snapshot Date",
+            options=all_dates,
+            index=last_idx,
+            format_func=lambda d: d.strftime("%Y-%m-%d"),
+        )
+    start_str = pd.to_datetime(chosen_start_date).strftime("%Y-%m-%d")
+    end_str = pd.to_datetime(chosen_end_date).strftime("%Y-%m-%d")
 
-    # ------------------------------------------------------------------ #
-    # Build front-end positions dataframe
-    # ------------------------------------------------------------------ #
-    front_df = pd.DataFrame({
-        'All Coupons': pd_pos_dict['All Coupons']['Level'],
-        'Coupons <2y': pd_pos_dict['Coupons <2y']['Level'],
-        'All Bills': pd_pos_dict['All Bills']['Level'],
-    })
+    ### ---------------------------------- FIRST HEATMAP ---------------------------------- ###
 
-    # restrict to selected window if you want (optional)
-    if start is not None and end is not None:
-        front_df = front_df.loc[pd.to_datetime(start):pd.to_datetime(end)]
+    all_ust = pd_pos_dict['All USTs'].loc[start_str:end_str]['Level']
+    pd_perc_total = pd.DataFrame({
+        'Coupons <2y':    (pd_pos_dict['Coupons <2y'].loc[start_str:end_str]['Level']    / all_ust) * 100,
+        'Coupons 2-3y':   (pd_pos_dict['Coupons 2-3y'].loc[start_str:end_str]['Level']   / all_ust) * 100,
+        'Coupons 3-6y':   (pd_pos_dict['Coupons 3-6y'].loc[start_str:end_str]['Level']   / all_ust) * 100,
+        'Coupons 6-7y':   (pd_pos_dict['Coupons 6-7y'].loc[start_str:end_str]['Level']   / all_ust) * 100,
+        'Coupons 7-11y':  (pd_pos_dict['Coupons 7-11y'].loc[start_str:end_str]['Level']  / all_ust) * 100,
+        'Coupons 11-21y': (pd_pos_dict['Coupons 11-21y'].loc[start_str:end_str]['Level'] / all_ust) * 100,
+        'Coupons >21y':   (pd_pos_dict['Coupons >21y'].loc[start_str:end_str]['Level']   / all_ust) * 100,
 
-    # ------------------------------------------------------------------ #
-    # FIRST CHART: levels (dollars)
-    # ------------------------------------------------------------------ #
-    fig1, ax1 = plt.subplots(figsize=(14, 6))
-    ax1.plot(
-        front_df.index,
-        front_df['Coupons <2y'] * 1e9,
-        color=pd_colors_dict['Coupons <2y'],
-        label='Coupons <2y',
+        'All TIPS':       (pd_pos_dict['All TIPS'].loc[start_str:end_str]['Level']       / all_ust) * 100,
+        'TIPS <2y':       (pd_pos_dict['TIPS <2y'].loc[start_str:end_str]['Level']       / all_ust) * 100,
+        'TIPS 2-6y':      (pd_pos_dict['TIPS 2-6y'].loc[start_str:end_str]['Level']      / all_ust) * 100,
+        'TIPS 6-11y':     (pd_pos_dict['TIPS 6-11y'].loc[start_str:end_str]['Level']     / all_ust) * 100,
+        'TIPS >11y':      (pd_pos_dict['TIPS >11y'].loc[start_str:end_str]['Level']      / all_ust) * 100,
+
+        'All Bills':      (pd_pos_dict['All Bills'].loc[start_str:end_str]['Level']      / all_ust) * 100,
+        'All FRNs':       (pd_pos_dict['All FRNs'].loc[start_str:end_str]['Level']       / all_ust) * 100,
+    }).T.round(2)
+    df_pct_total = pd_perc_total.copy()
+    df_pct_total.columns = df_pct_total.columns.strftime("%m-%d-%y")
+    df_norm_total = df_pct_total.copy()
+    col_min = df_norm_total.min(axis=0)
+    col_max = df_norm_total.max(axis=0)
+    denom = (col_max - col_min).replace(0, 1)
+    df_norm_total = (df_norm_total - col_min) / denom
+
+    ### ---------------------------------- SECOND HEATMAP ---------------------------------- ###
+
+    all_coupons = pd_pos_dict['All Coupons'].loc[start_str:end_str]['Level']
+    pd_perc_cpn = pd.DataFrame({
+        'Coupons <2y':    (pd_pos_dict['Coupons <2y'].loc[start_str:end_str]['Level']    / all_coupons) * 100,
+        'Coupons 2-3y':   (pd_pos_dict['Coupons 2-3y'].loc[start_str:end_str]['Level']   / all_coupons) * 100,
+        'Coupons 3-6y':   (pd_pos_dict['Coupons 3-6y'].loc[start_str:end_str]['Level']   / all_coupons) * 100,
+        'Coupons 6-7y':   (pd_pos_dict['Coupons 6-7y'].loc[start_str:end_str]['Level']   / all_coupons) * 100,
+        'Coupons 7-11y':  (pd_pos_dict['Coupons 7-11y'].loc[start_str:end_str]['Level']  / all_coupons) * 100,
+        'Coupons 11-21y': (pd_pos_dict['Coupons 11-21y'].loc[start_str:end_str]['Level'] / all_coupons) * 100,
+        'Coupons >21y':   (pd_pos_dict['Coupons >21y'].loc[start_str:end_str]['Level']   / all_coupons) * 100,
+    }).T.round(2)
+    df_pct_cpn = pd_perc_cpn.copy()
+    df_pct_cpn.columns = df_pct_cpn.columns.strftime("%m-%d-%y")
+    df_norm_cpn = df_pct_cpn.copy()
+    col_min = df_norm_cpn.min(axis=0)
+    col_max = df_norm_cpn.max(axis=0)
+    denom = (col_max - col_min).replace(0, 1)
+    df_norm_cpn = (df_norm_cpn - col_min) / denom
+
+    ### ---------------------------------- THIRD HEATMAP ---------------------------------- ###
+    pd_pos_levels_z_dict = {}
+    pd_pos_12m_chg_z_dict = {}
+    for key in pd_pos_dict.keys():
+        if type(pd_pos_dict[key]) == pd.core.frame.DataFrame:
+            levels_df = pd.DataFrame(pd_pos_dict[key]['Level'])
+            levels_df_mean = levels_df.rolling(156).mean()
+            levels_df_std = levels_df.rolling(156).std()
+            levels_df_z = (levels_df - levels_df_mean) / levels_df_std
+            pd_pos_levels_z_dict[key] = levels_df_z.dropna()
+            chg_12m_df = pd.DataFrame(pd_pos_dict[key]['12m chg'])
+            chg_12m_df_mean = chg_12m_df.rolling(156).mean()
+            chg_12m_df_std = chg_12m_df.rolling(156).std()
+            chg_12m_df_z = (chg_12m_df - chg_12m_df_mean) / chg_12m_df_std
+            pd_pos_12m_chg_z_dict[key] = chg_12m_df_z.dropna()
+
+    pd_holdings_levels_z = pd.DataFrame({
+        'All Coupons': (pd_pos_levels_z_dict['All Coupons'].loc[start_str:end_str])['Level'],
+        'Coupons <2y': (pd_pos_levels_z_dict['Coupons <2y'].loc[start_str:end_str])['Level'],
+        'Coupons 2-3y': (pd_pos_levels_z_dict['Coupons 2-3y'].loc[start_str:end_str])['Level'],
+        'Coupons 3-6y': (pd_pos_levels_z_dict['Coupons 3-6y'].loc[start_str:end_str])['Level'],
+        'Coupons 6-7y': (pd_pos_levels_z_dict['Coupons 6-7y'].loc[start_str:end_str])['Level'],
+        'Coupons 7-11y': (pd_pos_levels_z_dict['Coupons 7-11y'].loc[start_str:end_str])['Level'],
+        'Coupons 11-21y': (pd_pos_levels_z_dict['Coupons 11-21y'].loc[start_str:end_str])['Level'],
+        'Coupons >21y': (pd_pos_levels_z_dict['Coupons >21y'].loc[start_str:end_str])['Level'],
+
+        'All TIPS': (pd_pos_levels_z_dict['All TIPS'].loc[start_str:end_str])['Level'],
+        'TIPS <2y': (pd_pos_levels_z_dict['TIPS <2y'].loc[start_str:end_str])['Level'],
+        'TIPS 2-6y': (pd_pos_levels_z_dict['TIPS 2-6y'].loc[start_str:end_str])['Level'],
+        'TIPS 6-11y': (pd_pos_levels_z_dict['TIPS 6-11y'].loc[start_str:end_str])['Level'],
+        'TIPS >11y': (pd_pos_levels_z_dict['TIPS >11y'].loc[start_str:end_str])['Level'],
+
+        'All Bills': (pd_pos_levels_z_dict['All Bills'].loc[start_str:end_str])['Level'],
+        'All FRNs': (pd_pos_levels_z_dict['All FRNs'].loc[start_str:end_str])['Level'],
+    }).T.round(2)
+    df_levels_z = pd_holdings_levels_z.copy()
+    df_levels_z.columns = df_levels_z.columns.strftime("%m-%d-%y")
+    df_norm_levels_z = df_levels_z.copy()
+    col_min = df_norm_levels_z.min(axis=0)
+    col_max = df_norm_levels_z.max(axis=0)
+    denom = (col_max - col_min).replace(0, 1)
+    df_norm_levels_z = (df_norm_levels_z - col_min) / denom
+
+    ### ---------------------------------- FOURTH HEATMAP ---------------------------------- ###
+    pd_holdings_chg_z = pd.DataFrame({
+        'All Coupons': (pd_pos_12m_chg_z_dict['All Coupons'].loc[start_str:end_str])['12m chg'],
+        'Coupons <2y': (pd_pos_12m_chg_z_dict['Coupons <2y'].loc[start_str:end_str])['12m chg'],
+        'Coupons 2-3y': (pd_pos_12m_chg_z_dict['Coupons 2-3y'].loc[start_str:end_str])['12m chg'],
+        'Coupons 3-6y': (pd_pos_12m_chg_z_dict['Coupons 3-6y'].loc[start_str:end_str])['12m chg'],
+        'Coupons 6-7y': (pd_pos_12m_chg_z_dict['Coupons 6-7y'].loc[start_str:end_str])['12m chg'],
+        'Coupons 7-11y': (pd_pos_12m_chg_z_dict['Coupons 7-11y'].loc[start_str:end_str])['12m chg'],
+        'Coupons 11-21y': (pd_pos_12m_chg_z_dict['Coupons 11-21y'].loc[start_str:end_str])['12m chg'],
+        'Coupons >21y': (pd_pos_12m_chg_z_dict['Coupons >21y'].loc[start_str:end_str])['12m chg'],
+
+        'All TIPS': (pd_pos_12m_chg_z_dict['All TIPS'].loc[start_str:end_str])['12m chg'],
+        'TIPS <2y': (pd_pos_12m_chg_z_dict['TIPS <2y'].loc[start_str:end_str])['12m chg'],
+        'TIPS 2-6y': (pd_pos_12m_chg_z_dict['TIPS 2-6y'].loc[start_str:end_str])['12m chg'],
+        'TIPS 6-11y': (pd_pos_12m_chg_z_dict['TIPS 6-11y'].loc[start_str:end_str])['12m chg'],
+        'TIPS >11y': (pd_pos_12m_chg_z_dict['TIPS >11y'].loc[start_str:end_str])['12m chg'],
+
+        'All Bills': (pd_pos_12m_chg_z_dict['All Bills'].loc[start_str:end_str])['12m chg'],
+        'All FRNs': (pd_pos_12m_chg_z_dict['All FRNs'].loc[start_str:end_str])['12m chg'],
+    }).T.round(2)
+    df_chg_z = pd_holdings_chg_z.copy()
+    df_chg_z.columns = df_chg_z.columns.strftime("%m-%d-%y")
+    df_norm_chg_z = df_chg_z.copy()
+    col_min = df_norm_chg_z.min(axis=0)
+    col_max = df_norm_chg_z.max(axis=0)
+    denom = (col_max - col_min).replace(0, 1)
+    df_norm_chg_z = (df_norm_chg_z - col_min) / denom
+
+    ### ---------------------------------- ALL HEATMAPS ---------------------------------- ###
+    plt.rcParams["figure.dpi"] = 200
+    vmin, vmax = 0, 1
+    cmap = sns.color_palette("RdYlBu_r", as_cmap=True)
+
+    ### FIRST ###
+    fig1, ax1 = plt.subplots(figsize=(14, 8))
+    sns.heatmap(
+        df_norm_total,
+        ax=ax1,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        annot=df_pct_total,
+        fmt=".2f",
+        annot_kws={"fontsize": 8},
+        cbar=True,
+        cbar_kws={
+            "orientation": "horizontal",
+            "pad": 0.23,          # more space above plot
+            "fraction": 0.04,
+            "aspect": 40,
+        },
+        linewidths=0.5,
+        linecolor="white",
     )
-    ax1.plot(
-        front_df.index,
-        front_df['All Bills'] * 1e9,
-        color=pd_colors_dict['All Bills'],
-        label='All Bills',
-    )
-    ax1.set_title("US Primary Dealer Holdings (Net Position) | Front-End", fontsize=14)
-    ax1.set_ylabel("Notional", fontsize=12)
-    ax1.set_xlabel("Date", fontsize=12)
-    ax1.legend(loc="best", fontsize=9)
-    ax1.grid(True, linewidth=0.3, alpha=0.4)
-    fig1.autofmt_xdate()
+    ax1.set_title("Holdings as % of Total USTs", fontsize=14, pad=30)
+    cbar1 = ax1.collections[0].colorbar
+    cbar1.set_label("Relative level (per column)", fontsize=11)
+    cbar1.ax.xaxis.set_ticks_position("top")
+    cbar1.ax.xaxis.set_label_position("top")
+    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.9])  # leave extra room at top
     img1_b64 = fig_to_base64(fig1)
 
-    # ------------------------------------------------------------------ #
-    # SECOND CHART: 3yr Z-scores
-    # ------------------------------------------------------------------ #
-    z_df = front_df.copy()
-    z_df['Coupons <2y z'] = (
-        (z_df['Coupons <2y'] - z_df['Coupons <2y'].rolling(156).mean())
-        / z_df['Coupons <2y'].rolling(156).std()
+    ### SECOND ###
+    fig2, ax2 = plt.subplots(figsize=(14, 8))
+    sns.heatmap(
+        df_norm_cpn,
+        ax=ax2,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        annot=df_pct_cpn,
+        fmt=".2f",
+        annot_kws={"fontsize": 8},
+        cbar=True,
+        cbar_kws={
+            "orientation": "horizontal",
+            "pad": 0.23,
+            "fraction": 0.04,
+            "aspect": 40,
+        },
+        linewidths=0.5,
+        linecolor="white",
     )
-    z_df['All Bills z'] = (
-        (z_df['All Bills'] - z_df['All Bills'].rolling(156).mean())
-        / z_df['All Bills'].rolling(156).std()
-    )
-    z_df = z_df.dropna(subset=['Coupons <2y z', 'All Bills z'])
-
-    fig2, ax2 = plt.subplots(figsize=(14, 6))
-    ax2.plot(
-        z_df.index,
-        z_df['Coupons <2y z'],
-        color=pd_colors_dict['Coupons <2y'],
-        label='Coupons <2y',
-    )
-    ax2.plot(
-        z_df.index,
-        z_df['All Bills z'],
-        color=pd_colors_dict['All Bills'],
-        label='All Bills',
-    )
-    ax2.axhline(0, color="black", linewidth=0.5)
-    ax2.set_title("US Primary Dealer Holdings (Net Positions 3yr Z-Score) | Front-End", fontsize=14)
-    ax2.set_ylabel("Z-score", fontsize=12)
-    ax2.set_xlabel("Date", fontsize=12)
-    ax2.legend(loc="best", fontsize=9)
-    ax2.grid(True, linewidth=0.3, alpha=0.4)
-    fig2.autofmt_xdate()
+    ax2.set_title("Holdings as % of All Coupons", fontsize=14, pad=30)
+    cbar2 = ax2.collections[0].colorbar
+    cbar2.set_label("Relative level (per column)", fontsize=11)
+    cbar2.ax.xaxis.set_ticks_position("top")
+    cbar2.ax.xaxis.set_label_position("top")
+    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.9])
     img2_b64 = fig_to_base64(fig2)
 
-    # ------------------------------------------------------------------ #
-    # THIRD CHART: % of All Coupons
-    # ------------------------------------------------------------------ #
-    pct_df = front_df.copy()
-    pct_df['Coupons <2y %'] = (pct_df['Coupons <2y'] / pct_df['All Coupons']) * 100
-    pct_df['All Bills %'] = (pct_df['All Bills'] / pct_df['All Coupons']) * 100
-    pct_df = pct_df.dropna(subset=['Coupons <2y %', 'All Bills %'])
-
-    fig3, ax3 = plt.subplots(figsize=(14, 6))
-    ax3.plot(
-        pct_df.index,
-        pct_df['Coupons <2y %'],
-        color=pd_colors_dict['Coupons <2y'],
-        label='Coupons <2y',
+    ### THIRD ###
+    fig3, ax3 = plt.subplots(figsize=(14, 8))
+    sns.heatmap(
+        df_norm_levels_z,
+        ax=ax3,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        annot=df_levels_z,
+        fmt=".2f",
+        annot_kws={"fontsize": 8},
+        cbar=True,
+        cbar_kws={
+            "orientation": "horizontal",
+            "pad": 0.23,
+            "fraction": 0.04,
+            "aspect": 40,
+        },
+        linewidths=0.5,
+        linecolor="white",
     )
-    ax3.plot(
-        pct_df.index,
-        pct_df['All Bills %'],
-        color=pd_colors_dict['All Bills'],
-        label='All Bills',
-    )
-    ax3.set_title("US Primary Dealer Holdings (% of Net Positions) | Front-End", fontsize=14)
-    ax3.set_ylabel("% of All Coupons", fontsize=12)
-    ax3.set_xlabel("Date", fontsize=12)
-    ax3.legend(loc="best", fontsize=9)
-    ax3.grid(True, linewidth=0.3, alpha=0.4)
-    fig3.autofmt_xdate()
+    ax3.set_title("Holdings Levels as Z-Scores", fontsize=14, pad=30)
+    cbar3 = ax3.collections[0].colorbar
+    cbar3.set_label("Relative level (per column)", fontsize=11)
+    cbar3.ax.xaxis.set_ticks_position("top")
+    cbar3.ax.xaxis.set_label_position("top")
+    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.9])
     img3_b64 = fig_to_base64(fig3)
 
-    # ------------------------------------------------------------------ #
-    # Show all three charts in a horizontally scrollable row
-    # ------------------------------------------------------------------ #
+    ### FOURTH ###
+    fig4, ax4 = plt.subplots(figsize=(14, 8))
+    sns.heatmap(
+        df_norm_chg_z,
+        ax=ax4,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        annot=df_chg_z,
+        fmt=".2f",
+        annot_kws={"fontsize": 8},
+        cbar=True,
+        cbar_kws={
+            "orientation": "horizontal",
+            "pad": 0.23,
+            "fraction": 0.04,
+            "aspect": 40,
+        },
+        linewidths=0.5,
+        linecolor="white",
+    )
+    ax4.set_title("Holdings 12m Change as Z-Scores", fontsize=14, pad=30)
+    cbar4 = ax3.collections[0].colorbar
+    cbar4.set_label("Relative level (per column)", fontsize=11)
+    cbar4.ax.xaxis.set_ticks_position("top")
+    cbar4.ax.xaxis.set_label_position("top")
+    plt.tight_layout(rect=[0.0, 0.0, 1.0, 0.9])
+    img4_b64 = fig_to_base64(fig4)
+
+    ### SHOW ALL IMAGES NOW ###
     html = f"""
     <div style="width: 100%; overflow-x: auto;">
         <div style="display: flex; flex-wrap: nowrap;">
             <img src="data:image/png;base64,{img1_b64}" style="margin-right: 24px;" />
             <img src="data:image/png;base64,{img2_b64}" style="margin-right: 24px;" />
-            <img src="data:image/png;base64,{img3_b64}" />
+            <img src="data:image/png;base64,{img3_b64}" style="margin-right: 24px;" />
+            <img src="data:image/png;base64,{img4_b64}" />
         </div>
     </div>
     """
     st.markdown(html, unsafe_allow_html=True)
-
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ----------------------------------- SPONSORED VOLUMES - THE SOLUTION? ------------------------------------ ###
@@ -489,50 +653,82 @@ def plot_pct_dvp_sponsored(start, end, path_to_csv="data/SponsoredVolume.csv", *
 ### ---------------------------------- PRIMARY DEALERS BOND FRONT END CURVE ---------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def primary_dealer_front_end(start,end,**kwargs):
+def primary_dealer_front_end(start, end, **kwargs):
+    import matplotlib.pyplot as plt
+    from io import BytesIO
+    import base64
+
+    # helper to grab the PNG that streamlit_plot rendered from the last figure
+    def current_fig_to_base64():
+        buf = BytesIO()
+        plt.gcf().savefig(buf, format="png", bbox_inches="tight")
+        buf.seek(0)
+        encoded = base64.b64encode(buf.read()).decode("utf-8")
+        plt.close(plt.gcf())
+        return encoded
+
+    # ------------------------- build data ------------------------- #
     front_df = pd.DataFrame({
         'All Coupons': pd_pos_dict['All Coupons']['Level'],
         'Coupons <2y': pd_pos_dict['Coupons <2y']['Level'],
         'All Bills': pd_pos_dict['All Bills']['Level'],
     })
+
+    # 1) original first chart (levels)
     streamlit_plot(
-        front_df.dropna()*1e9,
+        front_df.dropna() * 1e9,
         ['Coupons <2y', 'All Bills'],
         [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        [
-            'Coupons <2y',
-            'All Bills'],
+        ['Coupons <2y', 'All Bills'],
         "US Primary Dealer Holdings (Net Position) | Front-End",
         ""
     )
-    front_df['Coupons <2y z'] = ((front_df['Coupons <2y'] -
-                                 front_df['Coupons <2y'].rolling(156).mean()) /
-                                 front_df['Coupons <2y'].rolling(156).std())
-    front_df['All Bills z'] = ((front_df['All Bills'] -
-                                 front_df['All Bills'].rolling(156).mean()) /
-                                 front_df['All Bills'].rolling(156).std())
+    img1_b64 = current_fig_to_base64()
+
+    # 2) original second chart (3yr Z-scores)
+    front_df['Coupons <2y z'] = (
+        (front_df['Coupons <2y'] - front_df['Coupons <2y'].rolling(156).mean())
+        / front_df['Coupons <2y'].rolling(156).std()
+    )
+    front_df['All Bills z'] = (
+        (front_df['All Bills'] - front_df['All Bills'].rolling(156).mean())
+        / front_df['All Bills'].rolling(156).std()
+    )
     streamlit_plot(
         front_df.dropna(),
         ['Coupons <2y z', 'All Bills z'],
         [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        [
-            'Coupons <2y',
-            'All Bills'],
+        ['Coupons <2y', 'All Bills'],
         "US Primary Dealer Holdings (Net Positions 3yr Z-Score) | Front-End",
         ""
     )
+    img2_b64 = current_fig_to_base64()
+
+    # 3) original third chart (% of All Coupons)
     front_df['Coupons <2y %'] = (front_df['Coupons <2y'] / front_df['All Coupons']) * 100
     front_df['All Bills %'] = (front_df['All Bills'] / front_df['All Coupons']) * 100
     streamlit_plot(
         front_df.dropna(),
         ['Coupons <2y %', 'All Bills %'],
         [pd_colors_dict['Coupons <2y'], pd_colors_dict['All Bills']],
-        [
-            'Coupons <2y',
-            'All Bills'],
+        ['Coupons <2y', 'All Bills'],
         "US Primary Dealer Holdings (% of Net Positions) | Front-End",
         ""
     )
+    img3_b64 = current_fig_to_base64()
+
+    # -------------------- horizontally scrollable row -------------------- #
+    html = f"""
+    <div style="width: 100%; overflow-x: auto;">
+        <div style="display: flex; flex-wrap: nowrap;">
+            <img src="data:image/png;base64,{img1_b64}" style="margin-right: 24px;" />
+            <img src="data:image/png;base64,{img2_b64}" style="margin-right: 24px;" />
+            <img src="data:image/png;base64,{img3_b64}" />
+        </div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
+
 
 
 
