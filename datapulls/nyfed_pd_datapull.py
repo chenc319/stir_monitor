@@ -1,12 +1,12 @@
 ### ---------------------------------------------------------------------------------------------------------- ###
-### ----------------------------------------- REFRESH DATA FUNCTION ------------------------------------------ ###
+### ------------------------------------------ PRIMARY DEALER DATA ------------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 ### PACKAGES ###
 from Functions import *
 from pathlib import Path
-import os
-DATA_DIR = os.getenv('DATA_DIR', '../data')
+DATA_DIR = Path("data")
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 ### ALL ###
 pd_total_masters = get_newyork_fed_data('PDPOSGST-TOT') / 1000
@@ -117,3 +117,213 @@ pd_pos_dict = {
 
 with open(Path(DATA_DIR) / 'pd_pos_dict.pkl', 'wb') as file:
     pickle.dump(pd_pos_dict, file)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------ PRIMARY DEALER DATA ------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+rrp_uncleared_bilateral_special_on = get_newyork_fed_data('PDSIRRA-UBSUTSET')
+rrp_uncleared_bilateral_special_l30 = get_newyork_fed_data('PDSIRRA-UBSUTSETTAL30')
+rrp_uncleared_bilateral_special_g30 = get_newyork_fed_data('PDSIRRA-UBSUTSETTAG30')
+
+rrp_uncleared_bilateral_general_on = get_newyork_fed_data('PDSIRRA-UBGUTSET')
+rrp_uncleared_bilateral_general_l30 = get_newyork_fed_data('PDSIRRA-UBGUTSETTAL30')
+rrp_uncleared_bilateral_general_g30 = get_newyork_fed_data('PDSIRRA-UBGUTSETTAG30')
+
+rrp_uncleared_bilateral = merge_dfs([
+    rrp_uncleared_bilateral_special_on,
+    rrp_uncleared_bilateral_special_l30,
+    rrp_uncleared_bilateral_special_g30,
+    rrp_uncleared_bilateral_general_on,
+    rrp_uncleared_bilateral_general_l30,
+    rrp_uncleared_bilateral_general_g30,
+])
+rrp_uncleared_bilateral.columns = [
+    'Uncleared Bilateral Special O/N',
+    'Uncleared Bilateral Special L30',
+    'Uncleared Bilateral Special G30',
+    'Uncleared Bilateral General O/N',
+    'Uncleared Bilateral General L30',
+    'Uncleared Bilateral General G30',
+]
+with open(Path(DATA_DIR) / 'rrp_uncleared_bilateral.pkl', 'wb') as file:
+    pickle.dump(rrp_uncleared_bilateral, file)
+
+rrp_cleared_bilateral_special_on = get_newyork_fed_data('PDSIRRA-CBSUTSET')
+rrp_cleared_bilateral_special_l30 = get_newyork_fed_data('PDSIRRA-CBSUTSETTAL30')
+rrp_cleared_bilateral_special_g30 = get_newyork_fed_data('PDSIRRA-CBSUTSETTAG30')
+
+rrp_cleared_bilateral_general_on = get_newyork_fed_data('PDSIRRA-CBGUTSET')
+rrp_cleared_bilateral_general_l30 = get_newyork_fed_data('PDSIRRA-CBGUTSETTAL30')
+rrp_cleared_bilateral_general_g30 = get_newyork_fed_data('PDSIRRA-CBGUTSETTAG30')
+
+rrp_cleared_bilateral_sponsored_on = get_newyork_fed_data('PDSIRRA-CBSPUTSET')
+rrp_cleared_bilateral_sponsored_l30 = get_newyork_fed_data('PDSIRRA-CBSPUTSETTAL30')
+rrp_cleared_bilateral_sponsored_g30 = get_newyork_fed_data('PDSIRRA-CBSPUTSETTAG30')
+
+rrp_cleared_bilateral = merge_dfs([
+    rrp_cleared_bilateral_special_on,
+    rrp_cleared_bilateral_special_l30,
+    rrp_cleared_bilateral_special_g30,
+    rrp_cleared_bilateral_general_on,
+    rrp_cleared_bilateral_general_l30,
+    rrp_cleared_bilateral_general_g30,
+    rrp_cleared_bilateral_sponsored_on,
+    rrp_cleared_bilateral_sponsored_l30,
+    rrp_cleared_bilateral_sponsored_g30,
+])
+rrp_cleared_bilateral.columns = [
+    'Cleared Bilateral Special O/N',
+    'Cleared Bilateral Special L30',
+    'Cleared Bilateral Special G30',
+    'Cleared Bilateral General O/N',
+    'Cleared Bilateral General L30',
+    'Cleared Bilateral General G30',
+    'Cleared Bilateral Sponsored O/N',
+    'Cleared Bilateral Sponsored L30',
+    'Cleared Bilateral Sponsored G30',
+]
+with open(Path(DATA_DIR) / 'rrp_cleared_bilateral.pkl', 'wb') as file:
+    pickle.dump(rrp_cleared_bilateral, file)
+
+rrp_gcf_on = get_newyork_fed_data('PDSIRRA-GCFUTSET')
+rrp_gcf_l30 = get_newyork_fed_data('PDSIRRA-GCFUTSETTAL30')
+rrp_gcf_g30 = get_newyork_fed_data('PDSIRRA-GCFUTSETTAG30')
+
+tri_ex_gcf_gc_on = get_newyork_fed_data('PDSIRRA-TRIGUTSET')
+tri_ex_gcf_gc_l30 = get_newyork_fed_data('PDSIRRA-TRIGUTSETTAL30')
+tri_ex_gcf_gc_g30 = get_newyork_fed_data('PDSIRRA-TRIGUTSETTAG30')
+
+tri_ex_gcf_sponsored_gc_on = get_newyork_fed_data('PDSIRRA-TRISPUTSET')
+tri_ex_gcf_sponsored_gc_l30 = get_newyork_fed_data('PDSIRRA-TRISPUTSETTAL30')
+tri_ex_gcf_sponsored_gc_g30 = get_newyork_fed_data('PDSIRRA-TRISPUTSETTAG30')
+
+rrp_gcf_and_triparty = merge_dfs([
+    rrp_gcf_on,
+    rrp_gcf_l30,
+    rrp_gcf_g30,
+    tri_ex_gcf_gc_on,
+    tri_ex_gcf_gc_l30,
+    tri_ex_gcf_gc_g30,
+    tri_ex_gcf_sponsored_gc_on,
+    tri_ex_gcf_sponsored_gc_l30,
+    tri_ex_gcf_sponsored_gc_g30,
+])
+rrp_gcf_and_triparty.columns = [
+    'GCF O/N',
+    'GCF L30',
+    'GCF G30',
+    'Tri-Party ex. GCF GC O/N',
+    'Tri-Party ex. GCF GC L30',
+    'Tri-Party ex. GCF GC G30',
+    'Tri-Party ex. Sponsored GCF GC O/N',
+    'Tri-Party ex. Sponsored GCF GC L30',
+    'Tri-Party ex. Sponsored GCF GC G30',
+]
+with open(Path(DATA_DIR) / 'rrp_cleared_bilateral.pkl', 'wb') as file:
+    pickle.dump(rrp_cleared_bilateral, file)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------------ PRIMARY DEALER DATA ------------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+repo_uncleared_bilateral_special_on = get_newyork_fed_data('PDSORA-UBSUTSET')
+repo_uncleared_bilateral_special_l30 = get_newyork_fed_data('PDSORA-UBSUTSETTAL30')
+repo_uncleared_bilateral_special_g30 = get_newyork_fed_data('PDSORA-UBSUTSETTAG30')
+
+repo_uncleared_bilateral_general_on = get_newyork_fed_data('PDSORA-UBGUTSET')
+repo_uncleared_bilateral_general_l30 = get_newyork_fed_data('PDSORA-UBGUTSETTAL30')
+repo_uncleared_bilateral_general_g30 = get_newyork_fed_data('PDSORA-UBGUTSETTAG30')
+
+repo_uncleared_bilateral = merge_dfs([
+    repo_uncleared_bilateral_special_on,
+    repo_uncleared_bilateral_special_l30,
+    repo_uncleared_bilateral_special_g30,
+    repo_uncleared_bilateral_general_on,
+    repo_uncleared_bilateral_general_l30,
+    repo_uncleared_bilateral_general_g30,
+])
+repo_uncleared_bilateral.columns = [
+    'Uncleared Bilateral Special O/N',
+    'Uncleared Bilateral Special L30',
+    'Uncleared Bilateral Special G30',
+    'Uncleared Bilateral General O/N',
+    'Uncleared Bilateral General L30',
+    'Uncleared Bilateral General G30',
+]
+with open(Path(DATA_DIR) / 'repo_uncleared_bilateral.pkl', 'wb') as file:
+    pickle.dump(repo_uncleared_bilateral, file)
+
+repo_cleared_bilateral_special_on = get_newyork_fed_data('PDSORA-CBSUTSET')
+repo_cleared_bilateral_special_l30 = get_newyork_fed_data('PDSORA-CBSUTSETTAL30')
+repo_cleared_bilateral_special_g30 = get_newyork_fed_data('PDSORA-CBSUTSETTAG30')
+
+repo_cleared_bilateral_general_on = get_newyork_fed_data('PDSORA-CBGUTSET')
+repo_cleared_bilateral_general_l30 = get_newyork_fed_data('PDSORA-CBGUTSETTAL30')
+repo_cleared_bilateral_general_g30 = get_newyork_fed_data('PDSORA-CBGUTSETTAG30')
+
+repo_cleared_bilateral_sponsored_on = get_newyork_fed_data('PDSORA-CBSPUTSET')
+repo_cleared_bilateral_sponsored_l30 = get_newyork_fed_data('PDSORA-CBSPUTSETTAL30')
+repo_cleared_bilateral_sponsored_g30 = get_newyork_fed_data('PDSORA-CBSPUTSETTAG30')
+
+repo_cleared_bilateral = merge_dfs([
+    repo_cleared_bilateral_special_on,
+    repo_cleared_bilateral_special_l30,
+    repo_cleared_bilateral_special_g30,
+    repo_cleared_bilateral_general_on,
+    repo_cleared_bilateral_general_l30,
+    repo_cleared_bilateral_general_g30,
+    repo_cleared_bilateral_sponsored_on,
+    repo_cleared_bilateral_sponsored_l30,
+    repo_cleared_bilateral_sponsored_g30,
+])
+repo_cleared_bilateral.columns = [
+    'Cleared Bilateral Special O/N',
+    'Cleared Bilateral Special L30',
+    'Cleared Bilateral Special G30',
+    'Cleared Bilateral General O/N',
+    'Cleared Bilateral General L30',
+    'Cleared Bilateral General G30',
+    'Cleared Bilateral Sponsored O/N',
+    'Cleared Bilateral Sponsored L30',
+    'Cleared Bilateral Sponsored G30',
+]
+with open(Path(DATA_DIR) / 'repo_cleared_bilateral.pkl', 'wb') as file:
+    pickle.dump(repo_cleared_bilateral, file)
+
+repo_gcf_on = get_newyork_fed_data('PDSORA-GCFUTSET')
+repo_gcf_l30 = get_newyork_fed_data('PDSORA-GCFUTSETTAL30')
+repo_gcf_g30 = get_newyork_fed_data('PDSORA-GCFUTSETTAG30')
+
+tri_ex_gcf_gc_on = get_newyork_fed_data('PDSORA-TRIGUTSET')
+tri_ex_gcf_gc_l30 = get_newyork_fed_data('PDSORA-TRIGUTSETTAL30')
+tri_ex_gcf_gc_g30 = get_newyork_fed_data('PDSORA-TRIGUTSETTAG30')
+
+tri_ex_gcf_sponsored_gc_on = get_newyork_fed_data('PDSORA-TRISPUTSET')
+tri_ex_gcf_sponsored_gc_l30 = get_newyork_fed_data('PDSORA-TRISPUTSETTAL30')
+tri_ex_gcf_sponsored_gc_g30 = get_newyork_fed_data('PDSORA-TRISPUTSETTAG30')
+
+repo_gcf_and_triparty = merge_dfs([
+    repo_gcf_on,
+    repo_gcf_l30,
+    repo_gcf_g30,
+    tri_ex_gcf_gc_on,
+    tri_ex_gcf_gc_l30,
+    tri_ex_gcf_gc_g30,
+    tri_ex_gcf_sponsored_gc_on,
+    tri_ex_gcf_sponsored_gc_l30,
+    tri_ex_gcf_sponsored_gc_g30,
+])
+repo_gcf_and_triparty.columns = [
+    'GCF O/N',
+    'GCF L30',
+    'GCF G30',
+    'Tri-Party ex. GCF GC O/N',
+    'Tri-Party ex. GCF GC L30',
+    'Tri-Party ex. GCF GC G30',
+    'Tri-Party ex. Sponsored GCF GC O/N',
+    'Tri-Party ex. Sponsored GCF GC L30',
+    'Tri-Party ex. Sponsored GCF GC G30',
+]
+with open(Path(DATA_DIR) / 'repo_cleared_bilateral.pkl', 'wb') as file:
+    pickle.dump(repo_cleared_bilateral, file)

@@ -1120,4 +1120,5 @@ def primary_dealer_tips_back(start, end, **kwargs):
 
     streamlit_plot_subplot_layout(subplots_array, 2, 2)
 
+def primary_dealer_financing(start, end, **kwargs):
 
