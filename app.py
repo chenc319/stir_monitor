@@ -223,23 +223,24 @@ st.sidebar.title("Mistral STIR Monitor")
 start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime('2019-12-31'))
 end_date = st.sidebar.date_input("End Date", value=pd.to_datetime('today'))
 
-progress_placeholder = st.sidebar.empty()
-if st.sidebar.button("Refresh Data"):
-    progress_bar = progress_placeholder.progress(0)
-    for percent_complete in range(1, 101):
-        time.sleep(0.01)
-        progress_bar.progress(percent_complete)
-    app_datapull.refresh_all_data()
-    st.sidebar.success("Data refreshed!")
-    progress_placeholder.empty()
-else:
-    progress_placeholder.empty()
+# progress_placeholder = st.sidebar.empty()
+# if st.sidebar.button("Refresh Data"):
+#     progress_bar = progress_placeholder.progress(0)
+#     for percent_complete in range(1, 101):
+#         time.sleep(0.01)
+#         progress_bar.progress(percent_complete)
+#     app_datapull.refresh_all_data()
+#     st.sidebar.success("Data refreshed!")
+#     progress_placeholder.empty()
+# else:
+#     progress_placeholder.empty()
 
 def reset_other_selections(current_section):
     sections = [
         "Plumbing",
         "Auctions & Flow",
-        "Positioning"
+        "Positioning",
+        "Roll Factor Analysis"
     ]
     for section in sections:
         if section != current_section:
@@ -265,6 +266,13 @@ with st.sidebar:
             "Select an option...": "Select an option...",
             "UST Positioning": "UST Positioning",
             "STIR Positioning": "STIR Positioning"
+        },
+        "Roll Factor Analysis": {
+            "Select an option...": "Select an option...",
+            'AM/LF/PD Positioning': 'AM/LF/PD Positioning',
+            'Optionality': 'Optionality',
+            'RV vs. Spline': 'RV vs. Spline',
+            'Repo': 'Repo',
         }
     }
 
