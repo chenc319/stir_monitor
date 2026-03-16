@@ -309,12 +309,22 @@ with st.sidebar:
         label_visibility="collapsed"
     )
 
+    st.markdown("### Roll Factor Analysis")
+    roll_factor_analysis = st.selectbox(
+        "Roll Factor Analysis",
+        list(sections["Roll Factor Analysis"].keys()),
+        key="Roll Factor Analysis_selection",
+        on_change=lambda: reset_other_selections("Roll Factor Analysis"),
+        label_visibility="collapsed"
+    )
+
     # Set the current page based on any non-default selection
     page = "Select an option..."
     for selection in [
         plumbing,
         auctions_and_flow,
-        positioning
+        positioning,
+        roll_factor_analysis
     ]:
         if selection != "Select an option...":
             page = selection
