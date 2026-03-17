@@ -5,8 +5,8 @@
 ### PACKAGES ###
 from Functions import *
 from pathlib import Path
-import os
-DATA_DIR = os.getenv('DATA_DIR', '../data')
+DATA_DIR = Path("data")
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 ### FUNCTIONS ###
 def refresh_all_data():

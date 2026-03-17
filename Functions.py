@@ -313,3 +313,57 @@ def streamlit_plot_subplot_layout(plot_funcs, n_rows: int, n_cols: int):
             with cols[c]:
                 plot_funcs[idx]()  # call the plotting function
             idx += 1
+
+def cot_year(year=2020, cot_report_type="legacy_fut", verbose=True):
+    """
+    Downloads the selected COT report historical data for a single year
+    from cftc.gov as a zip file, reads the desired text file from memory,
+    and returns the data as a DataFrame without saving anything locally.
+    """
+
+    if verbose:
+        print("Selected:", cot_report_type)
+
+    if cot_report_type == "legacy_fut":
+        rep = "deacot"
+        txt = "annual.txt"
+    elif cot_report_type == "legacy_futopt":
+        rep = "deahistfo"
+        txt = "annualof.txt"
+    elif cot_report_type == "supplemental_futopt":
+        rep = "dea_cit_txt_"
+        txt = "annualci.txt"
+    elif cot_report_type == "disaggregated_fut":
+        rep = "fut_disagg_txt_"
+        txt = "f_year.txt"
+    elif cot_report_type == "disaggregated_futopt":
+        rep = "com_disagg_txt_"
+        txt = "c_year.txt"
+    elif cot_report_type == "traders_in_financial_futures_fut":
+        rep = "fut_fin_txt_"
+        txt = "FinFutYY.txt"
+    elif cot_report_type == "traders_in_financial_futures_futopt":
+        rep = "com_fin_txt_"
+        txt = "FinComYY.txt"
+    else:
+        raise ValueError(
+            'cot_report_type must be one of: '
+            '"legacy_fut", "legacy_futopt", "supplemental_futopt", '
+            '"disaggregated_fut", "disaggregated_futopt", '
+            '"traders_in_financial_futures_fut", '
+            '"traders_in_financial_futures_futopt"'
+        )
+
+    cot_url = f"https://cftc.gov/files/dea/history/{rep}{year}.zip"
+    r = requests.get(cot_url)
+    r.raise_for_status()
+
+    # Open zip from memory
+    with zipfile.ZipFile(io.BytesIO(r.content)) as zf:
+        if verbose:
+            print("Downloaded single year data from:", year)
+            print("Reading", txt, "from zip in memory...")
+        with zf.open(txt) as f:
+            df = pd.read_csv(f, low_memory=False)
+
+    return df
