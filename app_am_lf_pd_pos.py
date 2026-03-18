@@ -95,7 +95,7 @@ def am_lf_snapshot(start, end, **kwargs):
         format_func=lambda d: d.strftime("%Y-%m-%d"),
     )
     cftc_am_of_snapshot = pd.DataFrame({
-        'TU': ['','','','','',''],
+        'TU': ['','','','','','','','','',''],
         'TU Real Money': real_fast_money_pos_dict['TU'].loc[chosen_date][[
             'AM Net Positions','AM 1w Pos Chg','AM 4w Pos Chg','AM 6m Pos Chg','AM 12m Pos Chg',
             'AM OI %','AM 1w OI Chg','AM 4w OI Chg','AM 6m OI Chg','AM 12m OI Chg']].tolist(),
@@ -103,7 +103,7 @@ def am_lf_snapshot(start, end, **kwargs):
             'LF Net Positions','LF 1w Pos Chg','LF 4w Pos Chg','LF 6m Pos Chg','LF 12m Pos Chg',
             'LF OI %','LF 1w OI Chg','LF 4w OI Chg','LF 6m OI Chg','LF 12m OI Chg']].tolist(),
 
-        'FV': ['','','','','',''],
+        'FV': ['','','','','','','','','',''],
         'FV Real Money': real_fast_money_pos_dict['FV'].loc[chosen_date][[
             'AM Net Positions','AM 1w Pos Chg','AM 4w Pos Chg','AM 6m Pos Chg','AM 12m Pos Chg',
             'AM OI %','AM 1w OI Chg','AM 4w OI Chg','AM 6m OI Chg','AM 12m OI Chg']].tolist(),
@@ -111,7 +111,7 @@ def am_lf_snapshot(start, end, **kwargs):
             'LF Net Positions','LF 1w Pos Chg','LF 4w Pos Chg','LF 6m Pos Chg','LF 12m Pos Chg',
             'LF OI %','LF 1w OI Chg','LF 4w OI Chg','LF 6m OI Chg','LF 12m OI Chg']].tolist(),
 
-        'TY': ['','','','','',''],
+        'TY': ['','','','','','','','','',''],
         'TY Real Money': real_fast_money_pos_dict['TY'].loc[chosen_date][[
             'AM Net Positions','AM 1w Pos Chg','AM 4w Pos Chg','AM 6m Pos Chg','AM 12m Pos Chg',
             'AM OI %','AM 1w OI Chg','AM 4w OI Chg','AM 6m OI Chg','AM 12m OI Chg']].tolist(),
@@ -119,7 +119,7 @@ def am_lf_snapshot(start, end, **kwargs):
             'LF Net Positions','LF 1w Pos Chg','LF 4w Pos Chg','LF 6m Pos Chg','LF 12m Pos Chg',
             'LF OI %','LF 1w OI Chg','LF 4w OI Chg','LF 6m OI Chg','LF 12m OI Chg']].tolist(),
 
-        'UXY': ['','','','','',''],
+        'UXY': ['','','','','','','','','',''],
         'UXY Real Money': real_fast_money_pos_dict['UXY'].loc[chosen_date][[
             'AM Net Positions','AM 1w Pos Chg','AM 4w Pos Chg','AM 6m Pos Chg','AM 12m Pos Chg',
             'AM OI %','AM 1w OI Chg','AM 4w OI Chg','AM 6m OI Chg','AM 12m OI Chg']].tolist(),
@@ -127,7 +127,7 @@ def am_lf_snapshot(start, end, **kwargs):
             'LF Net Positions','LF 1w Pos Chg','LF 4w Pos Chg','LF 6m Pos Chg','LF 12m Pos Chg',
             'LF OI %','LF 1w OI Chg','LF 4w OI Chg','LF 6m OI Chg','LF 12m OI Chg']].tolist(),
 
-        'US': ['','','','','',''],
+        'US': ['','','','','','','','','',''],
         'US Real Money': real_fast_money_pos_dict['US'].loc[chosen_date][[
             'AM Net Positions','AM 1w Pos Chg','AM 4w Pos Chg','AM 6m Pos Chg','AM 12m Pos Chg',
             'AM OI %','AM 1w OI Chg','AM 4w OI Chg','AM 6m OI Chg','AM 12m OI Chg']].tolist(),
@@ -135,7 +135,7 @@ def am_lf_snapshot(start, end, **kwargs):
             'LF Net Positions','LF 1w Pos Chg','LF 4w Pos Chg','LF 6m Pos Chg','LF 12m Pos Chg',
             'LF OI %','LF 1w OI Chg','LF 4w OI Chg','LF 6m OI Chg','LF 12m OI Chg']].tolist(),
 
-        'WN': ['','','','','',''],
+        'WN': ['','','','','','','','','',''],
         'WN Real Money': real_fast_money_pos_dict['WN'].loc[chosen_date][[
             'AM Net Positions','AM 1w Pos Chg','AM 4w Pos Chg','AM 6m Pos Chg','AM 12m Pos Chg',
             'AM OI %','AM 1w OI Chg','AM 4w OI Chg','AM 6m OI Chg','AM 12m OI Chg']].tolist(),
