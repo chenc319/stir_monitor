@@ -88,12 +88,14 @@ def am_lf_snapshot(start, end, **kwargs):
             real_fast_money_pos_dict[key] = real_fast_money_pos_dict[key].where(
                 real_fast_money_pos_dict[key] != 0, 0
             )
+
     chosen_date = st.selectbox(
         "Select CFTC Snapshot Date",
         options=all_dates,
         index=len(all_dates) - 1,
         format_func=lambda d: d.strftime("%Y-%m-%d"),
     )
+
     cftc_am_of_snapshot = pd.DataFrame({
         'TU': ['','','','','','','','','',''],
         'TU Real Money': real_fast_money_pos_dict['TU'].loc[chosen_date][[
@@ -146,39 +148,33 @@ def am_lf_snapshot(start, end, **kwargs):
 
     df = cftc_am_of_snapshot.copy()
     df.columns = [
-        'Net Positions', '1w Pos', '4w Pos', '6m Pos', '12m Pos',
+        'Net Pos', '1w Pos', '4w Pos', '6m Pos', '12m Pos',
         'Pos % OI','1w OI','4w OI','6m OI','12m OI'
     ]
 
-    # all headers (untabbed + bold)
-    section_rows = {
-        'TU',
-        'FV',
-        'TY',
-        'UXY',
-        'US',
-        'WN'
-    }
-
-    # only these get the dark-blue band
-    dark_blue_rows = {
-        "TU",
-        "FV",
-        "TY",
-        "UXY",
-        "US",
-        "WN"
-    }
+    section_rows = {'TU','FV','TY','UXY','US','WN'}
+    dark_blue_rows = {"TU","FV","TY","UXY","US","WN"}
 
     def style_fed_table(df):
         styler = df.style
 
-        def numeric_formatter(x):
+        # --- formatting: numeric vs OI % columns ---
+
+        pos_cols = ['Net Pos', '1w Pos', '4w Pos', '6m Pos', '12m Pos']
+        oi_cols = ['Pos % OI','1w OI','4w OI','6m OI','12m OI']
+
+        def pos_formatter(x):
             if isinstance(x, (int, float)) and not pd.isna(x):
                 return f"{x:,.0f}"
             return x
 
-        styler = styler.format(numeric_formatter, na_rep="")
+        def oi_formatter(x):
+            if isinstance(x, (int, float)) and not pd.isna(x):
+                return f"{x:0.2f}%"   # 2 decimals + percent sign
+            return x
+
+        styler = styler.format(pos_formatter, subset=pos_cols, na_rep="")
+        styler = styler.format(oi_formatter, subset=oi_cols, na_rep="")
 
         styler = styler.set_table_styles(
             [
@@ -188,8 +184,8 @@ def am_lf_snapshot(start, end, **kwargs):
                         ("border-collapse", "collapse"),
                         ("font-family", "Calibri, Arial, sans-serif"),
                         ("font-size", "14px"),
-                        ("table-layout", "fixed"),
-                        ("width", "100%"),
+                        ("table-layout", "fixed"),   # fixed layout to respect widths
+                        ("width", "100%"),           # fill full page width
                     ],
                 },
                 {
@@ -222,44 +218,37 @@ def am_lf_snapshot(start, end, **kwargs):
             ]
         )
 
-        numeric_cols = [
-            'Net Positions', '1w Pos', '4w Pos', '6m Pos', '12m Pos',
-            'Pos % OI','1w OI','4w OI','6m OI','12m OI'
-        ]
+        # center all data columns and give equal widths
+        numeric_cols = pos_cols + oi_cols
         existing_cols = [c for c in numeric_cols if c in df.columns]
         if existing_cols:
             styler = styler.set_properties(
                 subset=pd.IndexSlice[:, existing_cols],
                 **{"text-align": "center"},
             )
-            data_share = 90
-            per_col = data_share / len(existing_cols)
-            styler = styler.set_table_styles(
-                styler.table_styles
-                + [
+            # full width (100%) minus some slack can be allocated evenly
+            per_col = 100 / len(existing_cols)
+            extra_styles = []
+            for i, col in enumerate(existing_cols):
+                extra_styles.append(
                     {
-                        "selector": "col",
+                        "selector": f"th.col_heading.level0.col{i}",
                         "props": [("width", f"{per_col:.2f}%")],
                     }
-                ]
-            )
+                )
+            styler = styler.set_table_styles(styler.table_styles + extra_styles)
 
-        # row background:
-        # dark blue only for dark_blue_rows, otherwise white
+        # row banding for header rows
         def row_style(row):
             if row.name in dark_blue_rows:
                 return [
                     "background-color: #002b55; color: white; "
                     "font-weight: bold; text-align:left;"
                 ] * len(row)
-            # keep other rows default background; bold handled via index
             return [""] * len(row)
 
         styler = styler.apply(row_style, axis=1)
 
-        # index (row label) styling:
-        # - any section_rows: bold + no indent
-        # - others: normal + single indent
         def index_style(idx_series):
             styles = []
             for label in idx_series:
@@ -271,7 +260,7 @@ def am_lf_snapshot(start, end, **kwargs):
 
         styler = styler.apply_index(index_style, axis=0)
 
-        # color and bold only non-zero numbers
+        # color + bold non-zero numbers
         def color_and_bold_nonzero(val):
             if pd.isna(val) or not isinstance(val, (int, float)):
                 return ""
@@ -279,12 +268,9 @@ def am_lf_snapshot(start, end, **kwargs):
                 return "color: #008000; font-weight:bold;"
             if val < 0:
                 return "color: #CC0000; font-weight:bold;"
-            return ""  # zero
+            return ""
 
-        for col in [
-            'Net Positions', '1w Pos', '4w Pos', '6m Pos', '12m Pos',
-            'Pos % OI','1w OI','4w OI','6m OI','12m OI'
-        ]:
+        for col in numeric_cols:
             if col in df.columns:
                 styler = styler.applymap(
                     color_and_bold_nonzero, subset=pd.IndexSlice[:, col]
@@ -295,3 +281,4 @@ def am_lf_snapshot(start, end, **kwargs):
     styled = style_fed_table(df)
     html = styled.to_html()
     st.markdown(html, unsafe_allow_html=True)
+
