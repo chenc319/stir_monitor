@@ -145,8 +145,10 @@ def am_lf_snapshot(start, end, **kwargs):
     }).T
 
     df = cftc_am_of_snapshot.copy()
-    df.columns = ['Net Positions', '1w Pos Chg', '4w Pos Chg', '6m Pos Chg', '12m Pos Chg',
-                  'OI %','1w OI Chg','4w OI Chg','6m OI Chg','12m OI Chg']
+    df.columns = [
+        'Net Positions', '1w Pos', '4w Pos', '6m Pos', '12m Pos',
+        'Pos % OI','1w OI','4w OI','6m OI','12m OI'
+    ]
 
     # all headers (untabbed + bold)
     section_rows = {
@@ -220,8 +222,10 @@ def am_lf_snapshot(start, end, **kwargs):
             ]
         )
 
-        numeric_cols = ['Net Positions', '1w Pos Chg', '4w Pos Chg', '6m Pos Chg', '12m Pos Chg',
-                  'OI %','1w OI Chg','4w OI Chg','6m OI Chg','12m OI Chg']
+        numeric_cols = [
+            'Net Positions', '1w Pos', '4w Pos', '6m Pos', '12m Pos',
+            'Pos % OI','1w OI','4w OI','6m OI','12m OI'
+        ]
         existing_cols = [c for c in numeric_cols if c in df.columns]
         if existing_cols:
             styler = styler.set_properties(
@@ -277,8 +281,10 @@ def am_lf_snapshot(start, end, **kwargs):
                 return "color: #CC0000; font-weight:bold;"
             return ""  # zero
 
-        for col in ['Net Positions', '1w Pos Chg', '4w Pos Chg', '6m Pos Chg', '12m Pos Chg',
-                  'OI %','1w OI Chg','4w OI Chg','6m OI Chg','12m OI Chg']:
+        for col in [
+            'Net Positions', '1w Pos', '4w Pos', '6m Pos', '12m Pos',
+            'Pos % OI','1w OI','4w OI','6m OI','12m OI'
+        ]:
             if col in df.columns:
                 styler = styler.applymap(
                     color_and_bold_nonzero, subset=pd.IndexSlice[:, col]
