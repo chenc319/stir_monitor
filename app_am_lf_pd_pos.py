@@ -177,7 +177,7 @@ def am_lf_snapshot(start, end, **kwargs):
                         ("text-align", "left"),
                         ("border", "1px solid #CCCCCC"),
                         ("white-space", "nowrap"),
-                        ("width", "200px"),
+                        ("width", "150px"),
                         ("max-width", "300px"),
                     ],
                 },
