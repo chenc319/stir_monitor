@@ -86,7 +86,7 @@ lf_net_positions = pd.DataFrame({
     for key, df in cftc_bond_futures_dict.items()
 })
 lf_pos_oi = pd.DataFrame({
-    key: df["LF AM %"]
+    key: df["LF OI %"]
     for key, df in cftc_bond_futures_dict.items()
 })
 
