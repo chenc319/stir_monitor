@@ -17,6 +17,7 @@ from datapulls import app_datapull
 import app_mmf
 import app_stir_positioning
 import app_trace
+import app_am_lf_pd_pos
 import time
 
 ### FUNCTIONS ###
@@ -487,3 +488,10 @@ elif page == 'TRACE Model':
     st.title('Off-the-Run Liquidity by Tenor')
     app_trace.plot_off_the_run_nominal_coupons(start_date,end_date)
 
+### ---------------------------------------------------------------------------------------- ###
+### ------------------------------------ REAL FAST MONEY ----------------------------------- ###
+### ---------------------------------------------------------------------------------------- ###
+
+elif page == 'AM/LF/PD Positioning':
+    st.title('Real Money vs. Fast Money Bond Futures Snapshot')
+    app_am_lf_pd_pos.am_lf_snapshot(start_date, end_date)

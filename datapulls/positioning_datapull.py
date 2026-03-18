@@ -63,24 +63,23 @@ for year_str in years_array:
     wn_mini_df = wn_mini_df.sort_index()
 
     tu_historical_futopt_df = pd.concat([tu_historical_futopt_df,tu_mini_df],axis=0)
-    fv_historical_futopt_df = pd.concat([fv_historical_futopt_df,tu_mini_df],axis=0)
-    ty_historical_futopt_df = pd.concat([ty_historical_futopt_df,tu_mini_df],axis=0)
-    uxy_historical_futopt_df = pd.concat([uxy_historical_futopt_df,tu_mini_df],axis=0)
-    us_historical_futopt_df = pd.concat([us_historical_futopt_df,tu_mini_df],axis=0)
-    wn_historical_futopt_df = pd.concat([wn_historical_futopt_df,tu_mini_df],axis=0)
+    fv_historical_futopt_df = pd.concat([fv_historical_futopt_df,fv_mini_df],axis=0)
+    ty_historical_futopt_df = pd.concat([ty_historical_futopt_df,ty_mini_df],axis=0)
+    uxy_historical_futopt_df = pd.concat([uxy_historical_futopt_df,uxy_mini_df],axis=0)
+    us_historical_futopt_df = pd.concat([us_historical_futopt_df,us_mini_df],axis=0)
+    wn_historical_futopt_df = pd.concat([wn_historical_futopt_df,wn_mini_df],axis=0)
 
-with open(Path(DATA_DIR) / 'tu_historical_futopt_df.pkl', 'wb') as file:
-    pickle.dump(tu_historical_futopt_df, file)
-with open(Path(DATA_DIR) / 'fv_historical_futopt_df.pkl', 'wb') as file:
-    pickle.dump(fv_historical_futopt_df, file)
-with open(Path(DATA_DIR) / 'ty_historical_futopt_df.pkl', 'wb') as file:
-    pickle.dump(ty_historical_futopt_df, file)
-with open(Path(DATA_DIR) / 'uxy_historical_futopt_df.pkl', 'wb') as file:
-    pickle.dump(uxy_historical_futopt_df, file)
-with open(Path(DATA_DIR) / 'us_historical_futopt_df.pkl', 'wb') as file:
-    pickle.dump(us_historical_futopt_df, file)
-with open(Path(DATA_DIR) / 'wn_historical_futopt_df.pkl', 'wb') as file:
-    pickle.dump(wn_historical_futopt_df, file)
+cftc_bond_futures_dict = {
+    'TU': tu_historical_futopt_df,
+    'FV': fv_historical_futopt_df,
+    'TY': ty_historical_futopt_df,
+    'UXY': uxy_historical_futopt_df,
+    'US': us_historical_futopt_df,
+    'WN': wn_historical_futopt_df,
+}
+
+with open(Path(DATA_DIR) / 'cftc_bond_futures_dict.pkl', 'wb') as file:
+    pickle.dump(cftc_bond_futures_dict, file)
 
 ### ------------------------------------------------------------------------------------------------ ###
 ### ----------------------------------- CAYMAN ISLANDS DATA PULL ----------------------------------- ###
