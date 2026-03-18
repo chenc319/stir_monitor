@@ -30,31 +30,47 @@ for each_bond_key in cftc_bond_futures_dict.keys():
                               df['Asset_Mgr_Positions_Short_All'])
     df['LF Net Positions'] = (df['Lev_Money_Positions_Long_All'] -
                              df['Lev_Money_Positions_Short_All'])
-    df['AM 1w Chg'] = df['AM Net Positions'].diff(1)
-    df['AM 4w Chg'] = df['AM Net Positions'].diff(4)
-    df['AM 6m Chg'] = df['AM Net Positions'].diff(26)
-    df['AM 12m Chg'] = df['AM Net Positions'].diff(52)
+    df['AM 1w Pos Chg'] = df['AM Net Positions'].diff(1)
+    df['AM 4w Pos Chg'] = df['AM Net Positions'].diff(4)
+    df['AM 6m Pos Chg'] = df['AM Net Positions'].diff(26)
+    df['AM 12m Pos Chg'] = df['AM Net Positions'].diff(52)
     df['AM OI %'] = (df['AM Net Positions'] / df['Open_Interest_All']) * 100
+    df['AM 1w OI Chg'] = df['AM OI %'].diff(1)
+    df['AM 4w OI Chg'] = df['AM OI %'].diff(4)
+    df['AM 6m OI Chg'] = df['AM OI %'].diff(26)
+    df['AM 12m OI Chg'] = df['AM OI %'].diff(52)
 
-    df['LF 1w Chg'] = df['LF Net Positions'].diff(1)
-    df['LF 4w Chg'] = df['LF Net Positions'].diff(4)
-    df['LF 6m Chg'] = df['LF Net Positions'].diff(26)
-    df['LF 12m Chg'] = df['LF Net Positions'].diff(52)
+    df['LF 1w Pos Chg'] = df['LF Net Positions'].diff(1)
+    df['LF 4w Pos Chg'] = df['LF Net Positions'].diff(4)
+    df['LF 6m Pos Chg'] = df['LF Net Positions'].diff(26)
+    df['LF 12m Pos Chg'] = df['LF Net Positions'].diff(52)
     df['LF OI %'] = (df['LF Net Positions'] / df['Open_Interest_All']) * 100
+    df['LF 1w OI Chg'] = df['LF OI %'].diff(1)
+    df['LF 4w OI Chg'] = df['LF OI %'].diff(4)
+    df['LF 6m OI Chg'] = df['LF OI %'].diff(26)
+    df['LF 12m OI Chg'] = df['LF OI %'].diff(52)
 
     real_fast_money_pos_dict[each_bond_key] = pd.DataFrame(df[[
         'AM Net Positions',
-        'AM 1w Chg',
-        'AM 4w Chg',
-        'AM 6m Chg',
-        'AM 12m Chg',
+        'AM 1w Pos Chg',
+        'AM 4w Pos Chg',
+        'AM 6m Pos Chg',
+        'AM 12m Pos Chg',
         'AM OI %',
+        'AM 1w OI Chg',
+        'AM 4w OI Chg',
+        'AM 6m OI Chg',
+        'AM 12m OI Chg',
         'LF Net Positions',
-        'LF 1w Chg',
-        'LF 4w Chg',
-        'LF 6m Chg',
-        'LF 12m Chg',
-        'LF OI %'
+        'LF 1w Pos Chg',
+        'LF 4w Pos Chg',
+        'LF 6m Pos Chg',
+        'LF 12m Pos Chg',
+        'LF OI %',
+        'LF 1w OI Chg',
+        'LF 4w OI Chg',
+        'LF 6m OI Chg',
+        'LF 12m OI Chg',
     ]])
 
 ### ---------------------------------------------------------------------------------------------------------- ###
@@ -81,43 +97,56 @@ def am_lf_snapshot(start, end, **kwargs):
     cftc_am_of_snapshot = pd.DataFrame({
         'TU': ['','','','','',''],
         'TU Real Money': real_fast_money_pos_dict['TU'].loc[chosen_date][[
-            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']].tolist(),
+            'AM Net Positions','AM 1w Pos Chg','AM 4w Pos Chg','AM 6m Pos Chg','AM 12m Pos Chg',
+            'AM OI %','AM 1w OI Chg','AM 4w OI Chg','AM 6m OI Chg','AM 12m OI Chg']].tolist(),
         'TU Fast Money': real_fast_money_pos_dict['TU'].loc[chosen_date][[
-            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']].tolist(),
+            'LF Net Positions','LF 1w Pos Chg','LF 4w Pos Chg','LF 6m Pos Chg','LF 12m Pos Chg',
+            'LF OI %','LF 1w OI Chg','LF 4w OI Chg','LF 6m OI Chg','LF 12m OI Chg']].tolist(),
 
         'FV': ['','','','','',''],
         'FV Real Money': real_fast_money_pos_dict['FV'].loc[chosen_date][[
-            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']].tolist(),
+            'AM Net Positions','AM 1w Pos Chg','AM 4w Pos Chg','AM 6m Pos Chg','AM 12m Pos Chg',
+            'AM OI %','AM 1w OI Chg','AM 4w OI Chg','AM 6m OI Chg','AM 12m OI Chg']].tolist(),
         'FV Fast Money': real_fast_money_pos_dict['FV'].loc[chosen_date][[
-            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']].tolist(),
+            'LF Net Positions','LF 1w Pos Chg','LF 4w Pos Chg','LF 6m Pos Chg','LF 12m Pos Chg',
+            'LF OI %','LF 1w OI Chg','LF 4w OI Chg','LF 6m OI Chg','LF 12m OI Chg']].tolist(),
 
         'TY': ['','','','','',''],
         'TY Real Money': real_fast_money_pos_dict['TY'].loc[chosen_date][[
-            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']].tolist(),
+            'AM Net Positions','AM 1w Pos Chg','AM 4w Pos Chg','AM 6m Pos Chg','AM 12m Pos Chg',
+            'AM OI %','AM 1w OI Chg','AM 4w OI Chg','AM 6m OI Chg','AM 12m OI Chg']].tolist(),
         'TY Fast Money': real_fast_money_pos_dict['TY'].loc[chosen_date][[
-            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']].tolist(),
+            'LF Net Positions','LF 1w Pos Chg','LF 4w Pos Chg','LF 6m Pos Chg','LF 12m Pos Chg',
+            'LF OI %','LF 1w OI Chg','LF 4w OI Chg','LF 6m OI Chg','LF 12m OI Chg']].tolist(),
 
         'UXY': ['','','','','',''],
         'UXY Real Money': real_fast_money_pos_dict['UXY'].loc[chosen_date][[
-            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']].tolist(),
+            'AM Net Positions','AM 1w Pos Chg','AM 4w Pos Chg','AM 6m Pos Chg','AM 12m Pos Chg',
+            'AM OI %','AM 1w OI Chg','AM 4w OI Chg','AM 6m OI Chg','AM 12m OI Chg']].tolist(),
         'UXY Fast Money': real_fast_money_pos_dict['UXY'].loc[chosen_date][[
-            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']].tolist(),
+            'LF Net Positions','LF 1w Pos Chg','LF 4w Pos Chg','LF 6m Pos Chg','LF 12m Pos Chg',
+            'LF OI %','LF 1w OI Chg','LF 4w OI Chg','LF 6m OI Chg','LF 12m OI Chg']].tolist(),
 
         'US': ['','','','','',''],
         'US Real Money': real_fast_money_pos_dict['US'].loc[chosen_date][[
-            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']].tolist(),
+            'AM Net Positions','AM 1w Pos Chg','AM 4w Pos Chg','AM 6m Pos Chg','AM 12m Pos Chg',
+            'AM OI %','AM 1w OI Chg','AM 4w OI Chg','AM 6m OI Chg','AM 12m OI Chg']].tolist(),
         'US Fast Money': real_fast_money_pos_dict['US'].loc[chosen_date][[
-            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']].tolist(),
+            'LF Net Positions','LF 1w Pos Chg','LF 4w Pos Chg','LF 6m Pos Chg','LF 12m Pos Chg',
+            'LF OI %','LF 1w OI Chg','LF 4w OI Chg','LF 6m OI Chg','LF 12m OI Chg']].tolist(),
 
         'WN': ['','','','','',''],
         'WN Real Money': real_fast_money_pos_dict['WN'].loc[chosen_date][[
-            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']].tolist(),
+            'AM Net Positions','AM 1w Pos Chg','AM 4w Pos Chg','AM 6m Pos Chg','AM 12m Pos Chg',
+            'AM OI %','AM 1w OI Chg','AM 4w OI Chg','AM 6m OI Chg','AM 12m OI Chg']].tolist(),
         'WN Fast Money': real_fast_money_pos_dict['WN'].loc[chosen_date][[
-            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']].tolist(),
+            'LF Net Positions','LF 1w Pos Chg','LF 4w Pos Chg','LF 6m Pos Chg','LF 12m Pos Chg',
+            'LF OI %','LF 1w OI Chg','LF 4w OI Chg','LF 6m OI Chg','LF 12m OI Chg']].tolist(),
     }).T
 
     df = cftc_am_of_snapshot.copy()
-    df.columns = ['Net Positions', '1w Chg', '4w Chg', '6m Chg', '12m Chg', 'OI %']
+    df.columns = ['Net Positions', '1w Pos Chg', '4w Pos Chg', '6m Pos Chg', '12m Pos Chg',
+                  'OI %','1w OI Chg','4w OI Chg','6m OI Chg','12m OI Chg']
 
     # all headers (untabbed + bold)
     section_rows = {
@@ -191,7 +220,8 @@ def am_lf_snapshot(start, end, **kwargs):
             ]
         )
 
-        numeric_cols = ['Net Positions', '1w Chg', '4w Chg', '6m Chg', '12m Chg', 'OI %']
+        numeric_cols = ['Net Positions', '1w Pos Chg', '4w Pos Chg', '6m Pos Chg', '12m Pos Chg',
+                  'OI %','1w OI Chg','4w OI Chg','6m OI Chg','12m OI Chg']
         existing_cols = [c for c in numeric_cols if c in df.columns]
         if existing_cols:
             styler = styler.set_properties(
@@ -247,7 +277,8 @@ def am_lf_snapshot(start, end, **kwargs):
                 return "color: #CC0000; font-weight:bold;"
             return ""  # zero
 
-        for col in ['Net Positions', '1w Chg', '4w Chg', '6m Chg', '12m Chg', 'OI %']:
+        for col in ['Net Positions', '1w Pos Chg', '4w Pos Chg', '6m Pos Chg', '12m Pos Chg',
+                  'OI %','1w OI Chg','4w OI Chg','6m OI Chg','12m OI Chg']:
             if col in df.columns:
                 styler = styler.applymap(
                     color_and_bold_nonzero, subset=pd.IndexSlice[:, col]
