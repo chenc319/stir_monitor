@@ -72,51 +72,48 @@ def am_lf_snapshot(start, end, **kwargs):
             real_fast_money_pos_dict[key] = real_fast_money_pos_dict[key].where(
                 real_fast_money_pos_dict[key] != 0, 0
             )
-
     chosen_date = st.selectbox(
         "Select CFTC Snapshot Date",
         options=all_dates,
         index=len(all_dates) - 1,
         format_func=lambda d: d.strftime("%Y-%m-%d"),
     )
-
-    chosen_date = pd.to_datetime('2026-03-10')
     cftc_am_of_snapshot = pd.DataFrame({
         'TU': ['Net Positions','1w Chg','4w Chg','6m Chg','12m Chg','OI %'],
         'TU Real Money': real_fast_money_pos_dict['TU'].loc[chosen_date][[
-            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']],
+            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']].tolist(),
         'TU Fast Money': real_fast_money_pos_dict['TU'].loc[chosen_date][[
-            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']],
+            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']].tolist(),
 
         'FV': ['Net Positions', '1w Chg', '4w Chg', '6m Chg', '12m Chg', 'OI %'],
         'FV Real Money': real_fast_money_pos_dict['FV'].loc[chosen_date][[
-            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']],
+            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']].tolist(),
         'FV Fast Money': real_fast_money_pos_dict['FV'].loc[chosen_date][[
-            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']],
+            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']].tolist(),
 
         'TY': ['Net Positions', '1w Chg', '4w Chg', '6m Chg', '12m Chg', 'OI %'],
         'TY Real Money': real_fast_money_pos_dict['TY'].loc[chosen_date][[
-            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']],
+            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']].tolist(),
         'TY Fast Money': real_fast_money_pos_dict['TY'].loc[chosen_date][[
-            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']],
+            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']].tolist(),
 
         'UXY': ['Net Positions', '1w Chg', '4w Chg', '6m Chg', '12m Chg', 'OI %'],
         'UXY Real Money': real_fast_money_pos_dict['UXY'].loc[chosen_date][[
-            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']],
+            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']].tolist(),
         'UXY Fast Money': real_fast_money_pos_dict['UXY'].loc[chosen_date][[
-            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']],
+            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']].tolist(),
 
         'US': ['Net Positions', '1w Chg', '4w Chg', '6m Chg', '12m Chg', 'OI %'],
         'US Real Money': real_fast_money_pos_dict['US'].loc[chosen_date][[
-            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']],
+            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']].tolist(),
         'US Fast Money': real_fast_money_pos_dict['US'].loc[chosen_date][[
-            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']],
+            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']].tolist(),
 
         'WN': ['Net Positions', '1w Chg', '4w Chg', '6m Chg', '12m Chg', 'OI %'],
         'WN Real Money': real_fast_money_pos_dict['WN'].loc[chosen_date][[
-            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']],
+            'AM Net Positions','AM 1w Chg','AM 4w Chg','AM 6m Chg','AM 12m Chg','AM OI %']].tolist(),
         'WN Fast Money': real_fast_money_pos_dict['WN'].loc[chosen_date][[
-            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']],
+            'LF Net Positions','LF 1w Chg','LF 4w Chg','LF 6m Chg','LF 12m Chg','LF OI %']].tolist(),
     }).T
 
     df = cftc_am_of_snapshot.copy()
