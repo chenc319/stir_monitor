@@ -117,8 +117,6 @@ def am_lf_snapshot(start, end, **kwargs):
     }).T
 
     df = cftc_am_of_snapshot.copy()
-    cols = ['Net Positions', '1w Chg', '4w Chg', '6m Chg', '12m Chg', 'OI %']
-    df = df[cols]
 
     # all headers (untabbed + bold)
     section_rows = {
