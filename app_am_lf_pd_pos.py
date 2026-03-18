@@ -191,7 +191,7 @@ def am_lf_snapshot(start, end, **kwargs):
             ]
         )
 
-        numeric_cols = ["Level", "1w", "4w", "6m", "12m"]
+        numeric_cols = ['Net Positions', '1w Chg', '4w Chg', '6m Chg', '12m Chg', 'OI %']
         existing_cols = [c for c in numeric_cols if c in df.columns]
         if existing_cols:
             styler = styler.set_properties(
@@ -247,7 +247,7 @@ def am_lf_snapshot(start, end, **kwargs):
                 return "color: #CC0000; font-weight:bold;"
             return ""  # zero
 
-        for col in ["Level", "1w", "4w", "6m", "12m"]:
+        for col in ['Net Positions', '1w Chg', '4w Chg', '6m Chg', '12m Chg', 'OI %']:
             if col in df.columns:
                 styler = styler.applymap(
                     color_and_bold_nonzero, subset=pd.IndexSlice[:, col]
