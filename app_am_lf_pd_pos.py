@@ -34,13 +34,13 @@ for each_bond_key in cftc_bond_futures_dict.keys():
     df['AM 4w Chg'] = df['AM Net Positions'].diff(4)
     df['AM 6m Chg'] = df['AM Net Positions'].diff(26)
     df['AM 12m Chg'] = df['AM Net Positions'].diff(52)
-    df['AM OI %'] = df['AM Net Positions'] / df['Open_Interest_All']
+    df['AM OI %'] = (df['AM Net Positions'] / df['Open_Interest_All']) * 100
 
     df['LF 1w Chg'] = df['LF Net Positions'].diff(1)
     df['LF 4w Chg'] = df['LF Net Positions'].diff(4)
     df['LF 6m Chg'] = df['LF Net Positions'].diff(26)
     df['LF 12m Chg'] = df['LF Net Positions'].diff(52)
-    df['LF OI %'] = df['LF Net Positions'] / df['Open_Interest_All']
+    df['LF OI %'] = (df['LF Net Positions'] / df['Open_Interest_All']) * 100
 
     real_fast_money_pos_dict[each_bond_key] = pd.DataFrame(df[[
         'AM Net Positions',
@@ -132,9 +132,9 @@ def am_lf_snapshot(start, end, **kwargs):
     dark_blue_rows = {
         "TU",
         "FV",
-        "TY"
-        "UXY"
-        "US"
+        "TY",
+        "UXY",
+        "US",
         "WN"
     }
 
