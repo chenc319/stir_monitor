@@ -493,5 +493,5 @@ elif page == 'TRACE Model':
 ### ---------------------------------------------------------------------------------------- ###
 
 elif page == 'AM/LF/PD Positioning':
-    st.title('Real Money vs. Fast Money Bond Futures Snapshot')
+    st.title('Real Money (AM) vs. Fast Money (LF)')
     app_am_lf_pd_pos.am_lf_snapshot(start_date, end_date)
