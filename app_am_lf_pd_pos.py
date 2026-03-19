@@ -21,6 +21,38 @@ cftc_colors_dict = {
     'US':   '#9467bd',  # purple
     'WN':      '#7f7f7f',  # gray
 }
+cftc_colors_shades = {
+    'TU': [
+        '#1f77b4',  # base deep blue
+        '#4c97c8',  # lighter blue
+        '#155289',  # darker blue
+    ],
+    'FV': [
+        '#2ca02c',  # base green
+        '#5bbf5b',  # lighter green
+        '#1d701d',  # darker green
+    ],
+    'TY': [
+        '#ff7f0e',  # base orange
+        '#ffab5a',  # lighter orange
+        '#c75b00',  # darker orange
+    ],
+    'UXY': [
+        '#d62728',  # base red
+        '#e45b5c',  # lighter red
+        '#9b1c1d',  # darker red
+    ],
+    'US': [
+        '#9467bd',  # base purple
+        '#b18dd1',  # lighter purple
+        '#6c4b8c',  # darker purple
+    ],
+    'WN': [
+        '#7f7f7f',  # base gray
+        '#b0b0b0',  # lighter gray
+        '#4f4f4f',  # darker gray
+    ],
+}
 
 ### PRE CALCULATIONS ###
 real_fast_money_pos_dict = {}
@@ -362,63 +394,92 @@ def am_lf_snapshot(start, end, **kwargs):
 ### ---------------------------------------- REAL MONEY VS FAST MONEY ---------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def tu_data(start, end, **kwargs):
-    data = real_fast_money_pos_dict['TU']
+def real_money_fast_money_tu(start, end, **kwargs):
+    real_fast_fut_data = real_fast_money_pos_dict['TU'][[
+        'AM Net Positions','AM OI %','LF Net Positions', 'LF OI %',
+    ]]
+
+    real_fast_fut_data['AM 4w Pos MA'] = real_fast_fut_data['AM Net Positions'].rolling(4).mean()
+    real_fast_fut_data['LF 4w Pos MA'] = real_fast_fut_data['LF Net Positions'].rolling(4).mean()
+    real_fast_fut_data['AM 6m Pos MA'] = real_fast_fut_data['AM Net Positions'].rolling(26).mean()
+    real_fast_fut_data['LF 6m Pos MA'] = real_fast_fut_data['LF Net Positions'].rolling(26).mean()
+
+    real_fast_fut_data['AM 4w OI MA'] = real_fast_fut_data['AM OI %'].rolling(4).mean()
+    real_fast_fut_data['LF 4w OI MA'] = real_fast_fut_data['LF OI %'].rolling(4).mean()
+    real_fast_fut_data['AM 6m OI MA'] = real_fast_fut_data['AM OI %'].rolling(26).mean()
+    real_fast_fut_data['LF 6m OI MA'] = real_fast_fut_data['LF OI %'].rolling(26).mean()
+
+    real_fast_fut_data['AM Net Positions Z'] = (
+            (real_fast_fut_data['AM Net Positions'] -
+             real_fast_fut_data['AM Net Positions'].rolling(52).mean()) /
+            real_fast_fut_data['AM Net Positions'].rolling(52).std()
+    )
+    real_fast_fut_data['LF Net Positions Z'] = (
+            (real_fast_fut_data['LF Net Positions'] -
+             real_fast_fut_data['LF Net Positions'].rolling(52).mean()) /
+            real_fast_fut_data['LF Net Positions'].rolling(52).std()
+    )
+    real_fast_fut_data['AM OI % Z'] = (
+            (real_fast_fut_data['AM OI %'] -
+             real_fast_fut_data['AM OI %'].rolling(52).mean()) /
+            real_fast_fut_data['AM OI %'].rolling(52).std()
+    )
+    real_fast_fut_data['LF OI % Z'] = (
+            (real_fast_fut_data['LF OI %'] -
+             real_fast_fut_data['LF OI %'].rolling(52).mean()) /
+            real_fast_fut_data['LF OI %'].rolling(52).std()
+    )
+
     subplots_array = [
-        # 1) Net positions (levels)
         lambda: streamlit_plot(
-            back_df * 1e9,
-            ["Coupons 7-11y", "Coupons 11-21y", "Coupons >21y"],
+            real_fast_fut_data,
+            ["AM Net Positions", "AM 4w Pos MA", "AM 6m Pos MA"],
             [
-                pd_colors_dict["Coupons 7-11y"],
-                pd_colors_dict["Coupons 11-21y"],
-                pd_colors_dict["Coupons >21y"],
+                cftc_colors_shades["TU"][0],
+                cftc_colors_shades["TU"][1],
+                cftc_colors_shades["TU"][2],
             ],
-            ["Coupons 7-11y", "Coupons 11-21y", "Coupons >21y"],
-            "US Primary Dealer Holdings (Net Position) | Back End",
+            ["Net Positions", "4w MA", "6m MA"],
+            "Real Money Net Positions",
             "",
         ),
-        # 2) Net positions Z-scores
         lambda: streamlit_plot(
-            back_df,
-            ["Coupons 7-11y z", "Coupons 11-21y z", "Coupons >21y z"],
+            real_fast_fut_data,
+            ["AM OI %", "AM 4w OI MA", "AM 6m OI MA"],
             [
-                pd_colors_dict["Coupons 7-11y"],
-                pd_colors_dict["Coupons 11-21y"],
-                pd_colors_dict["Coupons >21y"],
+                cftc_colors_shades["TU"][0],
+                cftc_colors_shades["TU"][1],
+                cftc_colors_shades["TU"][2],
             ],
-            ["Coupons 7-11y", "Coupons 11-21y", "Coupons >21y"],
-            "US Primary Dealer Holdings (Net Positions 3y Z-Score) | Back End",
+            ["Net Positions % OI", "4w MA", "6m MA"],
+            "Real Money Net Positions % of OI",
             "",
         ),
-        # 3) % of back
         lambda: streamlit_plot(
-            back_df,
-            ["Coupons 7-11y %", "Coupons 11-21y %", "Coupons >21y %"],
+            real_fast_fut_data,
+            ["LF Net Positions", "LF 4w Pos MA", "LF 6m Pos MA"],
             [
-                pd_colors_dict["Coupons 7-11y"],
-                pd_colors_dict["Coupons 11-21y"],
-                pd_colors_dict["Coupons >21y"],
+                cftc_colors_shades["TU"][0],
+                cftc_colors_shades["TU"][1],
+                cftc_colors_shades["TU"][2],
             ],
-            ["Coupons 7-11y", "Coupons 11-21y", "Coupons >21y"],
-            "US Primary Dealer Holdings (% of Net Positions) | Back End",
+            ["Net Positions", "4w MA", "6m MA"],
+            "Fast Money Net Positions",
             "",
         ),
-        # 4) % of back Z-scores
         lambda: streamlit_plot(
-            back_df,
-            ["Coupons 7-11y % z", "Coupons 11-21y % z", "Coupons >21y % z"],
+            real_fast_fut_data,
+            ["LF OI %", "LF 4w OI MA", "LF 6m OI MA"],
             [
-                pd_colors_dict["Coupons 7-11y"],
-                pd_colors_dict["Coupons 11-21y"],
-                pd_colors_dict["Coupons >21y"],
+                cftc_colors_shades["TU"][0],
+                cftc_colors_shades["TU"][1],
+                cftc_colors_shades["TU"][2],
             ],
-            ["Coupons 7-11y", "Coupons 11-21y", "Coupons >21y"],
-            "US Primary Dealer Holdings (% of Net Positions 3y Z-Score) | Back End",
+            ["Net Positions % OI", "4w MA", "6m MA"],
+            "Fast Money Net Positions % of OI",
             "",
         ),
     ]
-
     streamlit_plot_subplot_layout(subplots_array, 2, 2)
 
 

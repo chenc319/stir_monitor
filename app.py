@@ -496,6 +496,7 @@ elif page == 'AM/LF/PD Positioning':
     st.title('Real Money (AM) vs. Fast Money (LF)')
     app_am_lf_pd_pos.am_lf_snapshot(start_date, end_date)
     st.title('TU')
+    app_am_lf_pd_pos.real_money_fast_money_tu(start_date,end_date)
     st.title('FV')
     st.title('TY')
     st.title('UXY')
