@@ -509,4 +509,5 @@ elif page == 'AM/LF/PD Positioning':
     app_am_lf_pd_pos.real_fast_wn(start_date,end_date)
     st.title('Z-Score Summary')
     app_am_lf_pd_pos.real_money_fast_money_summary(start_date,end_date)
-
+    st.title('Cayman Islands')
+    app_am_lf_pd_pos.cayman_islands_treasury_holdings(start_date,end_date)
