@@ -435,7 +435,7 @@ def am_lf_snapshot(start, end, **kwargs):
 def real_money_fast_money_master_fxn(bond_fut_str):
     subplots_array = [
         lambda: streamlit_plot(
-            real_fast_money_pos_dict[bond_fut_str],
+            real_fast_money_dict[bond_fut_str],
             ["AM Net Positions", "AM 4w Pos MA", "AM 6m Pos MA"],
             [
                 cftc_colors_shades[bond_fut_str][0],
@@ -447,7 +447,7 @@ def real_money_fast_money_master_fxn(bond_fut_str):
             "",
         ),
         lambda: streamlit_plot(
-            real_fast_money_pos_dict[bond_fut_str],
+            real_fast_money_dict[bond_fut_str],
             ["AM OI %", "AM 4w OI MA", "AM 6m OI MA"],
             [
                 cftc_colors_shades[bond_fut_str][0],
@@ -459,7 +459,7 @@ def real_money_fast_money_master_fxn(bond_fut_str):
             "",
         ),
         lambda: streamlit_plot(
-            real_fast_money_pos_dict[bond_fut_str],
+            real_fast_money_dict[bond_fut_str],
             ["LF Net Positions", "LF 4w Pos MA", "LF 6m Pos MA"],
             [
                 cftc_colors_shades[bond_fut_str][0],
@@ -471,7 +471,7 @@ def real_money_fast_money_master_fxn(bond_fut_str):
             "",
         ),
         lambda: streamlit_plot(
-            real_fast_money_pos_dict[bond_fut_str],
+            real_fast_money_dict[bond_fut_str],
             ["LF OI %", "LF 4w OI MA", "LF 6m OI MA"],
             [
                 cftc_colors_shades[bond_fut_str][0],
@@ -486,7 +486,7 @@ def real_money_fast_money_master_fxn(bond_fut_str):
     streamlit_plot_subplot_layout(subplots_array, 2, 2)
 
     streamlit_plot(
-        real_fast_money_pos_dict[bond_fut_str],
+        real_fast_money_dict[bond_fut_str],
         ["AM OI % Z", "LF OI % Z"],
         [
             cftc_colors_shades[bond_fut_str][0],
@@ -515,15 +515,15 @@ def real_fast_wn(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def real_money_fast_money_summary(start, end, **kwargs):
-    base_series = real_fast_money_pos_dict["TU"]
+    base_series = real_fast_money_dict["TU"]
     all_dates = base_series.index.sort_values()
 
     # Round existing series/DFs to 2 decimals and keep zeros as 0
-    for key, obj in real_fast_money_pos_dict.items():
+    for key, obj in real_fast_money_dict.items():
         if isinstance(obj, (pd.DataFrame, pd.Series)):
-            real_fast_money_pos_dict[key] = obj.round(2)
-            real_fast_money_pos_dict[key] = real_fast_money_pos_dict[key].where(
-                real_fast_money_pos_dict[key] != 0, 0
+            real_fast_money_dict[key] = obj.round(2)
+            real_fast_money_dict[key] = real_fast_money_dict[key].where(
+                real_fast_money_dict[key] != 0, 0
             )
 
     chosen_date = st.selectbox(
@@ -576,4 +576,3 @@ def real_money_fast_money_summary(start, end, **kwargs):
     styled = style_simple(df)
     html = styled.to_html()
     st.markdown(html, unsafe_allow_html=True)
-
