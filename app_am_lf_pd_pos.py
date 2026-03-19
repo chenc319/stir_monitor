@@ -394,8 +394,8 @@ def am_lf_snapshot(start, end, **kwargs):
 ### ---------------------------------------- REAL MONEY VS FAST MONEY ---------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
 
-def real_money_fast_money_tu(start, end, **kwargs):
-    real_fast_fut_data = real_fast_money_pos_dict['TU'][[
+def real_money_fast_money_master_fxn(bond_fut_str):
+    real_fast_fut_data = real_fast_money_pos_dict[bond_fut_str][[
         'AM Net Positions','AM OI %','LF Net Positions', 'LF OI %',
     ]]
 
@@ -435,9 +435,9 @@ def real_money_fast_money_tu(start, end, **kwargs):
             real_fast_fut_data,
             ["AM Net Positions", "AM 4w Pos MA", "AM 6m Pos MA"],
             [
-                cftc_colors_shades["TU"][0],
-                cftc_colors_shades["TU"][1],
-                cftc_colors_shades["TU"][2],
+                cftc_colors_shades[bond_fut_str][0],
+                cftc_colors_shades[bond_fut_str][1],
+                cftc_colors_shades[bond_fut_str][2],
             ],
             ["Net Positions", "4w MA", "6m MA"],
             "Real Money Net Positions",
@@ -447,9 +447,9 @@ def real_money_fast_money_tu(start, end, **kwargs):
             real_fast_fut_data,
             ["AM OI %", "AM 4w OI MA", "AM 6m OI MA"],
             [
-                cftc_colors_shades["TU"][0],
-                cftc_colors_shades["TU"][1],
-                cftc_colors_shades["TU"][2],
+                cftc_colors_shades[bond_fut_str][0],
+                cftc_colors_shades[bond_fut_str][1],
+                cftc_colors_shades[bond_fut_str][2],
             ],
             ["Net Positions % OI", "4w MA", "6m MA"],
             "Real Money Net Positions % of OI",
@@ -459,9 +459,9 @@ def real_money_fast_money_tu(start, end, **kwargs):
             real_fast_fut_data,
             ["LF Net Positions", "LF 4w Pos MA", "LF 6m Pos MA"],
             [
-                cftc_colors_shades["TU"][0],
-                cftc_colors_shades["TU"][1],
-                cftc_colors_shades["TU"][2],
+                cftc_colors_shades[bond_fut_str][0],
+                cftc_colors_shades[bond_fut_str][1],
+                cftc_colors_shades[bond_fut_str][2],
             ],
             ["Net Positions", "4w MA", "6m MA"],
             "Fast Money Net Positions",
@@ -471,9 +471,9 @@ def real_money_fast_money_tu(start, end, **kwargs):
             real_fast_fut_data,
             ["LF OI %", "LF 4w OI MA", "LF 6m OI MA"],
             [
-                cftc_colors_shades["TU"][0],
-                cftc_colors_shades["TU"][1],
-                cftc_colors_shades["TU"][2],
+                cftc_colors_shades[bond_fut_str][0],
+                cftc_colors_shades[bond_fut_str][1],
+                cftc_colors_shades[bond_fut_str][2],
             ],
             ["Net Positions % OI", "4w MA", "6m MA"],
             "Fast Money Net Positions % of OI",
@@ -486,10 +486,23 @@ def real_money_fast_money_tu(start, end, **kwargs):
         real_fast_fut_data,
         ["AM OI % Z", "LF OI % Z"],
         [
-            cftc_colors_shades["TU"][0],
-            cftc_colors_shades["TU"][2],
+            cftc_colors_shades[bond_fut_str][0],
+            cftc_colors_shades[bond_fut_str][2],
         ],
         ["Real Money", "Fast Money"],
         "Real Money vs. Fast Money Z-Scored",
         "",
     )
+
+def real_fast_tu(start, end, **kwargs):
+    real_money_fast_money_master_fxn('TU')
+def real_fast_fv(start, end, **kwargs):
+    real_money_fast_money_master_fxn('FV')
+def real_fast_ty(start, end, **kwargs):
+    real_money_fast_money_master_fxn('TY')
+def real_fast_uxy(start, end, **kwargs):
+    real_money_fast_money_master_fxn('UXY')
+def real_fast_us(start, end, **kwargs):
+    real_money_fast_money_master_fxn('US')
+def real_fast_wn(start, end, **kwargs):
+    real_money_fast_money_master_fxn('WN')
