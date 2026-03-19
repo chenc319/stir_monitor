@@ -122,6 +122,44 @@ lf_pos_oi = pd.DataFrame({
     for key, df in cftc_bond_futures_dict.items()
 })
 
+real_fast_money_dict = {}
+for bond_fut_str in ['TU','FV','TY','UXY','US','WN']:
+    real_fast_fut_data = real_fast_money_pos_dict[bond_fut_str][[
+        'AM Net Positions','AM OI %','LF Net Positions', 'LF OI %',
+    ]]
+
+    real_fast_fut_data['AM 4w Pos MA'] = real_fast_fut_data['AM Net Positions'].rolling(4).mean()
+    real_fast_fut_data['LF 4w Pos MA'] = real_fast_fut_data['LF Net Positions'].rolling(4).mean()
+    real_fast_fut_data['AM 6m Pos MA'] = real_fast_fut_data['AM Net Positions'].rolling(26).mean()
+    real_fast_fut_data['LF 6m Pos MA'] = real_fast_fut_data['LF Net Positions'].rolling(26).mean()
+
+    real_fast_fut_data['AM 4w OI MA'] = real_fast_fut_data['AM OI %'].rolling(4).mean()
+    real_fast_fut_data['LF 4w OI MA'] = real_fast_fut_data['LF OI %'].rolling(4).mean()
+    real_fast_fut_data['AM 6m OI MA'] = real_fast_fut_data['AM OI %'].rolling(26).mean()
+    real_fast_fut_data['LF 6m OI MA'] = real_fast_fut_data['LF OI %'].rolling(26).mean()
+
+    real_fast_fut_data['AM Net Positions Z'] = (
+            (real_fast_fut_data['AM Net Positions'] -
+             real_fast_fut_data['AM Net Positions'].rolling(52).mean()) /
+            real_fast_fut_data['AM Net Positions'].rolling(52).std()
+    )
+    real_fast_fut_data['LF Net Positions Z'] = (
+            (real_fast_fut_data['LF Net Positions'] -
+             real_fast_fut_data['LF Net Positions'].rolling(52).mean()) /
+            real_fast_fut_data['LF Net Positions'].rolling(52).std()
+    )
+    real_fast_fut_data['AM OI % Z'] = (
+            (real_fast_fut_data['AM OI %'] -
+             real_fast_fut_data['AM OI %'].rolling(52).mean()) /
+            real_fast_fut_data['AM OI %'].rolling(52).std()
+    )
+    real_fast_fut_data['LF OI % Z'] = (
+            (real_fast_fut_data['LF OI %'] -
+             real_fast_fut_data['LF OI %'].rolling(52).mean()) /
+            real_fast_fut_data['LF OI %'].rolling(52).std()
+    )
+    real_fast_money_dict[bond_fut_str] = real_fast_fut_data
+
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ---------------------------------------- REAL MONEY VS FAST MONEY ---------------------------------------- ###
 ### ---------------------------------------------------------------------------------------------------------- ###
@@ -395,41 +433,6 @@ def am_lf_snapshot(start, end, **kwargs):
 ### ---------------------------------------------------------------------------------------------------------- ###
 
 def real_money_fast_money_master_fxn(bond_fut_str):
-    real_fast_fut_data = real_fast_money_pos_dict[bond_fut_str][[
-        'AM Net Positions','AM OI %','LF Net Positions', 'LF OI %',
-    ]]
-
-    real_fast_fut_data['AM 4w Pos MA'] = real_fast_fut_data['AM Net Positions'].rolling(4).mean()
-    real_fast_fut_data['LF 4w Pos MA'] = real_fast_fut_data['LF Net Positions'].rolling(4).mean()
-    real_fast_fut_data['AM 6m Pos MA'] = real_fast_fut_data['AM Net Positions'].rolling(26).mean()
-    real_fast_fut_data['LF 6m Pos MA'] = real_fast_fut_data['LF Net Positions'].rolling(26).mean()
-
-    real_fast_fut_data['AM 4w OI MA'] = real_fast_fut_data['AM OI %'].rolling(4).mean()
-    real_fast_fut_data['LF 4w OI MA'] = real_fast_fut_data['LF OI %'].rolling(4).mean()
-    real_fast_fut_data['AM 6m OI MA'] = real_fast_fut_data['AM OI %'].rolling(26).mean()
-    real_fast_fut_data['LF 6m OI MA'] = real_fast_fut_data['LF OI %'].rolling(26).mean()
-
-    real_fast_fut_data['AM Net Positions Z'] = (
-            (real_fast_fut_data['AM Net Positions'] -
-             real_fast_fut_data['AM Net Positions'].rolling(52).mean()) /
-            real_fast_fut_data['AM Net Positions'].rolling(52).std()
-    )
-    real_fast_fut_data['LF Net Positions Z'] = (
-            (real_fast_fut_data['LF Net Positions'] -
-             real_fast_fut_data['LF Net Positions'].rolling(52).mean()) /
-            real_fast_fut_data['LF Net Positions'].rolling(52).std()
-    )
-    real_fast_fut_data['AM OI % Z'] = (
-            (real_fast_fut_data['AM OI %'] -
-             real_fast_fut_data['AM OI %'].rolling(52).mean()) /
-            real_fast_fut_data['AM OI %'].rolling(52).std()
-    )
-    real_fast_fut_data['LF OI % Z'] = (
-            (real_fast_fut_data['LF OI %'] -
-             real_fast_fut_data['LF OI %'].rolling(52).mean()) /
-            real_fast_fut_data['LF OI %'].rolling(52).std()
-    )
-
     subplots_array = [
         lambda: streamlit_plot(
             real_fast_fut_data,
