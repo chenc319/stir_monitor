@@ -435,7 +435,7 @@ def am_lf_snapshot(start, end, **kwargs):
 def real_money_fast_money_master_fxn(bond_fut_str):
     subplots_array = [
         lambda: streamlit_plot(
-            real_fast_fut_data,
+            real_fast_money_pos_dict[bond_fut_str],
             ["AM Net Positions", "AM 4w Pos MA", "AM 6m Pos MA"],
             [
                 cftc_colors_shades[bond_fut_str][0],
@@ -447,7 +447,7 @@ def real_money_fast_money_master_fxn(bond_fut_str):
             "",
         ),
         lambda: streamlit_plot(
-            real_fast_fut_data,
+            real_fast_money_pos_dict[bond_fut_str],
             ["AM OI %", "AM 4w OI MA", "AM 6m OI MA"],
             [
                 cftc_colors_shades[bond_fut_str][0],
@@ -459,7 +459,7 @@ def real_money_fast_money_master_fxn(bond_fut_str):
             "",
         ),
         lambda: streamlit_plot(
-            real_fast_fut_data,
+            real_fast_money_pos_dict[bond_fut_str],
             ["LF Net Positions", "LF 4w Pos MA", "LF 6m Pos MA"],
             [
                 cftc_colors_shades[bond_fut_str][0],
@@ -471,7 +471,7 @@ def real_money_fast_money_master_fxn(bond_fut_str):
             "",
         ),
         lambda: streamlit_plot(
-            real_fast_fut_data,
+            real_fast_money_pos_dict[bond_fut_str],
             ["LF OI %", "LF 4w OI MA", "LF 6m OI MA"],
             [
                 cftc_colors_shades[bond_fut_str][0],
@@ -486,7 +486,7 @@ def real_money_fast_money_master_fxn(bond_fut_str):
     streamlit_plot_subplot_layout(subplots_array, 2, 2)
 
     streamlit_plot(
-        real_fast_fut_data,
+        real_fast_money_pos_dict[bond_fut_str],
         ["AM OI % Z", "LF OI % Z"],
         [
             cftc_colors_shades[bond_fut_str][0],
