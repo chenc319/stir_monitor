@@ -11,6 +11,8 @@ DATA_DIR = os.getenv('DATA_DIR', 'data')
 ### LOAD DATA ###
 with open(Path(DATA_DIR) / 'cftc_bond_futures_dict.pkl', 'rb') as file:
     cftc_bond_futures_dict = pickle.load(file)
+with open(Path(DATA_DIR) / 'cayman_df.pkl', 'rb') as file:
+    cayman_df = pickle.load(file)
 
 ### COLOR ARRAY ###
 cftc_colors_dict = {
@@ -53,6 +55,10 @@ cftc_colors_shades = {
         '#4f4f4f',  # darker gray
     ],
 }
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ---------------------------------------- REAL MONEY VS FAST MONEY ---------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
 
 ### PRE CALCULATIONS ###
 real_fast_money_pos_dict = {}
@@ -159,6 +165,13 @@ for bond_fut_str in ['TU','FV','TY','UXY','US','WN']:
             real_fast_fut_data['LF OI %'].rolling(52).std()
     )
     real_fast_money_dict[bond_fut_str] = real_fast_fut_data
+
+### CAYMAN ISLAND HOLDINGS ###
+cayman_df.drop(['Country','Country Code','Date'],axis=1,inplace=True)
+cayman_df = cayman_df.apply(pd.to_numeric, errors='coerce')
+cayman_df = cayman_df * 1e6
+cayman_df['Treasuries % of Holdings'] = (cayman_df['Total US Securities Holdings'] /
+                                         cayman_df['US Treasuries Holdings'])
 
 ### ---------------------------------------------------------------------------------------------------------- ###
 ### ---------------------------------------- REAL MONEY VS FAST MONEY ---------------------------------------- ###
@@ -576,3 +589,36 @@ def real_money_fast_money_summary(start, end, **kwargs):
     styled = style_simple(df)
     html = styled.to_html()
     st.markdown(html, unsafe_allow_html=True)
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ------------------------------------ FAST MONEY PROXY - CAYMAN ISLANDS ----------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def cayman_islands_treasury_holdings(start, end, **kwargs):
+    streamlit_plot(
+        cayman_df,
+        [
+            "Total US Securities Holdings"],
+        ['#1f77b4'],
+        ["Total US Securities Holdings"],
+        "Cayman Islands: Total US Securities Holdings",
+        "",
+    )
+    streamlit_plot(
+        cayman_df,
+        [
+            "US Treasuries Holdings"],
+        ['#4c97c8'],
+        ["US Treasuries Holdings"],
+        "Cayman Islands: Total US Treasury Holdings",
+        "",
+    )
+    streamlit_plot(
+        cayman_df,
+        [
+            "Treasuries % of Holdings"],
+        ['#4c97c8'],
+        ["Treasuries % of Holdings"],
+        "Cayman Islands: Treasuries % of Holdings",
+        "",
+    )
