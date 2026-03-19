@@ -507,4 +507,6 @@ elif page == 'AM/LF/PD Positioning':
     app_am_lf_pd_pos.real_fast_us(start_date,end_date)
     st.title('WN')
     app_am_lf_pd_pos.real_fast_wn(start_date,end_date)
+    st.title('Summary')
+    app_am_lf_pd_pos.real_money_fast_money_summary(start_date,end_date)
 

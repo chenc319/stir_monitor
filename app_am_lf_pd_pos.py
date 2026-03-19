@@ -509,3 +509,65 @@ def real_fast_us(start, end, **kwargs):
     real_money_fast_money_master_fxn('US')
 def real_fast_wn(start, end, **kwargs):
     real_money_fast_money_master_fxn('WN')
+
+### ---------------------------------------------------------------------------------------------------------- ###
+### ---------------------------------------- REAL MONEY VS FAST MONEY ---------------------------------------- ###
+### ---------------------------------------------------------------------------------------------------------- ###
+
+def real_money_fast_money_summary(start, end, **kwargs):
+    base_series = real_fast_money_pos_dict["TU"]
+    all_dates = base_series.index.sort_values()
+
+    # Round existing series/DFs to 2 decimals and keep zeros as 0
+    for key, obj in real_fast_money_pos_dict.items():
+        if isinstance(obj, (pd.DataFrame, pd.Series)):
+            real_fast_money_pos_dict[key] = obj.round(2)
+            real_fast_money_pos_dict[key] = real_fast_money_pos_dict[key].where(
+                real_fast_money_pos_dict[key] != 0, 0
+            )
+
+    chosen_date = st.selectbox(
+        "Select Snapshot Date",
+        options=all_dates,
+        index=len(all_dates) - 1,
+        format_func=lambda d: d.strftime("%Y-%m-%d"),
+    )
+
+    # Only AM / LF Z-score columns, 2 decimals
+    cftc_am_of_snapshot = pd.DataFrame({
+        'TU':  real_fast_money_dict['TU'].loc[chosen_date][["AM OI % Z", "LF OI % Z"]],
+        'FV':  real_fast_money_dict['FV'].loc[chosen_date][["AM OI % Z", "LF OI % Z"]],
+        'TY':  real_fast_money_dict['TY'].loc[chosen_date][["AM OI % Z", "LF OI % Z"]],
+        'UXY': real_fast_money_dict['UXY'].loc[chosen_date][["AM OI % Z", "LF OI % Z"]],
+        'US':  real_fast_money_dict['US'].loc[chosen_date][["AM OI % Z", "LF OI % Z"]],
+        'WN':  real_fast_money_dict['WN'].loc[chosen_date][["AM OI % Z", "LF OI % Z"]],
+    }).T.round(2)
+
+    df = cftc_am_of_snapshot.copy()
+    df.columns = ["AM Z", "LF Z"]  # simple, no extra labels
+
+    def style_simple(df):
+        styler = df.style
+
+        # format both columns to 2 decimals
+        styler = styler.format("{:.2f}")
+
+        # color positives green, negatives red, zeros default
+        def color_and_bold_nonzero(val):
+            if pd.isna(val) or not isinstance(val, (int, float)):
+                return ""
+            if val > 0:
+                return "color: #008000; font-weight:bold;"
+            if val < 0:
+                return "color: #CC0000; font-weight:bold;"
+            return ""
+
+        for col in df.columns:
+            styler = styler.applymap(color_and_bold_nonzero, subset=pd.IndexSlice[:, col])
+
+        return styler
+
+    styled = style_simple(df)
+    html = styled.to_html()
+    st.markdown(html, unsafe_allow_html=True)
+
