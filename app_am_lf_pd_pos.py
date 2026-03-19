@@ -536,17 +536,17 @@ def real_money_fast_money_summary(start, end, **kwargs):
     # Only AM / LF Z-score columns, 2 decimals
     cftc_am_of_snapshot = pd.DataFrame({
         'TU':  real_fast_money_dict['TU'].loc[chosen_date][[
-            'AM Net Positions Z',"AM OI % Z", "LF OI % Z",'LF Net Positions Z']],
+            'AM Net Positions Z',"AM OI % Z", 'LF Net Positions Z', "LF OI % Z",]],
         'FV':  real_fast_money_dict['FV'].loc[chosen_date][[
-            'AM Net Positions Z',"AM OI % Z", "LF OI % Z",'LF Net Positions Z']],
+            'AM Net Positions Z',"AM OI % Z", 'LF Net Positions Z', "LF OI % Z",]],
         'TY':  real_fast_money_dict['TY'].loc[chosen_date][[
-            'AM Net Positions Z',"AM OI % Z", "LF OI % Z",'LF Net Positions Z']],
+            'AM Net Positions Z',"AM OI % Z", 'LF Net Positions Z', "LF OI % Z",]],
         'UXY': real_fast_money_dict['UXY'].loc[chosen_date][[
-            'AM Net Positions Z',"AM OI % Z", "LF OI % Z",'LF Net Positions Z']],
+            'AM Net Positions Z',"AM OI % Z", 'LF Net Positions Z', "LF OI % Z",]],
         'US':  real_fast_money_dict['US'].loc[chosen_date][[
-            'AM Net Positions Z',"AM OI % Z", "LF OI % Z",'LF Net Positions Z']],
+            'AM Net Positions Z',"AM OI % Z", 'LF Net Positions Z', "LF OI % Z",]],
         'WN':  real_fast_money_dict['WN'].loc[chosen_date][[
-            'AM Net Positions Z',"AM OI % Z", "LF OI % Z",'LF Net Positions Z']],
+            'AM Net Positions Z',"AM OI % Z", 'LF Net Positions Z', "LF OI % Z",]],
     }).T.round(2)
 
     df = cftc_am_of_snapshot.copy()
