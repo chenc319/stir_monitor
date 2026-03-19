@@ -482,4 +482,14 @@ def real_money_fast_money_tu(start, end, **kwargs):
     ]
     streamlit_plot_subplot_layout(subplots_array, 2, 2)
 
-
+    streamlit_plot(
+        real_fast_fut_data,
+        ["AM OI % Z", "LF OI % Z"],
+        [
+            cftc_colors_shades["TU"][0],
+            cftc_colors_shades["TU"][2],
+        ],
+        ["Real Money", "Fast Money"],
+        "Real Money vs. Fast Money Z-Scored",
+        "",
+    )
