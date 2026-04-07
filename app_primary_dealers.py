@@ -220,7 +220,7 @@ def primary_dealer_snapshot(start, end, **kwargs):
 
         for col in numeric_cols:
             if col in df.columns:
-                styler = styler.applymap(
+                styler = styler.map(
                     color_and_bold_nonzero, subset=pd.IndexSlice[:, col]
                 )
 

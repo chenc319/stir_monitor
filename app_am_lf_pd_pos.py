@@ -364,7 +364,7 @@ def am_lf_snapshot(start, end, **kwargs):
             return ""
         for col in numeric_cols:
             if col in df.columns:
-                styler = styler.applymap(
+                styler = styler.map(
                     color_and_bold_nonzero, subset=pd.IndexSlice[:, col]
                 )
         return styler
