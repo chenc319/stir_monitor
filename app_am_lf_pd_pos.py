@@ -582,7 +582,7 @@ def real_money_fast_money_summary(start, end, **kwargs):
             return ""
 
         for col in df.columns:
-            styler = styler.applymap(color_and_bold_nonzero, subset=pd.IndexSlice[:, col])
+            styler = styler.map(color_and_bold_nonzero, subset=pd.IndexSlice[:, col])
 
         return styler
 
