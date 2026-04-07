@@ -270,7 +270,7 @@ def plot_fed_balance_sheet_snapshot(start, end, **kwargs):
 
         for col in ["Level", "1w", "4w", "6m", "12m"]:
             if col in df.columns:
-                styler = styler.applymap(
+                styler = styler.map(
                     color_and_bold_nonzero, subset=pd.IndexSlice[:, col]
                 )
 
