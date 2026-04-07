@@ -10,7 +10,6 @@ import pandas as pd
 import requests, zipfile, io
 import functools as ft
 import pickle
-import pandas_datareader as pdr
 from plotly.subplots import make_subplots
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
