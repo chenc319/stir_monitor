@@ -18,7 +18,6 @@ import app_mmf
 import app_stir_positioning
 import app_trace
 import app_am_lf_pd_pos
-import time
 
 ### FUNCTIONS ###
 def merge_dfs(array_of_dfs):

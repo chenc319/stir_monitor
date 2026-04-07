@@ -9,7 +9,6 @@ import functools as ft
 import streamlit as st
 import plotly.graph_objs as go
 from matplotlib import pyplot as plt
-from pandas_datareader import data as pdr
 from pathlib import Path
 import os
 import pickle
